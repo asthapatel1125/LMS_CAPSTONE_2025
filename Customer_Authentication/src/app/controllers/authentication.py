@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 import jwt
-from session import create_session, delete_session
+from .session import create_session, delete_session
 
 SECRET_KEY = "lms2025"
 ALGORITHM = "HS256"
