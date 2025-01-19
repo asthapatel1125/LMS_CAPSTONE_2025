@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from app.routers.auth_router import router as auth_router
+from routers.auth_router import router as auth_router
 import uvicorn, os
 from fastapi import Request
 

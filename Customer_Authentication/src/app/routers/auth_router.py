@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Form, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
-from app.controllers.authentication import *
-from app.controllers.session import *
+from controllers.authentication import *
+from controllers.session import *
 import os
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
