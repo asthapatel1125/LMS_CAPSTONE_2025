@@ -8,16 +8,15 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 async def verify_user(email: str, password: str):
-    user = await get_user(email)
+    user = get_user(email)
     if not user or user["password"] != password:
         return False
     return True
 
 # Logic for handling login
 async def handle_login(email: str, pword: str):
-    if await verify_user(email, pword):
+    if verify_user(email, pword):
         session_id = create_session(email)
-        print('I AM IN HANDLE LOGIN')
         return session_id
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")

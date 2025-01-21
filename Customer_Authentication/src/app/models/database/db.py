@@ -1,27 +1,17 @@
-from contextlib import asynccontextmanager
-from fastapi import FastAPI
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# Load environment variables
+load_dotenv(dotenv_path="./app/config/.env")
 
-MONGO_URI = os.getenv("MONGO_URI")
-DATABASE_NAME = os.getenv("DATABASE_NAME")
+# MongoDB Connection (pymongo)
+MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://lmscapstone38:lmscapstone2025@lmscluster.i9xar.mongodb.net/?retryWrites=true&w=majority&appName=LMSCluster")
+client = MongoClient(MONGO_URL)
+db = client["sample_mflix"]
 
-class MongoDB:
-    client: AsyncIOMotorClient = None
-    db = None
+def get_db():
+    return db
 
-    @staticmethod
-    @asynccontextmanager
-    async def lifespan():
-        MongoDB.client = AsyncIOMotorClient(MONGO_URI)
-        MongoDB.db = MongoDB.client[DATABASE_NAME]
-        print(f"Connected to the database: {DATABASE_NAME}")
-
-        yield
-
-        if MongoDB.client:
-            MongoDB.client.close()
-            print("Database connection is closed.")
+def close_db():
+    client.close()

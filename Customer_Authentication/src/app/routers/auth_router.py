@@ -19,6 +19,7 @@ async def login_page(request: Request):
 @router.post("/login")
 async def login(email: str = Form(), pword: str = Form()):
     session_id = await handle_login(email, pword)
+    # change
     response = RedirectResponse(url="/auth/register", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(key="session_id", value=session_id, httponly=True)
     return response

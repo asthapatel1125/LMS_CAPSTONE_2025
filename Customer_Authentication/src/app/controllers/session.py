@@ -9,10 +9,10 @@ sessions = {}
 
 SESSION_EXPIRATION_TIME = 3600
 
-def create_session(username: str) -> str:
+def create_session(email: str) -> str:
     session_id = str(uuid4())
     sessions[session_id] = {
-        "username": username,
+        "email": email,
         "created_at": datetime.utcnow(),
     }
     return session_id
