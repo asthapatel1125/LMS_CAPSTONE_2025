@@ -1,32 +1,26 @@
 from fastapi import HTTPException, status
 import jwt
 from controllers.session import create_session, delete_session
+from models.customers import *
 
 SECRET_KEY = "lms2025"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# TO BE REPLACED
-mock_users_db = {
-    "john": {"username": "john", "password": "doe", "email": "john@example.com"},
-}
-
-def verify_user(username: str, password: str):
-    user = mock_users_db.get(username)
+async def verify_user(email: str, password: str):
+    user = await get_user(email)
     if not user or user["password"] != password:
         return False
     return True
 
 # Logic for handling login
-def handle_login(uname: str, pword: str):
-    if verify_user(uname, pword):
-        session_id = create_session(uname)
+async def handle_login(email: str, pword: str):
+    if await verify_user(email, pword):
+        session_id = create_session(email)
+        print('I AM IN HANDLE LOGIN')
         return session_id
     else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid username or password"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
 
 # Logic for handling logout
 def handle_logout(session_id: str):

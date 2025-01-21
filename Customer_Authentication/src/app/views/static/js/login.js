@@ -25,7 +25,7 @@ async function handleLoginFormSubmit(event) {
       errorMessage.style.display = 'block'; // Show error message
     }
     else {
-     /* try {
+      try {
         // Send the data using fetch API
         const response = await fetch("/login", {
             method: "POST",
@@ -42,7 +42,7 @@ async function handleLoginFormSubmit(event) {
         console.error("Error:", error);
         document.getElementById("responseMessage").innerText = "An error occurred!";
     }
-      // If fields are filled, proceed with the form submission (e.g., logging in)*/
+      // If fields are filled, proceed with the form submission (e.g., logging in)
       console.log('Email:', email);
       console.log('Password:', password);
     }

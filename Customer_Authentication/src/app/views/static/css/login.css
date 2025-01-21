@@ -67,6 +67,12 @@
 #errorMessage {
     font-weight: 600;
     font-size: 14px;
+    display: none;
+}
+
+/* Styling for quote */
+.quote {
+    font-style: italic;
 }
 
 /* Footer Styling */

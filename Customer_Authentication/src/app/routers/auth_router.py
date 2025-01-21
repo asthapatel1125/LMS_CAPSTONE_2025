@@ -17,9 +17,9 @@ async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @router.post("/login")
-async def login(uname: str = Form(...), pword: str = Form(...)):
-    session_id = handle_login(uname, pword)
-    response = RedirectResponse(url="/auth/dashboard", status_code=status.HTTP_303_SEE_OTHER)
+async def login(email: str = Form(), pword: str = Form()):
+    session_id = await handle_login(email, pword)
+    response = RedirectResponse(url="/auth/register", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(key="session_id", value=session_id, httponly=True)
     return response
 

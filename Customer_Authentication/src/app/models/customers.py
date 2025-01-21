@@ -1,17 +1,24 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from enum import Enum
 from bson import ObjectId
-from database.db import MongoDB
+from .database.db import MongoDB
 from typing import List
 
 app = FastAPI()
+
+class Address(str, Enum):
+    streetAddress = "streetAddress"
+    city = "city"
+    state = "state"
+    country = "country"
 
 class Customer(BaseModel):
     email: str
     password: str
     firstName: str
     lastName: str
-    address: list
+    address: List[Address]
     age: int
 
 @app.post("/customers/", response_model=dict)
@@ -19,11 +26,11 @@ async def create_user(customer: Customer):
     result = await MongoDB.db["customers"].insert_one(customer.dict())
     return {"id": str(result.inserted_id)}
 
-@app.get("/customers/{email}", response_model=Customer)
 async def get_user(email: str):
-    customer = await MongoDB.db["customers"].find_one({"email": ObjectId(email)})
+    customer = await MongoDB.db["customers"].find_one({"email": email})
     if not customer:
         raise HTTPException(status_code=404, detail="User not found")
+    print(**customer)
     return Customer(**customer)
 
 @app.get("/customers/{firstName}", response_model=Customer)
