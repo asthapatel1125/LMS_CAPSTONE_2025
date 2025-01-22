@@ -17,12 +17,15 @@ async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @router.post("/login")
-async def login(email: str = Form(), pword: str = Form()):
-    session_id = await handle_login(email, pword)
-    # change
-    response = RedirectResponse(url="/auth/register", status_code=status.HTTP_303_SEE_OTHER)
+def login(email: str = Form(), pword: str = Form()):
+    session_id = handle_login(email, pword)
+    response = RedirectResponse(url="/auth/home", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(key="session_id", value=session_id, httponly=True)
     return response
+
+@router.get("/logout", response_class=HTMLResponse)
+async def logout_page(request: Request):
+    return RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
 
 # Route to handle logout
 @router.post("/logout")
@@ -49,9 +52,9 @@ async def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
 # Route to handle user registration
-@router.post("/register")
-async def register_user(username: str = Form(...), email: str = Form(...), password: str = Form(...), confirm_password: str = Form(...)):
-    handle_registration(username, email, password, confirm_password)
+@router.post("/register", response_class=HTMLResponse)
+async def register_user(fname: str = Form(...), lname: str = Form(...), email: str = Form(...), password: str = Form(...), age: int = Form(...)):
+    handle_registration(fname, lname, email, password, age)
     return RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
 
 # Route to show forgot password page
@@ -68,3 +71,7 @@ async def reset_password(email: str = Form(...)):
 @router.get("/validate-token")
 async def validate_token_route(token: str):
     return validate_token(token)
+
+@router.get("/home", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return  templates.TemplateResponse("home.html", {"request": request})

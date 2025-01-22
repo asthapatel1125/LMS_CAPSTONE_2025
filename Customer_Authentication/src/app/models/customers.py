@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from enum import Enum
 from .database.db import *
-from typing import List
+from typing import List, Optional
 
 app = FastAPI()
 
@@ -21,16 +21,15 @@ class Customer(BaseModel):
     age: int
 
 @app.post("/customers/", response_model=dict)
-async def create_user(customer: Customer):
-    result = await get_db["customers"].insert_one(customer.dict())
+def create_user(customer: dict):
+    result = db["customers"].insert_one(customer)
     return {"id": str(result.inserted_id)}
 
 @app.get("/customers/{email}", response_model=Customer)
-async def get_user(email: str): 
+def get_user(email: str): 
     customer = db["customers"].find_one({"email": email})
-    print(customer)
     if not customer:
-        raise HTTPException(status_code=404, detail="User not found")
+        return None
     return Customer(**customer)
 
 @app.get("/customers/{firstName}", response_model=Customer)
@@ -41,9 +40,10 @@ async def get_user_by_fname(firstName: str):
     return Customer(**customer)
 
 @app.get("/customers/", response_model=List[Customer])
-async def list_users():
-    customers = await get_db.db["customers"].find().to_list(100)
-    return [Customer(**customers) for customer in customers]
+def list_users():
+    db = get_db()
+    customers = list(db["customers"].find())
+    return [Customer(**customer) for customer in customers]
 
 @app.delete("/customers/{email}")
 async def delete_user(email: str):

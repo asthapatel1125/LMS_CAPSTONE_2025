@@ -28,28 +28,10 @@ async function handleLoginFormSubmit(event) {
         errorMessage.style.display = 'block'; // Show error message
     }
     else{
-     /* try {
-        // Send the data using fetch API
-        const response = await fetch("/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"  // Tell FastAPI we are sending JSON
-            },
-            body: JSON.stringify(itemData)  // Convert the JavaScript object to JSON
-        });
-        // Parse the response as JSON
-        const responseData = await response.json();
-        // Display the response message
-        document.getElementById("responseMessage").innerText = responseData.message;
-    } catch (error) {
-        console.error("Error:", error);
-        document.getElementById("responseMessage").innerText = "An error occurred!";
-    }
-      // If fields are filled, proceed with the form submission (e.g., logging in)*/
       console.log('Email:', email);
       console.log('Password:', password);
     }
   }
   // Add an event listener for the form submission
-  document.getElementById('loginForm').addEventListener('submit', handleLoginFormSubmit);
+  document.getElementById('registerForm').addEventListener('submit', handleLoginFormSubmit);
   

@@ -8,8 +8,12 @@ from fastapi import Request
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from models.database.db import get_db, close_db
+
+load_dotenv(dotenv_path='./app/config/.env')
 
 app = FastAPI()
+
 
 """
 origins = ["*"]
@@ -42,13 +46,27 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 templates = Jinja2Templates(directory=templates_dir)
 
+@app.on_event("startup")
+def startup_db_client():
+    try:
+        # Test MongoDB connection
+        get_db().client.admin.command('ping')
+        print("MongoDB connected successfully!")
+    except Exception as e:
+        print(f"Error connecting to MongoDB: {e}")
+        raise HTTPException(status_code=500, detail="Unable to connect to MongoDB")
+
+@app.on_event("shutdown")
+def shutdown_db_client():
+    close_db()
+    print("MongoDB connection closed!")
+
+
 app.include_router(auth_router, prefix="/auth")
 
 @app.get("/")
 async def root(request : Request):
      return templates.TemplateResponse("login.html", {"request": request})
-
-load_dotenv(dotenv_path='./app/config/.env')
 
 if __name__ == "__main__":
     uvicorn.run(
