@@ -12,7 +12,7 @@ COPY src/app /app
 
 EXPOSE 8000
 
-CMD ["python", "main.py", "--host", "localhost", "--port", "8000"]
+CMD ["python", "main.py"]
 
 # Build docker image
 # docker build -t microservice_name:latest .
