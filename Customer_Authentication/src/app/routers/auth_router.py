@@ -27,13 +27,15 @@ async def login_page(request: Request):
 @router.post("/login")
 def login(email: str = Form(), pword: str = Form()):
     jwt_token = handle_login(email, pword) 
-    
     if jwt_token:
         expiration_time = datetime.utcnow() + timedelta(seconds=TOKEN_EXPIRATION_TIME)
         expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
-        
         response = RedirectResponse(url="/auth/home", status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="login_token", value=jwt_token, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME)
+        
+        user = get_user(email)
+        user_name = user.firstName if user else "Guest"
+        response.set_cookie(key="user_name", value=user_name, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME)
         return response
     else:
         return JSONResponse(
@@ -50,6 +52,7 @@ async def logout_page(request: Request):
 async def logout(response: Response):
     response = RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
     response.delete_cookie("login_token")
+    response.delete_cookie("user_name")
     return response
 
 # Route to show registration page
@@ -77,7 +80,8 @@ async def forgot_password(email: str = Form(...)):
 
 @router.get("/home", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return  templates.TemplateResponse("home.html", {"request": request})
+    user_name = request.cookies.get("user_name", "Guest")
+    return  templates.TemplateResponse("home.html", {"request": request, "name": user_name})
 
 # load verification code page
 @router.get("/verification-code", response_class=HTMLResponse)
