@@ -56,27 +56,27 @@
                     <div class="form-group">
                         <div class="mb-3">
                             <label for="first-name">First Name:</label>
-                            <input type="text" class="form-control rounded px-10 mb-2" id="first-name" name="fname" placeholder="Enter your first name">
+                            <input type="text" class="form-control rounded px-10 mb-2" id="first-name" name="fname" placeholder="Enter your first name" required>
                         </div>
                         <div class="mb-3">
                             <label for="last-name">Last Name:</label>
-                            <input type="text" class="form-control rounded" id="last-name" name="lname" placeholder="Enter your last name">
+                            <input type="text" class="form-control rounded" id="last-name" name="lname" placeholder="Enter your last name" required>
                         </div>
                         <div class="mb-3">
                             <label for="age">Age:</label>
-                            <input type="number" class="form-control rounded" id="age" name="age" placeholder="Enter your age">
+                            <input type="number" class="form-control rounded" id="age" min="1" max="120" name="age" placeholder="Enter your age" required>
                         </div>
                         <div class="mb-3">
                             <label for="email">Email:</label>
-                            <input type="email" class="form-control rounded" id="email" name="email" placeholder="Enter your email">
+                            <input type="email" class="form-control rounded" id="email" name="email" placeholder="Enter your email" required>
                         </div>
                         <div class="mb-3">
                             <label for="password">Password:</label>
-                            <input type="password" class="form-control rounded" id="password" name="password" placeholder="Enter your password">
+                            <input type="password" class="form-control rounded" id="password" name="password" placeholder="Enter your password" required>
                         </div>
                         <div class="mb-3">
                             <label for="re-password">Re-enter Password:</label>
-                            <input type="password" class="form-control rounded" id="re-password" name="re_password" placeholder="Re-enter your password">
+                            <input type="password" class="form-control rounded" id="re-password" name="re_password" placeholder="Re-enter your password" required>
                             <div id="errorMessage" class="fs-6 text-danger p-0 m-0" style="display: none; font-weight:600;"></div>
                         </div>
                         <button type="submit" class="btn btn-custom-size w-100 mt-3 mb-2">Register</button>

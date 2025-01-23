@@ -1,35 +1,32 @@
 from fastapi import HTTPException, status
-import jwt
-from controllers.session import *
+from controllers.token import *
 from models.customers import *
 
 SECRET_KEY = "lms2025"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
-async def verify_user(email: str, password: str):
+def verify_user(email: str, password: str):
     user = get_user(email)
-    if not user or user["password"] != password:
+    if not user or user.password != password:
         return False
     return True
 
 # Logic for handling login
-async def handle_login(email: str, pword: str):
+def handle_login(email: str, pword: str):
     if verify_user(email, pword):
-        session_id = create_session(email)
-        return session_id
+        token = create_jwt("FastAPI", email, ACCESS_TOKEN_EXPIRE_MINUTES)
+        return token
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
-
-# Logic for handling logout
-def handle_logout(session_id: str):
-    delete_session(session_id)
 
 # Logic for handling registration
 def handle_registration(fname: str, lname: str, email: str, password: str, age: int):
     user = get_user(email)
     if user is None:
-        return create_user({"firstName": fname, "lastName": lname, "email": email, "password": password, "address": [], "age": age})
+        return create_user(Customer(firstName=fname, lastName=lname, email=email, password=password, 
+                                    address=Address(streetAddress="", city="", state="", country=""), 
+                                    age=age))
     raise HTTPException(status_code=400, detail="Email already registered")    
     
 # Logic for handling forgot password

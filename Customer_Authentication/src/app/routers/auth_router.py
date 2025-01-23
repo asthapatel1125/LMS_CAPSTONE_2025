@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Form, Depends, HTTPException, status, Request
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from controllers.authentication import *
-from controllers.session import *
+from controllers.token import *
 import os
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,9 +18,9 @@ async def login_page(request: Request):
 
 @router.post("/login")
 def login(email: str = Form(), pword: str = Form()):
-    session_id = handle_login(email, pword)
+    jwt_token = handle_login(email, pword)
     response = RedirectResponse(url="/auth/home", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(key="session_id", value=session_id, httponly=True)
+    response.set_cookie(key="login_token", value=jwt_token, httponly=False)
     return response
 
 @router.get("/logout", response_class=HTMLResponse)
@@ -28,23 +28,11 @@ async def logout_page(request: Request):
     return RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
 
 # Route to handle logout
-@router.post("/logout")
-async def logout(session_id: str = Depends(lambda: None)):
-    handle_logout(session_id)
+@router.post("/logout", response_class=HTMLResponse)
+async def logout(response: Response):
+    response.delete_cookie("login_token", path="/auth/login")
     response = RedirectResponse(url="/auth/login")
-    response.delete_cookie("session_id")
     return response
-
-# Route to show dashboard page (after login)
-@router.get("/dashboard", response_class=HTMLResponse)
-async def dashboard_page(request: Request, session_id: str = Depends(lambda: None)):
-    session = get_session(session_id)
-    if not session:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired session",
-        )
-    return templates.TemplateResponse("dashboard.html", {"request": request, "username": session["username"]})
 
 # Route to show registration page
 @router.get("/register", response_class=HTMLResponse)
@@ -66,11 +54,6 @@ async def forgot_password_page(request: Request):
 @router.post("/forgot-password")
 async def reset_password(email: str = Form(...)):
     return handle_forgot_password(email)
-
-# Route to validate JWT token
-@router.get("/validate-token")
-async def validate_token_route(token: str):
-    return validate_token(token)
 
 @router.get("/home", response_class=HTMLResponse)
 async def login_page(request: Request):

@@ -6,23 +6,24 @@ from typing import List, Optional
 
 app = FastAPI()
 
-class Address(str, Enum):
-    streetAddress = "streetAddress"
-    city = "city"
-    state = "state"
-    country = "country"
+class Address(BaseModel):
+    streetAddress: str
+    city: str
+    state: str
+    country: str
 
 class Customer(BaseModel):
     email: str
     password: str
     firstName: str
     lastName: str
-    address: List[Address]
+    address: Address
     age: int
 
 @app.post("/customers/", response_model=dict)
-def create_user(customer: dict):
-    result = db["customers"].insert_one(customer)
+def create_user(customer: Customer):
+    customer_dict = customer.dict()
+    result = db["customers"].insert_one(customer_dict)
     return {"id": str(result.inserted_id)}
 
 @app.get("/customers/{email}", response_model=Customer)
@@ -30,6 +31,10 @@ def get_user(email: str):
     customer = db["customers"].find_one({"email": email})
     if not customer:
         return None
+    customer["_id"] = str(customer["_id"])
+    if isinstance(customer["age"], dict) and "$numberInt" in customer["age"]:
+        customer["age"] = int(customer["age"]["$numberInt"])
+        
     return Customer(**customer)
 
 @app.get("/customers/{firstName}", response_model=Customer)
