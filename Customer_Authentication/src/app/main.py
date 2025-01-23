@@ -78,7 +78,7 @@ async def root(request: Request):
 if __name__ == "__main__":
     uvicorn.run(
         app="main:app",
-        host="127.0.0.1",
+        host="localhost",
         port=8000,  # Use a different port
         reload=True if os.environ.get("ENVIRONMENT") == "dev" else False,
         workers=1,
