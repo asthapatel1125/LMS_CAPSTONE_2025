@@ -1,7 +1,7 @@
 // Define a function to handle the form submission
 async function handleLoginFormSubmit(event) {
     // Prevent the form from submitting normally (page reload)
-    event.preventDefault();
+    // event.preventDefault();
   
     // Get the values of the email and password fields
     const email = document.getElementById('email').value;

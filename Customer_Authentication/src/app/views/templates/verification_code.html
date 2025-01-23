@@ -6,7 +6,7 @@
   <title>Forgot Password</title>
   <!-- Link to Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/verfication_code.css" rel="stylesheet">
+    <link href="/static/css/verification_code.css" rel="stylesheet">
 </head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -50,20 +50,20 @@
     <!-- Content goes here -->
     <div class="verif-code-form col-12 col-md-6 bg-light align-items-center justify-content-center ">
         <h1 class="title fs-2">Forgot Password 🔐</h1>
-        <form id="verif-code-form">
+        <form id="verif-code-form" action="/auth/reset-password" method="POST">
             <div class="row">
               <div class="col-2"></div>
               <div class="col-8">
                 <div class="form-group p-3">
                   <label for="verif-code ">Verifcation Code:</label>
-                  <input type="text" class="form-control rounded" id="verif-code" placeholder="Enter your verification code">
+                  <input type="text" class="form-control rounded" id="verif-code" placeholder="Enter your verification code" required>
                   <div id="errorMessage" class="errorMessage  text-danger p-0 m-0"></div>
                   <div class="row">
                     <div class="col-5">
                         <button type="submit" class="btn btn-custom-size w-100 mt-3 mb-2">Continue</button>
                     </div>
                     <div class="col-5">
-                        <button type="button" class="btn btn-clear-size w-100 mt-3 mb-2">Resend Code</button>
+                        <a class="btn btn-clear-size w-100 mt-3 mb-2">Resend Code</a>
                     </div> 
                   </div>               
                 </div>
@@ -81,6 +81,6 @@
 
   <!-- Include Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/static/js/verfication_code.js"></script>
+  <!--<script src="/static/js/verification_code.js"></script>-->
 </body>
 </html>

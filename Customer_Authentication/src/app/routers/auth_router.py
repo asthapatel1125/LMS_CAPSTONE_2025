@@ -51,10 +51,26 @@ async def forgot_password_page(request: Request):
     return templates.TemplateResponse("forgot_password.html", {"request": request})
 
 # Route to handle password reset (mock implementation)
-@router.post("/forgot-password")
-async def reset_password(email: str = Form(...)):
-    return handle_forgot_password(email)
+@router.post("/forgot-password", response_class=HTMLResponse)
+async def forgot_password(email: str = Form(...)):
+    if handle_forgot_password(email):
+        return RedirectResponse(url="/auth/verification-code", status_code=status.HTTP_303_SEE_OTHER)
+    raise HTTPException(status_code=400, detail="Email is not registered.")    
 
 @router.get("/home", response_class=HTMLResponse)
 async def login_page(request: Request):
     return  templates.TemplateResponse("home.html", {"request": request})
+
+# load verification code page
+@router.get("/verification-code", response_class=HTMLResponse)
+async def verification_code_page(request: Request):
+    return templates.TemplateResponse("verification_code.html", {"request": request})
+
+@router.post("/verification-code", response_class=HTMLResponse)
+async def verification_code():
+    return RedirectResponse(url="/auth/reset-password", status_code=status.HTTP_303_SEE_OTHER)
+
+# load verification code page
+@router.get("/reset-password", response_class=HTMLResponse)
+async def reset_password_page(request: Request):
+    return templates.TemplateResponse("reset_password.html", {"request": request})

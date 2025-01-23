@@ -34,7 +34,7 @@ def get_user(email: str):
     customer["_id"] = str(customer["_id"])
     if isinstance(customer["age"], dict) and "$numberInt" in customer["age"]:
         customer["age"] = int(customer["age"]["$numberInt"])
-        
+
     return Customer(**customer)
 
 @app.get("/customers/{firstName}", response_model=Customer)

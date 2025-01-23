@@ -31,14 +31,10 @@ def handle_registration(fname: str, lname: str, email: str, password: str, age: 
     
 # Logic for handling forgot password
 def handle_forgot_password(email: str):
-    for user in mock_users_db.values():
-        if user["email"] == email:
-            # Simulate sending a reset link (replace with actual email logic)
-            return {"message": f"A reset link has been sent to {email}"}
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Email not found"
-    )
+    user = get_user(email)
+    if user is None:
+        return False
+    return True
 
 #-----------------JWT TOKEN VALIDATION------------------
 
