@@ -2,10 +2,6 @@ from fastapi import HTTPException, status
 from controllers.token import *
 from models.customers import *
 
-SECRET_KEY = "lms2025"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
-
 def verify_user(email: str, password: str):
     user = get_user(email)
     if not user or user.password != password:
@@ -15,7 +11,7 @@ def verify_user(email: str, password: str):
 # Logic for handling login
 def handle_login(email: str, pword: str):
     if verify_user(email, pword):
-        token = create_jwt("FastAPI", email, ACCESS_TOKEN_EXPIRE_MINUTES)
+        token = create_jwt(email)
         return token
     else:
         return None

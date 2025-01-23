@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResp
 from fastapi.templating import Jinja2Templates
 from controllers.authentication import *
 from controllers.token import *
+from datetime import datetime, timedelta
 import os
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,11 +19,14 @@ async def login_page(request: Request):
 
 @router.post("/login")
 def login(email: str = Form(), pword: str = Form()):
-    jwt_token = handle_login(email, pword)
+    jwt_token = handle_login(email, pword) 
     
     if jwt_token:
+        expiration_time = datetime.utcnow() + timedelta(seconds=TOKEN_EXPIRATION_TIME)
+        expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        
         response = RedirectResponse(url="/auth/home", status_code=status.HTTP_303_SEE_OTHER)
-        response.set_cookie(key="login_token", value=jwt_token, httponly=False)
+        response.set_cookie(key="login_token", value=jwt_token, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME)
         return response
     else:
         return JSONResponse(

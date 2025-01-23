@@ -9,13 +9,13 @@ router = APIRouter()
 
 SECRET_KEY = "lmscapstone"
 ALGORITHM = "HS256"
-TOKEN_EXPIRATION_TIME = 3600
+TOKEN_EXPIRATION_TIME = 300 # 5 minute expiration
 
 # token creation code
-def create_jwt(issuer:str, email: str, expiration: int) -> str:
+def create_jwt(email: str) -> str:
     expiration = datetime.utcnow() + timedelta(seconds=TOKEN_EXPIRATION_TIME)
     payload = {
-        "iss": issuer,
+        "iss": "FastAPI",
         "sub": email,
         "exp": expiration
     }
