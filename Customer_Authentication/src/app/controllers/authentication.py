@@ -18,7 +18,7 @@ def handle_login(email: str, pword: str):
         token = create_jwt("FastAPI", email, ACCESS_TOKEN_EXPIRE_MINUTES)
         return token
     else:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
+        return None
 
 # Logic for handling registration
 def handle_registration(fname: str, lname: str, email: str, password: str, age: int):

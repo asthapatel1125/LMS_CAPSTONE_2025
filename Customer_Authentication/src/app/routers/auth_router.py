@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Form, Depends, HTTPException, status, Request
-from fastapi.responses import RedirectResponse, HTMLResponse, Response
+from fastapi import APIRouter, Form, HTTPException, status, Request
+from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResponse
 from fastapi.templating import Jinja2Templates
 from controllers.authentication import *
 from controllers.token import *
@@ -19,9 +19,16 @@ async def login_page(request: Request):
 @router.post("/login")
 def login(email: str = Form(), pword: str = Form()):
     jwt_token = handle_login(email, pword)
-    response = RedirectResponse(url="/auth/home", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(key="login_token", value=jwt_token, httponly=False)
-    return response
+    
+    if jwt_token:
+        response = RedirectResponse(url="/auth/home", status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="login_token", value=jwt_token, httponly=False)
+        return response
+    else:
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Invalid username or password"}
+        )
 
 @router.get("/logout", response_class=HTMLResponse)
 async def logout_page(request: Request):
