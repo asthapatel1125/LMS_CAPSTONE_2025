@@ -15,6 +15,13 @@ router = APIRouter()
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
+    login_token = request.cookies.get("login_token")
+    if login_token:
+        try:
+            verify_jwt(login_token)
+            return RedirectResponse(url="/auth/home", status_code=status.HTTP_303_SEE_OTHER)
+        except HTTPException:
+            pass
     return templates.TemplateResponse("login.html", {"request": request})
 
 @router.post("/login")
@@ -41,8 +48,8 @@ async def logout_page(request: Request):
 # Route to handle logout
 @router.post("/logout", response_class=HTMLResponse)
 async def logout(response: Response):
-    response.delete_cookie("login_token", path="/auth/login")
-    response = RedirectResponse(url="/auth/login")
+    response = RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
+    response.delete_cookie("login_token")
     return response
 
 # Route to show registration page

@@ -1,14 +1,14 @@
 from dotenv import load_dotenv
-from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from routers.auth_router import router as auth_router
 import uvicorn, os
-from fastapi import Request
-from fastapi import FastAPI, HTTPException
+from fastapi import Request, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from models.database.db import get_db, close_db
+from fastapi.responses import RedirectResponse
+from controllers.token import *
 
 load_dotenv(dotenv_path='./app/config/.env')
 
@@ -65,8 +65,15 @@ def shutdown_db_client():
 app.include_router(auth_router, prefix="/auth")
 
 @app.get("/")
-async def root(request : Request):
-     return templates.TemplateResponse("login.html", {"request": request})
+async def root(request: Request):
+    login_token = request.cookies.get("login_token")
+    if login_token:
+        try:
+            verify_jwt(login_token)
+            return RedirectResponse(url="/auth/home", status_code=status.HTTP_303_SEE_OTHER)
+        except HTTPException:
+            pass
+    return RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
 
 if __name__ == "__main__":
     uvicorn.run(

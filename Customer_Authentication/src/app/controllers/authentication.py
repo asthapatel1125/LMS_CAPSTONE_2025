@@ -31,23 +31,3 @@ def handle_forgot_password(email: str):
     if user is None:
         return False
     return True
-
-#-----------------JWT TOKEN VALIDATION------------------
-
-"""
-def validate_token(token: str):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token"
-            )
-        return {"message": "Token is valid", "username": username}
-    except jwt.PyJWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
-        )
-"""
