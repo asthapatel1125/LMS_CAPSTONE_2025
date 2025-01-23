@@ -81,3 +81,18 @@ async def verification_code():
 @router.get("/reset-password", response_class=HTMLResponse)
 async def reset_password_page(request: Request):
     return templates.TemplateResponse("reset_password.html", {"request": request})
+
+# Route to show forgot password page
+@router.get("/manager", response_class=HTMLResponse)
+async def manager_login_page(request: Request):
+    return templates.TemplateResponse("manager_login.html", {"request": request})
+
+# Route to handle password reset (mock implementation)
+@router.post("/manager")
+async def reset_password(userId: str = Form(...), password: str = Form(...)):
+    # handle_manager_login(userId, password)
+    return RedirectResponse(url = "/auth/admin_dashboard", status_code = status.HTTP_303_SEE_OTHER)
+
+@router.get("/admin_dashboard", response_class = HTMLResponse)
+async def get_admin_dashboard(request: Request):
+    return templates.TemplateResponse("admin_dashboard.html", {"request": request})
