@@ -56,3 +56,16 @@ async def delete_user(email: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User deleted"}
+
+@app.put("/customers/{email}/password", response_model=dict)
+def change_password(email: str, new_password: str):
+    customer = get_user(email)
+    if not customer:
+        raise HTTPException(status_code=404, detail="User not found")
+    result = db["customers"].update_one(
+        {"email": email},
+        {"$set": {"password": new_password}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Password update failed")
+    return {"message": "Password updated successfully"}

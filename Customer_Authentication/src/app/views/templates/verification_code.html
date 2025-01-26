@@ -50,14 +50,14 @@
     <!-- Content goes here -->
     <div class="verif-code-form col-12 col-md-6 bg-light align-items-center justify-content-center ">
         <h1 class="title fs-2">Forgot Password 🔐</h1>
-        <form id="verif-code-form" action="/auth/reset-password" method="POST">
+        <form id="verif-code-form" action="/auth/verification-code" method="POST">
             <div class="row">
               <div class="col-2"></div>
               <div class="col-8">
                 <div class="form-group p-3">
                   <label for="verif-code ">Verifcation Code:</label>
-                  <input type="text" class="form-control rounded" id="verif-code" placeholder="Enter your verification code" required>
-                  <div id="errorMessage" class="errorMessage  text-danger p-0 m-0"></div>
+                  <input type="number" class="form-control rounded" min=100000 max=999999 name="code" id="verif-code" placeholder="Enter your verification code" required>
+                  <div class="errorMessage text-danger p-0 m-0">{{ error }}</div>
                   <div class="row">
                     <div class="col-5">
                         <button type="submit" class="btn btn-custom-size w-100 mt-3 mb-2">Continue</button>

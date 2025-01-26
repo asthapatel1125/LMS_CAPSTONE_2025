@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResp
 from fastapi.templating import Jinja2Templates
 from controllers.authentication import *
 from controllers.token import *
+from controllers.email_verif_code import *
 from datetime import datetime, timedelta
 import os
 
@@ -78,15 +79,26 @@ async def forgot_password_page(request: Request):
 
 # Route to handle password reset (mock implementation)
 @router.post("/forgot-password", response_class=HTMLResponse)
-async def forgot_password(email: str = Form(...)):
+async def forgot_password(response: Response, request: Request, email: str = Form(...)):
     if handle_forgot_password(email):
-        return RedirectResponse(url="/auth/verification-code", status_code=status.HTTP_303_SEE_OTHER)
-    raise HTTPException(status_code=400, detail="Email is not registered.")    
+        expiration_time = datetime.utcnow() + timedelta(minutes=60)
+        expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        verif_code = generate_code()
+        code_token = generate_code_token(verif_code, expiration_time) 
+        
+        response = RedirectResponse(url="/auth/verification-code", status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="verif_code", value=code_token, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME,secure=True, samesite="Strict")
+        response.set_cookie(key="verif_email", value=email, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME, secure=True, samesite="Strict")
+        
+        send_verif_email(email, verif_code)
+        return response
+    
+    return templates.TemplateResponse("forgot_password.html", {"request": request, "error": "Email is not registered."})   
 
 @router.get("/home", response_class=HTMLResponse)
 async def login_page(request: Request):
     user_name = request.cookies.get("user_name", "Guest")
-    return  templates.TemplateResponse("home.html", {"request": request, "name": user_name})
+    return templates.TemplateResponse("home.html", {"request": request, "name": user_name})
 
 # load verification code page
 @router.get("/verification-code", response_class=HTMLResponse)
@@ -94,13 +106,30 @@ async def verification_code_page(request: Request):
     return templates.TemplateResponse("verification_code.html", {"request": request})
 
 @router.post("/verification-code", response_class=HTMLResponse)
-async def verification_code():
-    return RedirectResponse(url="/auth/reset-password", status_code=status.HTTP_303_SEE_OTHER)
+async def verification_code(request: Request, code: int = Form(...)):
+    isValid = validate_code(request, code)
+    if isValid:
+        response = RedirectResponse(url="/auth/reset-password", status_code=status.HTTP_303_SEE_OTHER)
+        response.delete_cookie("verif_code")
+        return response
+    return templates.TemplateResponse("verification_code.html", {"request": request, "error": "Invalid verification code."})
 
 # load verification code page
 @router.get("/reset-password", response_class=HTMLResponse)
 async def reset_password_page(request: Request):
     return templates.TemplateResponse("reset_password.html", {"request": request})
+
+@router.post("/reset_password", response_class=HTMLResponse)
+async def verification_code(request: Request, first: str = Form(...), second: str = Form(...)):
+    result = handle_reset_password(request, first, second)
+    if result:
+        response = templates.TemplateResponse("reset_password.html", {"request": request, "success": "Password has been changed."})
+        response.delete_cookie("verif_email")
+        return response
+    return JSONResponse(
+            status_code=400,
+            content={"error": "Passwords do not match"}
+        )
 
 # Route to show forgot password page
 @router.get("/manager", response_class=HTMLResponse)
