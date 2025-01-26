@@ -23,7 +23,7 @@ def handle_registration(fname: str, lname: str, email: str, password: str, age: 
         return create_user(Customer(firstName=fname, lastName=lname, email=email, password=password, 
                                     address=Address(streetAddress="", city="", state="", country=""), 
                                     age=age))
-    raise HTTPException(status_code=400, detail="Email already registered")    
+    return "Error"  
     
 # Logic for handling forgot password
 def handle_forgot_password(email: str):

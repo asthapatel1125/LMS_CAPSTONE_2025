@@ -61,9 +61,14 @@ async def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
 # Route to handle user registration
-@router.post("/register", response_class=HTMLResponse)
+@router.post("/register")
 async def register_user(fname: str = Form(...), lname: str = Form(...), email: str = Form(...), password: str = Form(...), age: int = Form(...)):
-    handle_registration(fname, lname, email, password, age)
+    result = handle_registration(fname, lname, email, password, age)
+    if result == "Error":
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={"detail": "Email is already registered."}
+        )
     return RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
 
 # Route to show forgot password page
