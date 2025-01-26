@@ -81,7 +81,7 @@ async def forgot_password_page(request: Request):
 @router.post("/forgot-password", response_class=HTMLResponse)
 async def forgot_password(response: Response, request: Request, email: str = Form(...)):
     if handle_forgot_password(email):
-        expiration_time = datetime.utcnow() + timedelta(minutes=60)
+        expiration_time = datetime.utcnow() + timedelta(minutes=10)
         expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
         verif_code = generate_code()
         code_token = generate_code_token(verif_code, expiration_time) 
