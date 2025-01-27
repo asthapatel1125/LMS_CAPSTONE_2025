@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: customer-auth
+  name: customer-authentication
 spec:
   type: LoadBalancer
   selector:
-    app: customer-auth
+    app: customer-authentication
   ports:
     - protocol: TCP
       port: 8001

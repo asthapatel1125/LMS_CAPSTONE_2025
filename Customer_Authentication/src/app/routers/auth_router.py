@@ -87,8 +87,8 @@ async def forgot_password(response: Response, request: Request, email: str = For
         code_token = generate_code_token(verif_code, expiration_time) 
         
         response = RedirectResponse(url="/auth/verification-code", status_code=status.HTTP_303_SEE_OTHER)
-        response.set_cookie(key="verif_code", value=code_token, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME,secure=True, samesite="Strict")
-        response.set_cookie(key="verif_email", value=email, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME, secure=True, samesite="Strict")
+        response.set_cookie(key="verif_code", value=code_token, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME)
+        response.set_cookie(key="verif_email", value=email, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME)
         
         send_verif_email(email, verif_code)
         return response
