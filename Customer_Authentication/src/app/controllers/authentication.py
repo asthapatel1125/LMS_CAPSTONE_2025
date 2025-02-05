@@ -1,6 +1,7 @@
 from controllers.token import *
 from controllers.email_verif_code import *
 from models.customers import *
+from models.managers import *
 
 def verify_user(email: str, password: str):
     user = get_user(email)
@@ -38,5 +39,18 @@ def handle_reset_password(request: Request, first_pass: str, second_pass: str):
         change_password(verif_email, first_pass)
         return True
     return False
+
+def verify_manager(manager_id: str, password: str):
+    manager = get_manager(manager_id)
+    if manager is None:
+        return False
+    return True
+
+def handle_manager_login(manager_id: str, password: str):
+    if verify_manager(manager_id, password):
+        token = create_jwt(manager_id)
+        return token
+    else:
+        return None
     
     

@@ -77,7 +77,7 @@ async def register_user(fname: str = Form(...), lname: str = Form(...), email: s
 async def forgot_password_page(request: Request):
     return templates.TemplateResponse("forgot_password.html", {"request": request})
 
-# Route to handle password reset (mock implementation)
+# Route to handle password reset
 @router.post("/forgot-password", response_class=HTMLResponse)
 async def forgot_password(response: Response, request: Request, email: str = Form(...)):
     if handle_forgot_password(email):
@@ -100,7 +100,6 @@ async def login_page(request: Request):
     user_name = request.cookies.get("user_name", "Guest")
     return templates.TemplateResponse("home.html", {"request": request, "name": user_name})
 
-# load verification code page
 @router.get("/verification-code", response_class=HTMLResponse)
 async def verification_code_page(request: Request):
     return templates.TemplateResponse("verification_code.html", {"request": request})
@@ -114,7 +113,6 @@ async def verification_code(request: Request, code: int = Form(...)):
         return response
     return templates.TemplateResponse("verification_code.html", {"request": request, "error": "Invalid verification code."})
 
-# load verification code page
 @router.get("/reset-password", response_class=HTMLResponse)
 async def reset_password_page(request: Request):
     return templates.TemplateResponse("reset_password.html", {"request": request})
@@ -131,16 +129,34 @@ async def verification_code(request: Request, first: str = Form(...), second: st
             content={"error": "Passwords do not match"}
         )
 
-# Route to show forgot password page
+
+# Manager login routes
+
 @router.get("/manager", response_class=HTMLResponse)
 async def manager_login_page(request: Request):
     return templates.TemplateResponse("manager_login.html", {"request": request})
 
-# Route to handle password reset (mock implementation)
 @router.post("/manager")
-async def reset_password(userId: str = Form(...), password: str = Form(...)):
-    # handle_manager_login(userId, password)
-    return RedirectResponse(url = "/auth/admin_dashboard", status_code = status.HTTP_303_SEE_OTHER)
+def manager_login(manager_id: str = Form(), password: str = Form()):
+    jwt_token = handle_manager_login(manager_id, password)
+    
+    if jwt_token:
+        expiration_time = datetime.utcnow() + timedelta(seconds=TOKEN_EXPIRATION_TIME)
+        expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        # to be changed
+        response = RedirectResponse(url="/catalog/", status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="manager_login_token", value=jwt_token, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME)
+
+        manager = get_manager(manager_id)
+        manager_name = manager.firstName if manager else "Manager"
+        response.set_cookie(key="manager_name", value=manager_name, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME)
+
+        return response
+    else:
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Invalid manager ID or password"}
+        )
 
 @router.get("/admin_dashboard", response_class = HTMLResponse)
 async def get_admin_dashboard(request: Request):

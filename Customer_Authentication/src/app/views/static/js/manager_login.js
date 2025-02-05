@@ -25,9 +25,7 @@ async function handleLoginFormSubmit(event) {
       errorMessage.style.display = 'block'; // Show error message
     }
     else {
-      console.log('Email:', userId);
-      console.log('Password:', password);
-      location.href = "admin_dashboard.html";
+      window.location.href = "/auth/manager";
     }
   }
   // Add an event listener for the form submission

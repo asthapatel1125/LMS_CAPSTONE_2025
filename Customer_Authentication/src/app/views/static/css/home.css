@@ -1,185 +1,68 @@
-        /* Reset and base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+.btn-custom {
+    border-radius: 15px;
+    cursor: pointer;
+    color: black;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 220px; /* Uniform height */
+    width: 100%;
+    border: none;
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-color: #f8f9fa;
-            color: #333;
-        }
+/* Custom Button Colors */
+.btn-library { background-color:rgb(134, 179, 141);  } /* Blue */
+.btn-transactions { background-color:rgb(134, 179, 141);  } /* Red */
+.btn-holds { background-color:rgb(134, 179, 141); } /* Orange */
+.btn-account { background-color:rgb(134, 179, 141); } /* Green */
+.btn-search { background-color:rgb(134, 179, 141);  } /* Purple */
+.btn-notifications { background-color:rgb(134, 179, 141);  } /* Teal */
 
-        /* Header styles */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 30px;
-            background-color:rgb(246, 246, 246);
-            color: #000000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+.btn h1 {
+    font-size: 2.5rem; /* Icon size */
+    margin-bottom: 10px;
+}
 
-        .logo h1 {
-            font-size: 30px;
-            line-height: 1.2;
-            font-weight: bold;
-            margin: 1rem;
-        }
+.btn h3 {
+    font-size: 1.6rem; /* Title text size */
+    margin-bottom: 5px;
+}
 
-        .nav-links {
-            display: flex;
-            gap: 15px;
-        }
+.btn p {
+    font-size: 1rem; /* Description text */
+    margin: 0;
+    padding: 0 10px;
+}
 
-        .nav-links a {
-            text-decoration: none;
-            padding: 10px 15px;
-            color: #000000;
-            font-size: 18px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
+.user-dashboard {
+    border-radius: 15px;
+    padding: 30px;
+}
 
-        .nav-links a:hover {
-            background-color:rgb(197, 197, 197);
-        }
+.dashboard-heading {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+}
 
-        .logout-btn {
-            background-color:rgb(0, 0, 0);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 18px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+/* Hover effect */
+.btn-custom:hover {
+    opacity: 0.85;
+}
 
-        .logout-btn:hover {
-            background-color:rgb(102, 102, 102);
-        }
-
-        /* Main content styles */
-        .main-content {
-            flex: 1;
-            padding: 40px 20px;
-        }
-
-        .gray-space {
-            background-color: #e9ecef;
-            height: 250px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .book-section {
-            margin-bottom: 40px;
-        }
-
-        .book-section h2 {
-            text-align: center;
-            color: white;
-            background-color:rgb(0, 0, 0);
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        /* Carousel styles */
-        .carousel {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .book-container {
-            display: flex;
-            justify-content: space-between;
-            flex: 1;
-        }
-
-        .book-cover {
-            width: 160px;
-            height: 220px;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border: 1px solid #ddd;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .book-cover:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        .carousel-btn {
-            background-color:rgb(0, 0, 0);
-            color: white;
-            border: none;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-
-        .carousel-btn:hover {
-            background-color:rgba(0, 0, 0, 0.32);
-            transform: scale(1.1);
-        }
-
-        .carousel-btn i {
-            font-size: 20px;
-        }
-
-        /* Footer styles */
-        .footer {
-            background-color: #343a40;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 16px;
-            border-top: 5px solid #007bff;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                height: auto;
-                gap: 15px;
-                text-align: center;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-            }
-
-            .book-container {
-                flex-wrap: wrap;
-                gap: 15px;
-            }
-
-            .book-cover {
-                width: 120px;
-                height: 180px;
-            }
-        }
+@media (max-width: 768px) {
+    .btn-custom {
+        height: 180px; /* Adjust height for smaller screens */
+    }
+    .btn h1 {
+        font-size: 2rem;
+    }
+    .btn h3 {
+        font-size: 1.4rem;
+    }
+    .btn p {
+        font-size: 0.9rem;
+    }
+}

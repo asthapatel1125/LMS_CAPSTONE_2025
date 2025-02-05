@@ -64,7 +64,7 @@ def shutdown_db_client():
 
 app.include_router(auth_router, prefix="/auth")
 
-@app.get("/")
+@app.get("/auth")
 async def root(request: Request):
     login_token = request.cookies.get("login_token")
     if login_token:
