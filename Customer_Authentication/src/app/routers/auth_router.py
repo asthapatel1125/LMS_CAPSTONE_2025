@@ -7,6 +7,8 @@ from controllers.email_verif_code import *
 from datetime import datetime, timedelta
 import os
 
+CATALOG_SERVICE_URL = "http://catalog:8000/catalog"
+
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
 
@@ -96,7 +98,7 @@ async def forgot_password(response: Response, request: Request, email: str = For
     return templates.TemplateResponse("forgot_password.html", {"request": request, "error": "Email is not registered."})   
 
 @router.get("/home", response_class=HTMLResponse)
-async def login_page(request: Request):
+async def home_page(request: Request):
     user_name = request.cookies.get("user_name", "Guest")
     return templates.TemplateResponse("home.html", {"request": request, "name": user_name})
 
@@ -118,7 +120,7 @@ async def reset_password_page(request: Request):
     return templates.TemplateResponse("reset_password.html", {"request": request})
 
 @router.post("/reset_password", response_class=HTMLResponse)
-async def verification_code(request: Request, first: str = Form(...), second: str = Form(...)):
+async def reset_password(request: Request, first: str = Form(...), second: str = Form(...)):
     result = handle_reset_password(request, first, second)
     if result:
         response = templates.TemplateResponse("reset_password.html", {"request": request, "success": "Password has been changed."})
@@ -144,7 +146,7 @@ def manager_login(manager_id: str = Form(), password: str = Form()):
         expiration_time = datetime.utcnow() + timedelta(seconds=TOKEN_EXPIRATION_TIME)
         expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
         # to be changed
-        response = RedirectResponse(url="/catalog/", status_code=status.HTTP_303_SEE_OTHER)
+        response = RedirectResponse(url=CATALOG_SERVICE_URL, status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="manager_login_token", value=jwt_token, httponly=True, expires=expires, max_age=TOKEN_EXPIRATION_TIME)
 
         manager = get_manager(manager_id)

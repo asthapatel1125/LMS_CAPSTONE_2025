@@ -44,6 +44,8 @@ def verify_manager(manager_id: str, password: str):
     manager = get_manager(manager_id)
     if manager is None:
         return False
+    elif manager_id != manager.managerID or password != manager.passwordHash:
+        return False
     return True
 
 def handle_manager_login(manager_id: str, password: str):
