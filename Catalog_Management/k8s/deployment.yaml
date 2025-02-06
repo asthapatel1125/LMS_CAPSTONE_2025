@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: manager
+  name: catalog
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: manager
+      app: catalog
   template:
     metadata:
       labels:
-        app: manager
+        app: catalog
     spec:
       containers:
-      - name: manager
-        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/manager:v1
+      - name: catalog
+        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/catalog:v1
         ports:
-        - containerPort: 8003
+        - containerPort: 8000
