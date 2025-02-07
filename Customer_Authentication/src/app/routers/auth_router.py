@@ -7,7 +7,7 @@ from controllers.email_verif_code import *
 from datetime import datetime, timedelta
 import os
 
-CATALOG_SERVICE_URL = "http://catalog:8002/catalog"
+CATALOG_SERVICE_URL = os.getenv("CATALOG_SERVICE_URL", "http://127.0.0.1:8002/catalog")
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
