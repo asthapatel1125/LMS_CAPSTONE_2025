@@ -19,7 +19,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item px-2">
-              <a class="nav-link" href="#">My Dashboard</a>
+              <a class="nav-link" href="/catalog/admin_dashboard">My Dashboard</a>
             </li>
             <li class="nav-item px-2">
               <a class="nav-link" href="#">Catalogue View</a>
@@ -28,7 +28,7 @@
               <a class="nav-link" href="#">Account</a>
             </li>
             <li class="nav-item px-2">
-              <a class="nav-link" href="manager_login.html" style="background-color: #E3E3E3; border-radius: 15px">Log Out</a>
+              <a class="nav-link" href="/catalog/manager-login" style="background-color: #E3E3E3; border-radius: 15px">Log Out</a>
             </li>
           </ul>
         </div>
@@ -43,95 +43,67 @@
     <div class="col-10">
     <div class="add-book-form col-12 mb-5 p-4 bg-light align-items-center justify-content-center ">
         <h1 class="fs-2 mb-4" style="text-align: center;">Add Book to Inventory 📖</h1>
-        <form class="row g-3">
+        <form id="addBookForm" class="row g-3" action="/catalog/add-item" method="POST">
           <div class="col-md-6">
             <label for="title" class="form-label">Title:</label>
-            <input type="text" class="form-control" id="title" required>
-          </div>
-          <div class="col-md-6" id="field-container">
-            <label for="authour" class="form-label">Authour(s):</label>  
-              <div class="row form-group mb-3" id="authour">
-                <div class="input-group">
-                  <input type="text" class="form-control" id="input-1" name="authour-1" required>
-                  <button type="button" class="btn btn-custom-size" id="add-authour">+</button>
-                </div>
-              </div>
-          </div>
-          <div class="col-6">
-            <label for="isbn-num" class="form-label">ISBN Number:</label>
-            <input type="text" class="form-control" id="isbn-num" placeholder="XXX-XX-XXXXX-XX-X">
-          </div>
-          <div class="col-12">
-            <label for="publisher" class="form-label">Publisher:</label>
-            <input type="text" class="form-control" id="publisher" required>
-          </div>
-          <div>Publication Date:</div>
-          <div class="col-md-4">
-            <input type="number" class="form-control" id="year" placeholder="Year" min="1905" max="2025">
-          </div>
-          <div class="col-md-4">
-            <select id="month" class="form-select">
-              <option selected disabled>Month</option>
-              <option>January</option>
-              <option>February</option>
-              <option>March</option>
-              <option>April</option>
-              <option>May</option>
-              <option>June</option>
-              <option>July</option>
-              <option>August</option>
-              <option>September</option>
-              <option>October</option>
-              <option>November</option>
-              <option>December</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <input type="number" class="form-control" id="day" min="1" max="31" placeholder="Day">
+            <input type="text" class="form-control" id="title" name="title" required>
           </div>
           <div class="col-md-6">
-            <label for="series" class="form-label">Series:</label>
-            <input type="text" class="form-control" id="series">
-          </div>
+            <label for="isbn" class="form-label">ISBN:</label>
+            <input type="text" class="form-control" id="isbn" name="isbn" required>
+          </div>        
+          <div class="col-md-6">
+            <label for="author" class="form-label">Author:</label>
+            <input type="text" class="form-control" id="input-1" name="author" required>
+          </div>  
           <div class="col-md-6">
             <label for="genre" class="form-label">Genre:</label>
-            <input type="text" class="form-control" id="genre">
+            <input type="text" class="form-control" id="genre" name="genre" required>
           </div>
-          
-          <div class="col-md-5">
-            <label for="book-format" class="form-label">Book Format:</label>
-            <select id="book-format" class="form-select" onchange="toggleFormat()" required>
-              <option selected disabled>Choose...</option>
-              <option>Book</option>
-              <option>eBook</option>
-              <option>Audiobook</option>
-            </select>
-          </div> 
-          <div class="col-md-4">
-            <label for="num-pages" class="form-label">Duration:</label>
-            <input type="text" class="form-control" id="num-pages" required>
-          </div>
-          <div class="col-md-3">
-            <label for="num-copies" class="form-label">Number of Copies:</label>
-            <input type="number" class="form-control" id="num-copies" min="0" required>
-          </div> 
-          <div class="col-md-4">
+          <div class="col-md-6">
             <label for="rating" class="form-label">Rating:</label>
-            <select id="rating" class="form-select" required>
+            <input type="number" class="form-control" id="rating" name="rating" step="0.1" min="0" max="5" required>
+          </div>
+          <div class="col-md-6">
+            <label for="kidFriendly" class="form-label">Kid Friendly:</label>
+            <select id="kidFriendly" name="kidFriendly" class="form-select" required>
               <option selected disabled>Choose...</option>
-              <option>Youth</option>
-              <option>Adult</option>
-              <option>Everyone</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
             </select>
-          </div>           
+          </div>
           <div class="col-12">
             <label for="description" class="form-label">Description:</label>
-            <textarea class="form-control" id="description" rows="4" required></textarea>
-          </div>    
+            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+          </div>
+          <div class="col-md-6">
+            <label for="format" class="form-label">Book Format:</label>
+            <input type="text" class="form-control" id="format" name="format" required>
+          </div> 
+          <div class="col-md-6">
+            <label for="pageNumber" class="form-label">Page Number:</label>
+            <input type="number" class="form-control" id="pageNumber" name="pageNumber" min="1" required>
+          </div>
+          <div class="col-md-6">
+            <label for="bookID" class="form-label">Book ID:</label>
+            <input type="text" class="form-control" id="bookID" name="bookID" required>
+          </div>
+          <div class="col-md-6">
+            <label for="publisher" class="form-label">Publisher:</label>
+            <input type="text" class="form-control" id="publisher" name="publisher" required>
+          </div>
+          <div class="col-md-6">
+            <label for="status" class="form-label">Status:</label>
+            <select id="status" name="status" class="form-select" required>
+              <option selected disabled>Choose...</option>
+              <option>Available</option>
+              <option>Not Available</option>
+            </select>
+          </div>       
           <div class="col-12">
               <div class="mb-3">
                 <label for="imageUpload" class="form-label">Upload Book Cover:</label>
-                <input type="file" class="form-control" id="imageUpload" accept="image/*" onchange="previewImage(event)">
+                <input type="file" class="form-control" id="imageUpload" name="imageUpload" accept="image/*" onchange="previewImage(event)">
               </div>
               <div class="mb-3">
                 <img id="imagePreview" src="#" alt="Image Preview" style="display: none; width: 100%; max-width: 300px;"/>
@@ -139,7 +111,7 @@
           </div>   
           <div class="col-12">
             <button type="submit" class="btn btn-custom-size px-4 mx-2" onclick="submitBook()">Submit</button>
-            <button type="reset"  class="btn btn-clear-size px-4 mx-2">Clear</button>
+            <button type="reset"  class="btn btn-clear-size px-4 mx-2" onclick="clear()">Clear</button>
             <button type="button" class="btn btn-clear-size px-4 mx-2" onclick="cancel()">Cancel</button>
           </div>
         </form>

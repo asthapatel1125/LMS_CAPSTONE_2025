@@ -16,7 +16,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item px-2">
-              <a class="nav-link" href="#">My Dashboard</a>
+              <a class="nav-link" href="/catalog/admin_dashboard">My Dashboard</a>
             </li>
             <li class="nav-item px-2">
               <a class="nav-link" href="#">Catalogue View</a>
@@ -25,7 +25,7 @@
               <a class="nav-link" href="#">Account</a>
             </li>
             <li class="nav-item px-2">
-              <a class="nav-link" href="manager_login.html" style="background-color: #E3E3E3; border-radius: 15px">Log Out</a>
+              <a class="nav-link" href="/catalog/manager-login" style="background-color: #E3E3E3; border-radius: 15px">Log Out</a>
             </li>
           </ul>
         </div>
@@ -37,19 +37,20 @@
       <div class="col-1"></div>
       <div class="col-10">
         <div class="delete-book-form col-12 mb-5 p-4 bg-light align-items-center justify-content-center">
-          <form class="row g-3">
+          <form class="row g-3" id="deleteBookForm" action="/catalog/remove-item" method="POST">
             <h2 class="text-center m-3">Delete Book from Inventory 🗑️</h2>
             <input type="text" id="searchInput" class="form-control" placeholder="Search by ISBN, title, or author..." oninput="searchBooks()">
             <ul id="bookList" class="list-group">
                 <!-- Dynamically filled book list will appear here -->
             </ul>
+            
             <!-- Display Book Details -->
             <div id="bookDetails" class="mt-4">
-            <!-- Book details will be displayed here when a book is clicked -->
+                <!-- Book details will be displayed here when a book is clicked -->
             </div>
             <div class="col-12">
               <button type="submit" class="btn btn-custom-size px-4" id = "deleteButton" onclick="deleteBook()">Delete</button>
-              <button type="button" class="btn btn-clear-size px-4 mx-2">Cancel</button>
+              <button type="button" class="btn btn-clear-size px-4 mx-2" onclick="cancel()">Cancel</button>
             </div>
           </form>
        </div>

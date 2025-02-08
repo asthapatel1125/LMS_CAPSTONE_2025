@@ -9,7 +9,7 @@ router = APIRouter()
 
 SECRET_KEY = "lmscapstone"
 ALGORITHM = "HS256"
-TOKEN_EXPIRATION_TIME = 300 # 5 minute expiration
+TOKEN_EXPIRATION_TIME = 3600
 
 # token creation code
 def create_jwt(email: str) -> str:

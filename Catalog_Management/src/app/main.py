@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from routers.managerRouter import router as catalog_router
+from routers.catalogRouter import router as catalog_router
 import uvicorn, os
 from fastapi import Request, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -70,10 +70,10 @@ async def root(request: Request):
     if login_token:
         try:
             verify_jwt(login_token)
-            return RedirectResponse(url="/catalog/edit_inventory", status_code=status.HTTP_303_SEE_OTHER)
+            return RedirectResponse(url="/catalog/admin_dashboard", status_code=status.HTTP_303_SEE_OTHER)
         except HTTPException:
             pass
-    return None
+    return RedirectResponse(url="/catalog/edit_inventory", status_code=status.HTTP_303_SEE_OTHER)
 
 if __name__ == "__main__":
     uvicorn.run(
