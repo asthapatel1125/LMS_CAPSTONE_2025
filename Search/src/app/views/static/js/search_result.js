@@ -46,7 +46,7 @@ function createBookCard(book) {
     card.innerHTML = `
         <div class="book-cover" style="background-color: ${book.cover}"></div>
         <div class="book-info">
-            <p><strong>TITLE:</strong> ${book.title}</p>
+            <p>${book.title}</p>
             <p><strong>AUTHOR:</strong> ${book.author}</p>
             <p><strong>ISBN:</strong> ${book.isbn}</p>
         </div>

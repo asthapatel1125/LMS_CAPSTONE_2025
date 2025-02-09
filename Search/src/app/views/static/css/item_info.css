@@ -1,0 +1,181 @@
+
+    /* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color:rgb(242, 242, 242);
+}
+
+/* Header styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color:rgb(252, 252, 252);
+    color: #000000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.27);
+}
+.header .logo h1 {
+    font-size: 18px;
+    line-height: 1.0;
+    font-weight: bold;
+    font: sans-serif;
+}
+.nav-links {
+    display: flex;
+    gap: 15px;
+}
+.nav-links a {
+    text-decoration: none;
+    padding: 10px 15px;
+    color: #000000;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    font: sans-serif;
+}
+.nav-links a:hover {
+    background-color:rgb(0, 0, 0);
+    color:white;
+}
+
+.logout-btn {
+    background-color:rgb(0, 0, 0);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.logout-btn:hover {
+    background-color:rgb(185, 185, 185);
+    color: black;
+}
+
+.content {
+    padding: 2rem;
+}
+
+/* Item Display Section */
+.item-display {
+    display: flex;
+    align-items: center;
+    gap: 5rem;
+    background: white;
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgb(239, 131, 84);
+}
+.item-display:hover{
+    transform: translateY(-10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 16px rgb(239, 131, 84);
+}
+
+.item-cover {
+    width: 150px;
+    height: 200px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.item-info {
+    flex-grow: 1;
+}
+
+.item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.action-btn {
+    background:rgb(0, 0, 0);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.action-btn:hover {
+    background-color:rgb(102, 102, 102);
+}
+
+/* Synopsis Section */
+.synopsis-section {
+    margin-top: 2rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgb(28, 50, 213);
+    max-height: 200px;
+    overflow-y: auto;
+}
+.synopsis-content {
+    padding: 0.5rem 0;
+}
+.synopsis-section:hover{
+    transform: translateY(-10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 16px rgb(28, 50, 213);
+}
+.sysnopsis {
+    border-bottom: 1px solid #ddd;
+    padding: 0.5rem 0;
+}
+
+/* Reviews Section */
+.reviews-section {
+    margin-top: 2rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgb(54, 203, 205);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.reviews-content {
+    padding: 0.5rem 0;
+}
+.reviews-section:hover{
+    transform: translateY(-10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 16px rgb(54, 203, 205);
+}
+.review {
+    border-bottom: 1px solid #ddd;
+    padding: 0.5rem 0;
+}
+
+/* Custom Scrollbar for Webkit Browsers */
+.synopsis-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.synopsis-section::-webkit-scrollbar-thumb {
+    background-color: rgb(0,0,0);
+    border-radius: 4px;
+}
+
+.reviews-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.reviews-section::-webkit-scrollbar-thumb {
+    background-color: rgb(0,0,0);
+    border-radius: 4px;
+}
+/* Footer styles */
+.footer {
+    background-color:rgb(0, 0, 0);
+    color: white;
+    padding: 2px;
+    text-align: center;
+    font-size: 8px;
+    border-top: 5px solid rgb(0, 0, 0);
+}
