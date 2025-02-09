@@ -24,10 +24,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem;
-    background-color: var(--primary-bg);
-    border-bottom: 1px solid #eee;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px 30px;
+    background-color: rgb(239, 239, 239); 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
 }
 
 .logo {
