@@ -24,16 +24,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 0.5rem;
     background-color: var(--primary-bg);
     border-bottom: 1px solid #eee;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
-    line-height: 1.2;
+    line-height: 1.0;
 }
 
 .navigation {
