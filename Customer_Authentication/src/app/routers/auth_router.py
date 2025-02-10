@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import os
 
 CATALOG_SERVICE_URL = "http://127.0.0.1:8002/catalog"
-USER_HOME_PAGE = "http://127.0.0.1:8002/search/home"
+USER_HOME_PAGE = "http://127.0.0.1:8003/search/home"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
