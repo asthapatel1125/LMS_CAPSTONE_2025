@@ -68,7 +68,7 @@ body {
     margin-bottom : 40px;
 }
 .image {
-    background: url('search_image.jpg') no-repeat center center/cover;
+    background: url('static/images/search_image.jpg') no-repeat center center/cover;
     text-align: center;
     padding: 130px 20px;
     color: black;
