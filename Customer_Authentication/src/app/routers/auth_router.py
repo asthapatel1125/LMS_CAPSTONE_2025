@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import os
 
 CATALOG_SERVICE_URL = "http://127.0.0.1:8002/catalog"
+USER_HOME_PAGE = "http://127.0.0.1:8002/search/home"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
@@ -99,8 +100,7 @@ async def forgot_password(response: Response, request: Request, email: str = For
 
 @router.get("/home", response_class=HTMLResponse)
 async def home_page(request: Request):
-    user_name = request.cookies.get("user_name", "Guest")
-    return templates.TemplateResponse("home.html", {"request": request, "name": user_name})
+    return RedirectResponse(url=USER_HOME_PAGE ,status_code=status.HTTP_303_SEE_OTHER)
 
 @router.get("/verification-code", response_class=HTMLResponse)
 async def verification_code_page(request: Request):
