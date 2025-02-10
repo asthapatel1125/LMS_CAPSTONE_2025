@@ -1,0 +1,194 @@
+/* General Styles */
+body {
+    font-family: 'Merriweather', serif; /* Elegant serif font */
+    margin: 0;
+    padding: 0;
+    background-color:rgb(247, 247, 247);
+    color:rgb(0, 0, 0); /* Off-white text for high contrast */
+    font-size: 20px;
+}
+
+/* Header styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: rgba(255, 255, 255, 0.9); 
+    box-shadow: 0 3px 5px rgba(21, 49, 26, 0.2); 
+}
+
+.header .logo h1 {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: serif;
+    color:rgb(0, 0, 0);
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    padding: 12px 18px;
+    color:rgb(0, 0, 0); 
+    font-size: 15px;
+    border-radius: 6px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    font-family: 'Lato', sans-serif;
+}
+
+.nav-links a:hover {
+    background-color: rgba(184, 184, 184, 0.61); 
+    color:rgb(0, 0, 0); 
+}
+
+.logout-btn {
+    background-color:rgb(0, 0, 0); /* Muted olive brown */
+    color:rgb(236, 236, 236);
+    border: none;
+    padding: 12px 22px;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: 'Lato', sans-serif;
+}
+
+.logout-btn:hover {
+    background-color:rgb(213, 213, 213); 
+    color: black;
+}
+
+.content {
+    padding: 3rem;
+}
+
+/* Item Display Section */
+.item-display {
+    display: flex;
+    align-items: center;
+    gap: 6rem;
+    background:white; /* Darker, semi-transparent background */
+    color: black;
+    padding: 4rem;
+    border-radius: 15px;
+    box-shadow: 0px 6px 12px rgb(49, 66, 52); /* Stronger shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    font-size: 18px;
+}
+
+.item-display:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 10px 20px rgb(134, 179, 141); /* Even stronger shadow on hover */
+}
+
+.item-cover {
+    width: 200px;
+    height: 250px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.item-info {
+    flex-grow: 1;
+}
+
+.item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.action-btn {
+    background:rgb(134, 179, 141); 
+    color: rgb(28, 35, 33);
+    border: none;
+    padding: 1.2rem 2.5rem;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 20px;
+    font-family: 'Lato', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+.action-btn:hover {
+    background-color:rgb(175, 230, 183); 
+}
+
+/* Synopsis and Reviews Sections */
+.synopsis-section{
+    margin-top: 3rem;
+    background: white; 
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0px 6px 12px rgb(85, 53, 44); /* Stronger shadow */
+    max-height: 250px;
+    overflow-y: auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+}
+.reviews-section {
+    margin-top: 3rem;
+    background: white; 
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0px 6px 12px rgb(61, 46, 71); /* Stronger shadow */
+    max-height: 250px;
+    overflow-y: auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.synopsis-section:hover{
+    transform: translateY(-15px);
+    box-shadow: 0 10px 20px rgb(255, 161, 135); /* Even stronger shadow on hover */
+    
+}
+.reviews-section:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 10px 20px rgb(189, 136, 226); /* Even stronger shadow on hover */
+}
+
+.synopsis-content{
+    padding: 0.8rem 0;
+    font-family: 'Lato', sans-serif;
+    color: rgb(48, 10, 0); /* Lighter, warm yellow text */
+    font-size: 18px;
+}
+.reviews-content {
+    padding: 0.8rem 0;
+    font-family: 'Lato', sans-serif;
+    color: rgb(45, 0, 77); /* Lighter, warm yellow text */
+    font-size: 16px;
+}
+
+.sysnopsis,
+.review {
+    border-bottom: 1px solid #555; /* Darker border */
+    padding: 0.8rem 0;
+}
+
+/* Custom Scrollbar for Webkit Browsers */
+.synopsis-section::-webkit-scrollbar,
+.reviews-section::-webkit-scrollbar {
+    width: 8px;
+}
+
+.synopsis-section::-webkit-scrollbar-thumb,
+.reviews-section::-webkit-scrollbar-thumb {
+    background-color: rgb(1, 1, 2); /* Dark olive brown scrollbar */
+    border-radius: 6px;
+}
+
+/* Footer styles */
+.footer {
+    background-color:rgb(165, 165, 165); /* Very dark brown footer */
+    color:black;
+    padding: 5px;
+    text-align: center;
+    font-size: 10px;
+    font-family: 'Lato', sans-serif;
+    
+}

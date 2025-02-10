@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="/static/css/search.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="header">
+        <h1 class="logo">LIBRARY<br>MANAGEMENT<br>SYSTEM</h1>
+        <nav class="navigation">
+            <a href="#" class="nav-link">Dashboard</a>
+            <a href="#" class="nav-link">Browse</a>
+            <button class="logout-btn">Logout</button>
+        </nav>
+    </header>
+    <main class="main-content">
+        <aside class="filters">
+            <h2 class="filters-title">FILTERS</h2>
+            <div class="filters-content">
+                <section class="filter-section">
+                    <h3>SORT BY RATING:</h3>
+                    <div class="filter-options">
+                        <label class="radio-label">
+                            <input type="radio" name="rating" value="low-high" checked>
+                            LOW-HIGH
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="rating" value="high-low">
+                            HIGH-LOW
+                        </label>
+                    </div>
+                </section>
+                <section class="filter-section">
+                    <h3>SORT BY GENRE:</h3>
+                    <div class="filter-options">
+                        <label class="radio-label">
+                            <input type="radio" name="genre" value="fantasy" checked>
+                            FANTASY
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="genre" value="romance">
+                            ROMANCE
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="genre" value="fiction">
+                            FICTION
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="genre" value="non-fiction">
+                            NON-FICTION
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="genre" value="self-help">
+                            SELF-HELP
+                        </label>
+                    </div>
+                </section>
+            </div>
+        </aside>
+        <div class="books-grid" id="booksGrid">
+            <!-- Books will be dynamically inserted here -->
+        </div>
+    </main>
+    <script src="static/js/search_result.js"></script>
+</body>
+</html>
