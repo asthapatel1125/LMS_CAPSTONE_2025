@@ -1,0 +1,26 @@
+from fastapi import APIRouter, Form, HTTPException, status, Request
+from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResponse
+from fastapi.templating import Jinja2Templates
+#from controllers.authentication import *
+from controllers.token import *
+#from controllers.email_verif_code import *
+from datetime import datetime, timedelta
+import os
+
+USER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/login"
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+templates_dir = os.path.join(base_dir, "..", "views", "templates")
+
+templates = Jinja2Templates(directory=templates_dir)
+
+router = APIRouter()
+
+@router.get("/home", response_class=HTMLResponse)
+def home_page(request: Request):
+    user_name = request.cookies.get("user_name", "Guest")
+    return templates.TemplateResponse("search.html", {"request": request, "name": user_name})
+
+@router.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return RedirectResponse(url=USER_LOGIN_PAGE, status_code=status.HTTP_303_SEE_OTHER)
