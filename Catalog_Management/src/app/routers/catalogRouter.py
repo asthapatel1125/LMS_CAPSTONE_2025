@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Form, status, Request
+from fastapi import APIRouter, Body, status, Request
 from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResponse
 from fastapi.templating import Jinja2Templates
 from controllers.token import *
 from controllers.inventory import *
+from datetime import datetime
 import os
 
 MANAGER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/manager"
@@ -20,7 +21,15 @@ def edit_inventory_page(request: Request):
 @router.get("/admin_dashboard", response_class=HTMLResponse)
 def admin_dashboard_page(request: Request):
     manager_name = request.cookies.get("manager_name", "Admin")
-    return templates.TemplateResponse("admin_dashboard.html", {"request": request, "name": manager_name})
+    curHr = datetime.now().hour
+    # Determine greeting
+    if 0 <= curHr < 12:
+        greeting = f"Good Morning {manager_name} 🖥️"
+    elif 12 <= curHr < 17:
+        greeting = f"Good Afternoon {manager_name} 🖥️"
+    else:
+        greeting = f"Good Evening {manager_name} 🖥️"
+    return templates.TemplateResponse("admin_dashboard.html", {"request": request, "greeting": greeting})
 
 @router.get("/manager-login", response_class=HTMLResponse)
 def manager_login_page(response: Response):
@@ -36,16 +45,16 @@ def add_item_page(request: Request):
     return templates.TemplateResponse("add_book.html", {"request": request})
 
 @router.post("/add-item", response_class=HTMLResponse)
-def add_item(title: str = Form(...), isbn: str = Form(...), author: str = Form(...), genre: str = Form(...), rating: float = Form(...),
-            kidFriendly: bool = Form(...), description: str = Form(...), format: str = Form(...), pageNumber: int = Form(...), 
-            bookID: str = Form(...), publisher: str = Form(...), status: str = Form(...) ):
+def add_item(title: str = Body(...), isbn: str = Body(...), author: str = Body(...), genre: str = Body(...), rating: float = Body(...),
+            kidFriendly: bool = Body(...), description: str = Body(...), format: str = Body(...), pageNumber: int = Body(...), 
+            bookID: str = Body(...), publisher: str = Body(...), status: str = Body(...) ):
     result = handle_add_book(title, isbn, author, genre, rating, kidFriendly, description, format, pageNumber, bookID, publisher, status)
     if result == "Error":
         return JSONResponse(
-            status_code=status.HTTP_409_CONFLICT,
+            status_code=409,
             content={"detail": "Item already exists."}
         )
-    return RedirectResponse(url="/catalog/edit_inventory", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/catalog/edit_inventory", status_code=303)
 
 @router.get("/remove-item", response_class=HTMLResponse)
 def remove_item_page(request: Request):

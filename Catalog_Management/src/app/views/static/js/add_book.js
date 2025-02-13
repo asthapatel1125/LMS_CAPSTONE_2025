@@ -70,8 +70,34 @@ function submitBook(){
     event.preventDefault();
     const formIsValid = validateForm();
     if (formIsValid) {
-        alert('Successfully added book!');
-        location.href = "/catalog/edit_inventory";
+        // Collect form data
+        const formData = new FormData(document.getElementById("addBookForm"));
+        const data = Object.fromEntries(formData.entries());
+
+        fetch('/catalog/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.status === 409) {
+                return response.json().then(result => {
+                    alert(result.detail);
+                    document.getElementById("addBookForm").reset();
+                });
+            } else if (response.ok) {
+                alert("Book added successfully!");
+                document.getElementById("addBookForm").reset();
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
+            } else {
+                alert("An unexpected error occurred.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
     }
 }
 

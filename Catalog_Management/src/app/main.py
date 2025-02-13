@@ -15,7 +15,6 @@ load_dotenv(dotenv_path='./app/config/.env')
 app = FastAPI()
 
 
-"""
 origins = ["*"]
 
 app.add_middleware(
@@ -26,7 +25,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-"""
 
 # Custom middleware example
 class CustomMiddleware(BaseHTTPMiddleware):
@@ -73,7 +71,7 @@ async def root(request: Request):
             return RedirectResponse(url="/catalog/admin_dashboard", status_code=status.HTTP_303_SEE_OTHER)
         except HTTPException:
             pass
-    return RedirectResponse(url="/catalog/edit_inventory", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/catalog/manager-login", status_code=status.HTTP_303_SEE_OTHER)
 
 if __name__ == "__main__":
     uvicorn.run(
