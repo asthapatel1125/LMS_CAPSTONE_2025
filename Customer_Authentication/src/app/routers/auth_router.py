@@ -124,13 +124,14 @@ async def reset_password_page(request: Request):
 async def reset_password(request: Request, first: str = Form(...), second: str = Form(...)):
     result = handle_reset_password(request, first, second)
     if result:
-        response = templates.TemplateResponse("reset_password.html", {"request": request, "success": "Password has been changed."})
+        response = JSONResponse(
+            status_code=200,
+            content={"success": "Password changed successfully"})
         response.delete_cookie("verif_email")
         return response
     return JSONResponse(
             status_code=400,
-            content={"error": "Passwords do not match"}
-        )
+            content={"error": "Passwords do not match"})
 
 @router.get("/cancel-verif", response_class=HTMLResponse)
 async def cancel_verif(request: Request):
