@@ -61,10 +61,7 @@ def shutdown_db_client():
 
 
 app.include_router(catalog_router, prefix="/catalog")
-@app.get("/catalog")
-async def root(request: Request):
-    return RedirectResponse(url="/catalog/admin_dashboard", status_code=status.HTTP_303_SEE_OTHER)
-"""
+
 @app.get("/catalog")
 async def root(request: Request):
     login_token = request.cookies.get("manager_login_token")
@@ -75,7 +72,7 @@ async def root(request: Request):
         except HTTPException:
             pass
     return RedirectResponse(url="/catalog/manager-login", status_code=status.HTTP_303_SEE_OTHER)
-"""
+
 if __name__ == "__main__":
     uvicorn.run(
         app="main:app",
