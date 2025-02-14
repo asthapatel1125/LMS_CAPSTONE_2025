@@ -42,9 +42,9 @@
     <div class="admin-dashboard mb-5 p-4 bg-light align-items-center justify-content-center ">
         <h1 class="fs-1 mb-3" style="text-align: center;"> Edit Inventory 📝</h1>
         <div class="container">
-            <div class="row p-4">
-                <div class="col-md">
-                    <form action="/catalog/add-item" method="GET">
+            <div class="row p-4 d-flex align-items-stretch">
+                <div class="col-md d-flex align-items-stretch">
+                    <form action="/catalog/add-item" method="GET" class="w-100">
                       <button type="submit" class="btn p-5 w-100 h-100" onclick="addBookPage()">
                         <h1>➕</h1>
                         <h3>Add</h3>
@@ -52,15 +52,17 @@
                       </button>
                     </form>
                   </div>
-                  <div class="col-md">
-                    <button type="submit" class="btn fs-4 p-5 w-100 h-100">
-                        <h1>✏️</h1>
-                        <h3>Modify</h3>
-                        <p class="fs-6">Edit items descriptors.</p>
-                    </button>
+                  <div class="col-md d-flex align-items-stretch">
+                    <form action="/catalog/modify-item" method="GET" class="w-100">
+                      <button type="submit" class="btn fs-4 p-5 w-100 h-100">
+                          <h1>✏️</h1>
+                          <h3>Modify</h3>
+                          <p class="fs-6">Edit items descriptors.</p>
+                      </button>
+                    </form>
                   </div>
-                  <div class="col-md">
-                    <form action="/catalog/remove-item" method="GET">
+                  <div class="col-md d-flex align-items-stretch">
+                    <form action="/catalog/remove-item" method="GET" class="w-100">
                       <button type="submit" class="btn fs-4 p-5 w-100 h-100" onclick="deleteBookPage()">
                         <h1>🗑️</h1>
                         <h3>Delete</h3>

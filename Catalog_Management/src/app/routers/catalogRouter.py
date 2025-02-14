@@ -70,3 +70,20 @@ def list_books_json():
 def delete_book_request(isbn: str):
     result = delete_book(isbn)
     return result
+
+@router.get("/modify-item", response_class=HTMLResponse)
+def modify_item_page(request: Request):
+    return templates.TemplateResponse("modify_book.html", {"request": request})
+
+@router.post("/modify-item", response_class=HTMLResponse)
+def modify_item(title: str = Body(...), isbn: str = Body(...), author: str = Body(...), genre: str = Body(...),
+                rating: float = Body(...), description: str = Body(...), kidFriendly: bool = Body(...),
+                format: str = Body(...), pageNumber: int = Body(...), publisher: str = Body(...), status: str = Body(...)):
+    
+    result = handle_modify_book(title, isbn, author, genre, rating, description, kidFriendly, format, pageNumber, publisher, status)
+    if result == False:
+        return JSONResponse(
+            status_code=409,
+            content={"detail": "Nothing has been updated."}
+        )
+    return RedirectResponse(url="/catalog/edit_inventory", status_code=200)
