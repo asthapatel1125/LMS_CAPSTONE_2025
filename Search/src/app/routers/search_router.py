@@ -8,10 +8,10 @@ from datetime import datetime, timedelta
 import os
 
 USER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/login"
+USER_LOGOUT_PAGE = "http://127.0.0.1:8001/auth/logout"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
-
 templates = Jinja2Templates(directory=templates_dir)
 
 router = APIRouter()
@@ -24,3 +24,10 @@ def home_page(request: Request):
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return RedirectResponse(url=USER_LOGIN_PAGE, status_code=status.HTTP_303_SEE_OTHER)
+
+@router.post("/logout", response_class=HTMLResponse)
+async def logout(request: Request):
+    response = RedirectResponse(url=USER_LOGOUT_PAGE, status_code=status.HTTP_303_SEE_OTHER)
+    response.delete_cookie("login_token")
+    response.delete_cookie("user_name")
+    return response
