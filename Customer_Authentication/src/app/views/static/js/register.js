@@ -63,6 +63,10 @@ async function handleLoginFormSubmit(event) {
   }
 }
 
+function clear(){
+  document.getElementById("registerForm").reset();
+}
+
 document
   .getElementById("registerForm")
   .addEventListener("submit", handleLoginFormSubmit);

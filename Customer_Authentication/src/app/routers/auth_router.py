@@ -73,6 +73,7 @@ async def register_user(fname: str = Form(...), lname: str = Form(...), email: s
             status_code=status.HTTP_409_CONFLICT,
             content={"detail": "Email is already registered."}
         )
+    send_register_email(email, fname, lname)
     return RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
 
 # Route to show forgot password page
@@ -131,6 +132,12 @@ async def reset_password(request: Request, first: str = Form(...), second: str =
             content={"error": "Passwords do not match"}
         )
 
+@router.get("/cancel-verif", response_class=HTMLResponse)
+async def cancel_verif(request: Request):
+    response = RedirectResponse(url="/auth/login" ,status_code=status.HTTP_303_SEE_OTHER)
+    response.delete_cookie("verif_email")
+    response.delete_cookie("verif_code")
+    return response
 
 # Manager login routes
 
