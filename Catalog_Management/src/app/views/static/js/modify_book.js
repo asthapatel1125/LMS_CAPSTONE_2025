@@ -202,7 +202,7 @@ function modifyBook(event) {
             } else if (response.ok) {
                 alert("Book modified successfully!");
                 document.getElementById("modifyBookForm").reset();
-                fetchBooks();
+                window.location.href = "/catalog/modify-item";
             } else {
                 fetchBooks();
                 alert("An unexpected error occurred.");
