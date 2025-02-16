@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 
 MANAGER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/manager"
+MANAGE_HOLDS_ADMIN = "http://127.0.0.1:8004/reservations/manage-holds"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
@@ -37,6 +38,12 @@ def manager_login_page(response: Response):
     response.delete_cookie("manager_login_token")
     response.delete_cookie("manager_name")
     return response
+
+# Manage holds page button
+
+@router.get("/manage-holds", response_class=HTMLResponse)
+def manage_holds_page(request: Request):
+    return RedirectResponse(url=MANAGE_HOLDS_ADMIN, status_code=status.HTTP_303_SEE_OTHER)
 
 # Edit inventory page buttons (x3)
 
