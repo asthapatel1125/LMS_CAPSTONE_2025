@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 
 MANAGER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/manager"
-MANAGE_HOLDS_ADMIN = "http://127.0.0.1:8004/reservations/manage-holds"
+MANAGE_HOLDS_ADMIN = "http://127.0.0.1:8004/reservations/holds-admin"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
