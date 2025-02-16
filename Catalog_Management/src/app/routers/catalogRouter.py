@@ -42,7 +42,7 @@ def manager_login_page(response: Response):
 # Manage holds page button
 
 @router.get("/manage-holds", response_class=HTMLResponse)
-def manage_holds_page(request: Request):
+def manage_holds_page(response: Response):
     return RedirectResponse(url=MANAGE_HOLDS_ADMIN, status_code=status.HTTP_303_SEE_OTHER)
 
 # Edit inventory page buttons (x3)
