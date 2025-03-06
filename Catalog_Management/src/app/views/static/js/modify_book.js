@@ -67,7 +67,7 @@ function displayBookDetails(book) {
         <p><strong>Author:</strong> ${book.author}</p>
         <p><strong>ISBN:</strong> ${book.isbn}</p>
         <p><strong>Genre:</strong> ${book.genre}</p>
-        <p><strong>Rating:</strong> ${book.rating} ⭐</p>
+        <p><strong>Number of copies:</strong> ${book.numCopies}</p>
         <p><strong>Description:</strong> ${book.description}</p>
         <p><strong>Kid Friendly:</strong> ${book.kidFriendly ? "Yes" : "No"}</p>
         <p><strong>Format:</strong> ${book.format}</p>
@@ -100,7 +100,7 @@ function populateModifyForm(book) {
     document.getElementById('author').value = book.author;
     document.getElementById('isbn').value = book.isbn;
     document.getElementById('genre').value = book.genre;
-    document.getElementById('rating').value = book.rating;
+    document.getElementById('numCopies').value = book.numCopies;
     document.getElementById('description').value = book.description;
     document.getElementById('kidFriendly').checked = book.kidFriendly;
     document.getElementById('format').value = book.format;

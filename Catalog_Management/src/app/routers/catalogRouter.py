@@ -54,8 +54,8 @@ def add_item_page(request: Request):
 @router.post("/add-item", response_class=HTMLResponse)
 def add_item(title: str = Body(...), isbn: str = Body(...), author: str = Body(...), genre: str = Body(...), rating: float = Body(...),
             kidFriendly: bool = Body(...), description: str = Body(...), format: str = Body(...), pageNumber: int = Body(...), 
-            bookID: str = Body(...), publisher: str = Body(...), status: str = Body(...) ):
-    result = handle_add_book(title, isbn, author, genre, rating, kidFriendly, description, format, pageNumber, bookID, publisher, status)
+            numCopies: int = Body(...), publisher: str = Body(...), status: str = Body(...) ):
+    result = handle_add_book(title, isbn, author, genre, rating, kidFriendly, description, format, pageNumber, numCopies, publisher, status)
     if result == "Error":
         return JSONResponse(
             status_code=409,
@@ -84,10 +84,10 @@ def modify_item_page(request: Request):
 
 @router.post("/modify-item", response_class=HTMLResponse)
 def modify_item(title: str = Body(...), isbn: str = Body(...), author: str = Body(...), genre: str = Body(...),
-                rating: float = Body(...), description: str = Body(...), kidFriendly: bool = Body(...),
+                numCopies: int = Body(...), description: str = Body(...), kidFriendly: bool = Body(...),
                 format: str = Body(...), pageNumber: int = Body(...), publisher: str = Body(...), status: str = Body(...)):
     
-    result = handle_modify_book(title, isbn, author, genre, rating, description, kidFriendly, format, pageNumber, publisher, status)
+    result = handle_modify_book(title, isbn, author, genre, numCopies, description, kidFriendly, format, pageNumber, publisher, status)
     if result == False:
         return JSONResponse(
             status_code=409,

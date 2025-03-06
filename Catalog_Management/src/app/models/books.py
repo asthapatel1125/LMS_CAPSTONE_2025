@@ -17,7 +17,7 @@ class Book(BaseModel):
     description: str
     format: str
     pageNumber: int
-    bookID: str
+    numCopies: int
     publisher: str
     status: str
 
@@ -60,93 +60,92 @@ def delete_book(isbn: str):
     else:
         return {"message": "Error deleting book."}
     
-# Update any field of the book (total 11 fields, excluding bookID)
-@app.put("/catalog/update-isbn/{book_id}", response_model=dict)
-def update_isbn(book_id: str, new_isbn: str):
+    
+# Update book fields
+@app.put("/catalog/update-isbn/{isbn}", response_model=dict)
+def update_isbn(isbn: str, new_isbn: str):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"isbn": new_isbn}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-title/{book_id}", response_model=dict)
-def update_title(book_id: str, new_title: str):
+@app.put("/catalog/update-title/{isbn}", response_model=dict)
+def update_title(isbn: str, new_title: str):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"title": new_title}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-description/{book_id}", response_model=dict)
-def update_description(book_id: str, new_description: str):
+@app.put("/catalog/update-description/{isbn}", response_model=dict)
+def update_description(isbn: str, new_description: str):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"description": new_description}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-rating/{book_id}", response_model=dict)
-def update_rating(book_id: str, new_rating: float):
+@app.put("/catalog/update-numCopies/{isbn}", response_model=dict)
+def update_numCopies(isbn: str, new_copies: float):
     result = db["books"].update_one(
-        {"bookID": book_id},
-        {"$set": {"rating": new_rating}}
+        {"isbn": isbn},
+        {"$set": {"numCopies": new_copies}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-author/{book_id}", response_model=dict)
-def update_author(book_id: str, new_author: str):
+@app.put("/catalog/update-author/{isbn}", response_model=dict)
+def update_author(isbn: str, new_author: str):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"author": new_author}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-genre/{book_id}", response_model=dict)
-def update_genre(book_id: str, new_genre: str):
+@app.put("/catalog/update-genre/{isbn}", response_model=dict)
+def update_genre(isbn: str, new_genre: str):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"genre": new_genre}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-kidFriendly/{book_id}", response_model=dict)
-def update_kidFriendly(book_id: str, new_kidFriendly: bool):
+@app.put("/catalog/update-kidFriendly/{isbn}", response_model=dict)
+def update_kidFriendly(isbn: str, new_kidFriendly: bool):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"kidFriendly": new_kidFriendly}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-format/{book_id}", response_model=dict)
-def update_format(book_id: str, new_format: str):
+@app.put("/catalog/update-format/{isbn}", response_model=dict)
+def update_format(isbn: str, new_format: str):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"format": new_format}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-pageNumber/{book_id}", response_model=dict)
-def update_pageNumber(book_id: str, new_pageNumber: int):
+@app.put("/catalog/update-pageNumber/{isbn}", response_model=dict)
+def update_pageNumber(isbn: str, new_pageNumber: int):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"pageNumber": new_pageNumber}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-publisher/{book_id}", response_model=dict)
-def update_publisher(book_id: str, new_publisher: str):
+@app.put("/catalog/update-publisher/{isbn}", response_model=dict)
+def update_publisher(isbn: str, new_publisher: str):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"publisher": new_publisher}}
     )
     return result.modified_count > 0
 
-@app.put("/catalog/update-status/{book_id}", response_model=dict)
-def update_status(book_id: str, new_status: str):
+@app.put("/catalog/update-status/{isbn}", response_model=dict)
+def update_status(isbn: str, new_status: str):
     result = db["books"].update_one(
-        {"bookID": book_id},
+        {"isbn": isbn},
         {"$set": {"status": new_status}}
     )
     return result.modified_count > 0
-
-
