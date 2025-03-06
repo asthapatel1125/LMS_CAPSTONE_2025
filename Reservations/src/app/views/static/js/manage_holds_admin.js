@@ -4,35 +4,85 @@
 -refresh table after each time one of the buttons are selected
 -assign each book a copy number
  */
-const books = [
-    { title: "The Great Gatsby", user: "F. Scott Fitzgerald", holdDate: "2025-02-15", dueDate: "2024-15-2022", isbn:"1", format:"Ebook", status:"Fulfilled"},
-    { title: "Moby-Dick", user: "Herman Melville", holdDate: "2025-02-10", dueDate: "na", isbn:"3", format:"Audiobook", status:"Waiting"},
-    { title: "The Catcher in the Rye", user: "J.D. Salinger", holdDate: "2025-02-14", dueDate: "2024-15-2022", isbn:"4", format:"Ebook", status:"Fulfilled"},
-    { title: "The Catcher in the Rye", user: "J.. Salinger", holdDate: "2025-02-14", dueDate: "2024-15-2022", isbn:"4", format:"Ebook", status:"Fulfilled"},
-    { title: "To Kill a Mockingbird", user: "Harper Lee", holdDate: "2025-01-21", dueDate: "na", isbn:"5", format:"Ebook", status:"Waiting"}
-  ];
+let books = [];
 
-function createTable(){
+async function fetchHolds() {
+  try {
+      const response = await fetch('/reservations/list-holds/');
+      console.log(response);
+      if (response.ok) {
+          const booksData = await response.json();
+          books = booksData;
+          console.log(books);
+          createTable();
+      } else {
+          console.error("Failed to fetch reservations:", response.status);
+      }
+  } catch (error) {
+      console.error("Error fetching reservations:", error);
+  }
+}
+
+async function fetchBooksISBN(isbn) {
+    try {
+        const response = await fetch(`/reservations/book-title/${isbn}`);
+        console.log(response);
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Book Title:", data.title);
+            return data.title;
+        } else {
+            console.error("Failed to fetch book title:", response.status);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching book title:", error);
+        return null;
+    }
+}  
+
+function formatDate(dateString) {
+    if (!dateString) return "ERR"; // Handle missing dates
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", { 
+        year: "numeric", 
+        month: "short", 
+        day: "numeric" 
+    });
+}
+
+async function createTable() {
     let i = 1;
-    books.forEach(book =>{
+    const table = document.getElementById('book-table');
+    table.innerHTML = '';
+
+    for (const book of books) {
+        let title = book.title;
+        if (!title) {
+            title = await fetchBooksISBN(book.isbn) || "Unknown Title";
+        }
+
         const row = document.createElement('tr');
         row.innerHTML = `
             <td><input type="checkbox" class="selectRow"></td>
             <th scope="row">${i}</th>
-            <td>${book.title}</td>
+            <td>${title}</td>
             <td>${book.isbn}</td>
-            <td>${book.copyid}</td>
-            <td>${book.user}</td>
-            <td>${book.holdDate}</td>
-            <td>${book.dueDate}</td>
+            <td>${book.book_id}</td>
+            <td>${book.user_email}</td>
+            <td>${formatDate(book.reservation_date)}</td>
+            <td>${formatDate(book.expiration_date)}</td>
             <td>${book.status}</td>
-        `
-        document.getElementById('book-table').appendChild(row);
+        `;
+        table.appendChild(row);
         i++;
-        });
+    }
 }
 
-createTable();
+window.onload = fetchHolds;
+
+// -------------------------------- Helper Functions --------------------------------
 
 $(document).ready(function() {
     // Select or deselect a single row checkbox

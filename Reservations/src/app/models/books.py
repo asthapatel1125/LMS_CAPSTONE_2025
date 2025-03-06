@@ -48,6 +48,14 @@ def list_books():
     books = list(db["books"].find())
     return [Book(**book) for book in books]
 
+@app.get("/books/title/{isbn}", response_model=str)
+def get_book_title(isbn: str):
+    db = get_db()
+    book = db["books"].find_one({"isbn": isbn}, {"_id": 0, "title": 1})
+    if not book:
+        return "Book not found"
+    return book["title"]
+
 @app.delete("/books/{isbn}", response_model=dict)
 def delete_book(isbn: str):
     result = db["books"].delete_one({"isbn": isbn})

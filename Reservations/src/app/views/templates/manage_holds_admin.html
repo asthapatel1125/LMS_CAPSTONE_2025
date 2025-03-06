@@ -20,7 +20,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item px-2">
-              <a class="nav-link" href="#">My Dashboard</a>
+              <a class="nav-link" href="/reservations/dashboard">My Dashboard</a>
             </li>
             <li class="nav-item px-2">
               <a class="nav-link" href="#">Catalogue View</a>
@@ -29,7 +29,7 @@
               <a class="nav-link" href="#">Account</a>
             </li>
             <li class="nav-item px-2">
-              <a class="nav-link" href="manager_login.html" style="background-color: #E3E3E3; border-radius: 15px">Log Out</a>
+              <a class="nav-link" href="/reservations/logout" style="background-color: #E3E3E3; border-radius: 15px">Log Out</a>
             </li>
           </ul>
         </div>
@@ -81,7 +81,7 @@
                                 </div>
                             </li>
                         </ul>
-                        <button type="button" class="btn btn-clear-size px-4 mx-2" onclick=resetTable()> Clear </button>
+                        <button type="button" class="btn btn-clear-size px-4 mx-2" onclick="resetTable()"> Clear </button>
                       </div>
                       
                 </div>
@@ -101,7 +101,7 @@
                 <th>#</th>
                 <th>Title</th>
                 <th>ISBN</th>
-                <th>Copy No.</th>
+                <th>Book ID</th>
                 <th>User Information</th>
                 <th>Hold Date</th>
                 <th>Due Date</th>
