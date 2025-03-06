@@ -19,14 +19,18 @@ router = APIRouter()
 @router.get("/home", response_class=HTMLResponse)
 def home_page(request: Request):
     user_name = request.cookies.get("user_name", "Guest")
-    return templates.TemplateResponse("search.html", {"request": request, "name": user_name})
+    return templates.TemplateResponse("search_page.html", {"request": request, "name": user_name})
+
+@router.get("/item-info", response_class=HTMLResponse)
+def item_info_page(request: Request):
+    return templates.TemplateResponse("item_info.html", {"request": request})
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return RedirectResponse(url=USER_LOGIN_PAGE, status_code=status.HTTP_303_SEE_OTHER)
 
-@router.post("/logout", response_class=HTMLResponse)
-async def logout(request: Request):
+@router.get("/logout", response_class=HTMLResponse)
+async def logout_page(request: Request):
     response = RedirectResponse(url=USER_LOGOUT_PAGE, status_code=status.HTTP_303_SEE_OTHER)
     response.delete_cookie("login_token")
     response.delete_cookie("user_name")

@@ -1,0 +1,45 @@
+.filter{
+    background-color: rgb(225, 230, 232, 0.3);
+    border-radius: 15px;
+    height: 50%;
+}
+
+.btn-custom-size {
+    padding: 6px 12px; /* Adjust padding for smaller size */
+    border-radius: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #162D3A;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.btn-custom-filter{
+    background-color: white;
+    text-align: left;  
+}
+
+.btn-custom-back{
+    background-color: rgb(225, 230, 232, 0.3);
+    border-radius: 15px;
+    text-align: center;  
+}
+
+.book-cover{
+    width: 85%;
+    height: 200px;
+    object-fit:cover;
+    border-radius: 8px;
+}
+
+.card-header{
+    background-color: #97b8b3;
+    border-bottom: none;
+}
+
+.card{
+    background-color: rgb(225, 230, 232, 0.3);
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

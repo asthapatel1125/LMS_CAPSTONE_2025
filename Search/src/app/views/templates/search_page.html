@@ -15,14 +15,14 @@
   <header class="bg-primary text-white text-center mb-4">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/auth/login">Library Management System</a>
+        <a class="navbar-brand" href="/search/login">Library Management System</a>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item px-2">
-              <a class="nav-link active" aria-current="page" href="/auth/login">Home</a>
+              <a class="nav-link active" aria-current="page" href="/search/login">Home</a>
             </li>
             <li class="nav-item px-2">
-              <a class="nav-link" href="search.html">Browse</a>
+              <a class="nav-link" href="/search/home">Browse</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Explore</a>
@@ -51,7 +51,7 @@
         <section class="searchHeader col-12">
           <div class="row">
             <div class="col-12 mt-4 m-3">
-              <h1 class="mt-5 p-1 fs-1 text-center" style="color: white; font-weight: 700;">Library Catalogue🔍</h1>
+              <h1 class="mt-5 p-1 fs-1 text-center" style="color: white; font-weight: 700;">{{name}}'s Catalogue🔍</h1>
               <h2 class="mt-1 fs-4 text-center" style="color: white; font-weight: 320; font-style: italic;">search by title, author, genre...</h2>
               <form class="d-flex" role="search">
                 <div class="row w-100 mt-4">
@@ -78,7 +78,7 @@
                   <div class="carousel-item active">
                     <div class="row justify-content-center">
                       <div class="col-2 d-flex justify-content-center align-items-center">
-                        <a href="item_info.html">
+                        <a href="/search/item-info">
                           <img src="/static/images/Screenshot 2025-02-04 001359.png" class="img-fluid" alt="Image 1">
                         </a>
                       </div> 
@@ -177,7 +177,7 @@
             </div>
         </section>
         <section class="col-12 book-section mt-3 mb-5" id="newest">
-            <h3 class="mx-3 mt-3">⚡Newest</h3>
+            <h3 class="mx-3 mt-3">⚡ Newest</h3>
               <div id="newestCarouselControls" class="carousel slide m-3" data-bs-ride="false">
                 <div id="newestCarousel" class="carousel slide " data-bs-ride="false">
                   <div class="carousel-inner">
