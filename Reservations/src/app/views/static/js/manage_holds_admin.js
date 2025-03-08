@@ -8,29 +8,38 @@ let books = [];
 
 async function fetchHolds() {
   try {
-      const response = await fetch('/reservations/list-holds/');
-      console.log(response);
-      if (response.ok) {
-          const booksData = await response.json();
-          books = booksData;
-          console.log(books);
-          createTable();
-      } else {
-          console.error("Failed to fetch reservations:", response.status);
+    const response = await fetch("/reservations/list-holds/");
+    if (response.ok) {
+      const booksData = await response.json();
+      books = booksData;
+      console.log(books);
+
+      // Update books status
+      for (const book of books) {
+        const isbn = book.isbn; // Assuming isbn is a field in the hold object
+        const book_id = book.book_id; // Assuming book_id is a field in the hold object
+
+        // Call the update_status endpoint for each book/hold
+        const updateResponse = await fetch(`/reservations/update-status/${isbn}/${book_id}`);
+        const updateData = await updateResponse.json();
+        console.log(updateData.message);
       }
+      // Create the UI
+      createTable();
+    } else {
+      console.error("Failed to fetch reservations:", response.status);
+    }
   } catch (error) {
-      console.error("Error fetching reservations:", error);
+    console.error("Error fetching reservations:", error);
   }
 }
 
 async function fetchBooksISBN(isbn) {
     try {
         const response = await fetch(`/reservations/book-title/${isbn}`);
-        console.log(response);
 
         if (response.ok) {
             const data = await response.json();
-            console.log("Book Title:", data.title);
             return data.title;
         } else {
             console.error("Failed to fetch book title:", response.status);
@@ -390,39 +399,64 @@ function getCheckedRow() {
     }
     return null; 
   }
-  
-//Function for backend stuff
-function fulfillHold(action) {
-    const checkedRow = getCheckedRow(); // Get the checked row
+
+async function cancelHold() {
+    const checkedRow = getCheckedRow();
   
     if (!checkedRow) {
       alert("Please select a row.");
       return;
     }
-    alert("Fulfilling hold");
-    console.log("Fulfilling row:", checkedRow);
-    createTable(); //refreshed table
+    const isbn = checkedRow.querySelector('td:nth-child(4)').textContent;
+    const book_id = checkedRow.querySelector('td:nth-child(5)').textContent;
+
+    try {
+        const response = await fetch(`/reservations/delete-hold/${isbn}/${book_id}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+        
+        if (response.ok) {
+            alert("Hold deleted successfully");
+            await fetchHolds();
+            window.location.reload();
+        } else {
+            alert("Failed to delete hold. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error deleting hold:", error);
+        alert("An error occurred while deleting the hold.");
+    }
 }
 
-function cancelHold(action) {
-    const checkedRow = getCheckedRow(); // Get the checked row
-  
+async function extendHold() {
+    const checkedRow = getCheckedRow();
     if (!checkedRow) {
       alert("Please select a row.");
       return;
     }
-    alert("Cancelling hold");
-    console.log("Cancelling row:", checkedRow);
-    createTable(); //refreshed table
+    const isbn = checkedRow.querySelector('td:nth-child(4)').textContent;
+    const book_id = checkedRow.querySelector('td:nth-child(5)').textContent;
+    
+    try {
+        const response = await fetch(`/reservations/extend-hold/${isbn}/${book_id}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+        
+        if (response.ok) {
+            alert("Hold extended successfully!");
+            await fetchHolds();
+            window.location.reload();
+        } else {
+            alert("Failed to extend hold. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error extending hold:", error);
+        alert("An error occurred while extending the hold.");
+    }
 }
 
-function extendHold(action) {
-    const checkedRow = getCheckedRow(); // Get the checked row
-    if (!checkedRow) {
-      alert("Please select a row.");
-      return;
-    }
-    alert("Extending hold");
-    console.log("Extending row:", checkedRow);
-    createTable(); //refreshed table
+function goBack(){
+    window.location = '/reservations/dashboard';
 }

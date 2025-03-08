@@ -6,7 +6,6 @@ from controllers.holds import *
 import os
 
 MANAGER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/manager"
-ADMIN_LOGOUT_PAGE = "http://127.0.0.1:8001/auth/manager-logout"
 ADMIN_DASHBOARD_PAGE = "http://127.0.0.1:8002/catalog/admin_dashboard"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -26,11 +25,9 @@ def manager_login_page(response: Response):
 def holds_admin_page(request: Request):
     return templates.TemplateResponse("manage_holds_admin.html", {"request": request})
 
-@router.post("/logout", response_class=HTMLResponse)
-async def logout(response: Response):
-    response = RedirectResponse(url=ADMIN_LOGOUT_PAGE, status_code=status.HTTP_303_SEE_OTHER)
-    response.delete_cookie("manager_login_token")
-    response.delete_cookie("manager_name")
+@router.get("/dashboard", response_class=HTMLResponse)
+async def dashboard_page(response: Response):
+    response = RedirectResponse(url=ADMIN_DASHBOARD_PAGE, status_code=status.HTTP_303_SEE_OTHER)
     return response
 
 @router.post("/dashboard", response_class=HTMLResponse)
@@ -52,3 +49,29 @@ def book_title_json(isbn: str):
         return JSONResponse(status_code=404, content={"message": title})
     return JSONResponse(content={"title": title})
 
+# Extending the hold by 5 days in the database
+@router.post("/extend-hold/{isbn}/{book_id}")
+def extend_hold_json(isbn: str, book_id: str):
+    return extend_hold(isbn, book_id)
+
+# Updating the status of the reservations
+@router.get("/update-status/{isbn}/{book_id}")
+async def update_status(isbn: str, book_id: str):
+    reservations_count = db["reservations"].count_documents({"isbn": isbn, "status": "complete"})
+    copies = get_book_copies(isbn)
+    print(f"\n\n{reservations_count} || {copies} || {isbn}, {book_id}\n\n")
+    if copies is not None and reservations_count < copies:
+        print(f"\n\nI AM IN FIRST\n\n")
+        response = update_hold_status(isbn, book_id)
+    else:
+        print(f"\n\nI AM IN SECOND\n\n")
+        response = update_status_invalid(isbn, book_id)
+    
+    if response:
+        return JSONResponse(status_code=200, content={"message": f"Status updated {isbn} | {book_id}."})
+    return JSONResponse(status_code=200, content={"message": f"Status not updated {isbn} | {book_id}."})
+
+@router.post("/delete-hold/{isbn}/{book_id}")
+async def delete_hold_json(isbn: str, book_id: str):
+    response = delete_reservation(isbn, book_id)
+    return response

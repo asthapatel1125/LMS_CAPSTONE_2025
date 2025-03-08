@@ -29,7 +29,7 @@
               <a class="nav-link" href="#">Account</a>
             </li>
             <li class="nav-item px-2">
-              <a class="nav-link" href="/reservations/logout" style="background-color: #E3E3E3; border-radius: 15px">Log Out</a>
+              <a class="nav-link" href="/reservations/manager-login" style="background-color: #E3E3E3; border-radius: 15px">Log Out</a>
             </li>
           </ul>
         </div>
@@ -113,9 +113,13 @@
             </tbody>
             </table>  
         </div> 
-        <button type="submit" class="btn btn-custom-size mx-1 my-3 px-3" onclick="fulfillHold()">Fulfill</button>
-        <button type="submit" class="btn btn-extend-size mx-1 my-3 px-3" onclick="extendHold()">Extend</button>
-        <button type="submit" class="btn btn-cancel-size mx-1 my-3 px-3" onclick="cancelHold()">Cancel</button>
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+              <button type="submit" class="btn btn-extend-size mx-1 my-3 px-3" onclick="extendHold()">Extend</button>
+              <button type="submit" class="btn btn-cancel-size mx-1 my-3 px-3" onclick="cancelHold()">Cancel</button>
+          </div>
+          <button type="submit" class="btn btn-back-size mx-1 my-3 px-3 ms-auto" onclick="goBack()">Back</button>
+      </div>
     </div>   
 </main>
 

@@ -71,7 +71,7 @@ async def root(request: Request):
             return RedirectResponse(url="/reservations/holds-admin", status_code=status.HTTP_303_SEE_OTHER)
         except HTTPException:
             pass
-    return RedirectResponse(url="/reservations/holds-admin", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/reservations/manager-login", status_code=status.HTTP_303_SEE_OTHER)
 
 if __name__ == "__main__":
     uvicorn.run(

@@ -63,3 +63,16 @@ def delete_book(isbn: str):
         return {"message": "Book deleted successfully."}
     else:
         return {"message": "Error deleting book."}
+
+# numCopies increment and decrement
+@app.get("/books/{isbn}")
+def get_book_copies(isbn: int):
+    book = db["books"].find_one({"isbn": isbn})
+    if not book:
+        return None
+    book["_id"] = str(book["_id"])
+
+    if isinstance(book["numCopies"], dict) and "$numberInt" in book["numCopies"]:
+        book["numCopies"] = int(book["numCopies"]["$numberInt"])
+
+    return book["numCopies"]
