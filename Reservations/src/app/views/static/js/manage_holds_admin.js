@@ -11,7 +11,7 @@ async function fetchHolds() {
     const response = await fetch("/reservations/list-holds/");
     if (response.ok) {
       const booksData = await response.json();
-      books = booksData;
+      books = [...booksData];
       console.log(books);
 
       // Update books status
@@ -25,7 +25,7 @@ async function fetchHolds() {
         console.log(updateData.message);
       }
       // Create the UI
-      createTable();
+      createTable(books);
     } else {
       console.error("Failed to fetch reservations:", response.status);
     }
@@ -61,12 +61,12 @@ function formatDate(dateString) {
     });
 }
 
-async function createTable() {
+async function createTable(filteredBooks = books) {
     let i = 1;
     const table = document.getElementById('book-table');
     table.innerHTML = '';
 
-    for (const book of books) {
+    for (const book of filteredBooks) {
         let title = book.title;
         if (!title) {
             title = await fetchBooksISBN(book.isbn) || "Unknown Title";
@@ -89,7 +89,9 @@ async function createTable() {
     }
 }
 
-window.onload = fetchHolds;
+window.onload = async () => {
+    await fetchHolds();
+}
 
 // -------------------------------- Helper Functions --------------------------------
 
@@ -122,7 +124,6 @@ function restrictSingleFilterSelection() {
       if (this.checked) {
         // Update the filterOpt when a checkbox is selected
         filterOpt = this.value;
-        console.log('Selected filter:', filterOpt);
 
         // Uncheck other checkboxes
         filterCheckboxes.forEach((otherCheckbox) => {
@@ -175,65 +176,31 @@ restrictSingleFilterSelection();
 
 // Function to search the books dynamically
 function searchBooks() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
+    const query = searchInput.value.toLowerCase();
+    let filteredBooks = [...books];
+    console.log(filteredBooks);
     if (query === "") {
-        // If query is empty, hide the search list
-        clearSearchResults();
-        selectedBook = null;
-        
-    } else {
-        if (filterOpt === 'isbn'){
-            const filteredBooks = [];
-            books.forEach(book => {
-                if (!filteredBooks.includes(book.isbn) && book.isbn.toLowerCase().includes(query)){
-                    filteredBooks.push(book.isbn)
-                }
-            }); 
-            console.log(filteredBooks);
-            displayIsbn(filteredBooks);         
-        }
-        else if (filterOpt === 'title'){
-            const filteredBooks = [];
-            books.forEach(book => {
-                if (!filteredBooks.includes(book.title) && book.title.toLowerCase().includes(query)){
-                    filteredBooks.push(book.title)
-                }
-            }); 
-            console.log(filteredBooks);
-            displayTitle(filteredBooks);        
-        }
-        else if (filterOpt === 'user'){
-            const filteredBooks = [];
-            books.forEach(book => {
-                if (!filteredBooks.includes(book.user) && book.user.toLowerCase().includes(query)){
-                    filteredBooks.push(book.user)
-                }
-            }); 
-            console.log(filteredBooks);
-            displayUser(filteredBooks);           
-        } 
-        else if (filterOpt === 'holdDate'){
-            const filteredBooks = [];
-            books.forEach(book => {
-                if (!filteredBooks.includes(book.holdDate) && book.holdDate.toLowerCase().includes(query)){
-                    filteredBooks.push(book.holdDate)
-                }
-            }); 
-            console.log(filteredBooks); 
-            filterTableByDate(filteredBooks, 'holdDate') 
-        }
-        else if (filterOpt === 'dueDate'){
-            const filteredBooks = [];
-            books.forEach(book => {
-                if (!filteredBooks.includes(book.dueDate) && book.dueDate.toLowerCase().includes(query)){
-                    filteredBooks.push(book.dueDate)
-                }
-            }); 
-            console.log(filteredBooks); 
-            filterTableByDate(filteredBooks, 'dueDate') 
-        }
+        createTable(filteredBooks);
+        return;
     }
-  }
+
+    if (filterOpt === 'isbn') {
+        filteredBooks = books.filter(book => book.isbn.toLowerCase().includes(query));
+    }
+    else if (filterOpt === 'bookID') {
+        filteredBooks = books.filter(book => book.book_id.toLowerCase().includes(query));
+    }
+    else if (filterOpt === 'user') {
+        filteredBooks = books.filter(book => book.user_email.toLowerCase().includes(query));
+    }
+    else if (filterOpt === 'holdDate') {
+        filteredBooks = books.filter(book => formatDate(book.reservation_date).toLowerCase().includes(query));
+    }
+    else if (filterOpt === 'dueDate') {
+        filteredBooks = books.filter(book => formatDate(book.expiration_date).toLowerCase().includes(query));
+    }
+    createTable(filteredBooks);
+}
   
   // Function to display the list of books based on isbn
   function displayTitle(titlesToDisplay) {
@@ -338,12 +305,15 @@ function filterTableByDate(dateToDisplay, dateType) {
     }
 }
 
-function resetTable(){
-    const table = document.getElementById('book-table');
-    const tableRows = table.querySelectorAll('tr');
-    tableRows.forEach(row => {row.style.display = '' });
+function resetTable() {
+    document.getElementById("searchInput").value = "";
+    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.getElementById("searchInput").disabled = true;
+    filterOpt = '';
+    createTable(books);
 }
-
 
 function clearSearchResults() {
     const bookList = document.getElementById('bookList');
@@ -355,39 +325,24 @@ const tableRows = table.querySelectorAll('tr');
 
 function filterTable(book, filter){
     const query = book.toLowerCase();
-    tableRows.forEach(row => {
+    let filteredBooks = [...books];
+
+    filteredBooks = filteredBooks.filter(row => {
         const cells = row.querySelectorAll('td');
-        console.log(cells);
-        if (filter === 'user'){
-            shouldDisplay = cells[4].textContent.toLowerCase().includes(query);
-            console.log(cells[4].textContent.toLowerCase());
-            row.style.display = shouldDisplay ? '' : 'none';
-        }
-        else if (filter === 'isbn'){
-            shouldDisplay = cells[2].textContent.toLowerCase().includes(query);
-            console.log(cells[2].textContent.toLowerCase());
-            row.style.display = shouldDisplay ? '' : 'none';
-        }
-        else if (filter === 'title'){
-            console.log(query);
-            shouldDisplay = cells[1].textContent.toLowerCase().includes(query);
-            console.log(cells[1].textContent.toLowerCase());
-            row.style.display = shouldDisplay ? '' : 'none';
-        }
-        else if (filter === 'holdDate'){
-            console.log(query);
-            shouldDisplay = cells[5].textContent.toLowerCase().includes(query);
-            console.log(cells[5].textContent.toLowerCase());
-            row.style.display = shouldDisplay ? '' : 'none';            
-        }
-        else if (filter === 'dueDate'){
-            console.log(query);
-            shouldDisplay = cells[6].textContent.toLowerCase().includes(query);
-            console.log(cells[6].textContent.toLowerCase());
-            row.style.display = shouldDisplay ? '' : 'none';            
+        if (filter === 'user') {
+            return cells[4].textContent.toLowerCase().includes(query);
+        } else if (filter === 'isbn') {
+            return cells[2].textContent.toLowerCase().includes(query);
+        } else if (filter === 'title') {
+            return cells[1].textContent.toLowerCase().includes(query);
+        } else if (filter === 'holdDate') {
+            return cells[5].textContent.toLowerCase().includes(query);
+        } else if (filter === 'dueDate') {
+            return cells[6].textContent.toLowerCase().includes(query);
         }
     });
-    console.log(book);
+
+    //createTable(filteredBooks);
 }
 
 // Function to get the checked row
@@ -460,3 +415,13 @@ async function extendHold() {
 function goBack(){
     window.location = '/reservations/dashboard';
 }
+
+// Dynamically filter books
+let searchTimeout;
+
+searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        searchBooks();
+    }, 1000);
+});
