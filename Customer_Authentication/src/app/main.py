@@ -14,6 +14,17 @@ load_dotenv(dotenv_path='./app/config/.env')
 
 app = FastAPI()
 
+origins = ["http://127.0.0.1:8001/auth",
+           "http://34.152.10.54:8001/auth"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Custom middleware example
 class CustomMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
