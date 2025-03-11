@@ -7,7 +7,7 @@ from controllers.email_verif_code import *
 from datetime import datetime, timedelta
 import os
 
-CATALOG_SERVICE_URL = "http://127.0.0.1:8002/catalog"
+CATALOG_SERVICE_URL = "http://35.203.36.97:8002/catalog"
 USER_HOME_PAGE = "http://127.0.0.1:8003/search/home"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
