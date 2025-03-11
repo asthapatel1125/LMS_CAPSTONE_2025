@@ -84,4 +84,5 @@ if __name__ == "__main__":
         port=8002,  # Use a different port
         reload=True if os.environ.get("ENVIRONMENT") == "dev" else False,
         workers=1,
+        proxy_headers=True
     )
