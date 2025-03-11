@@ -15,7 +15,8 @@ load_dotenv(dotenv_path='./app/config/.env')
 app = FastAPI()
 
 
-origins = ["*"]
+origins = ["http://127.0.0.1:8002/catalog",
+           "http://35.203.36.97:8002/catalog"]
 
 app.add_middleware(
     CORSMiddleware,
