@@ -14,20 +14,6 @@ load_dotenv(dotenv_path='./app/config/.env')
 
 app = FastAPI()
 
-
-"""
-origins = ["*"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-"""
-
 # Custom middleware example
 class CustomMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -36,7 +22,7 @@ class CustomMiddleware(BaseHTTPMiddleware):
         print("Custom middleware: After request processing")
         return response
 
-app.add_middleware(CustomMiddleware)
+#app.add_middleware(CustomMiddleware)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, "views", "static")
@@ -61,12 +47,7 @@ def shutdown_db_client():
     close_db()
     print("MongoDB connection closed!")
 
-
 app.include_router(auth_router, prefix="/auth")
-
-@app.get("/")
-async def home(request: Request):
-    return RedirectResponse(url="/auth", status_code=status.HTTP_200_OK)
 
 @app.get("/auth")
 async def root(request: Request):
