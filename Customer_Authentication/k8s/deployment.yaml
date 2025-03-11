@@ -14,9 +14,6 @@ spec:
     spec:
       containers:
       - name: customer-authentication
-        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/customer_authentication:v4
+        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/customer_auth:v1
         ports:
         - containerPort: 8000
-        env:
-          - name: CATALOG_SERVICE_URL
-            value: "http://catalog:8000/catalog"
