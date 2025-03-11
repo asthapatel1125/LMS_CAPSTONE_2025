@@ -1,59 +1,164 @@
-document.addEventListener("DOMContentLoaded", function () {
-    loadHolds();
-    loadCheckedOutBooks();
-    loadWishlist();
-});
-
 // Holds Data
-function loadHolds() {
-    const holdsData = [
-        { title: "The Great Gatsby", position: 2 },
-        { title: "1984", position: 5 },
-        { title: "Brave New World", position: 3 }
-    ];
-    const holdsTable = document.getElementById("holdsTable");
-    holdsTable.innerHTML = "";
-    holdsData.forEach((hold) => {
-        let row = `<tr class="book-row"><td>${hold.title}</td><td class="queue-position">${hold.position}</td></tr>`;
-        holdsTable.innerHTML += row;
-    });
+let holdsData = [];
+
+async function loadHolds() {
+    try {
+        const response = await fetch('/mylib/pending-holds', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',},
+            body: JSON.stringify({}) 
+        });
+        if (!response.ok) {
+            alert("Failed to fetch hold requests");
+            return;
+        }
+
+        const holdsData = await response.json();
+        const holdsTable = document.getElementById("holdsTable");
+        holdsTable.innerHTML = ""; // Reset the table
+
+        holdsData.forEach((hold) => {
+            const reservationDate = new Date(hold.reservationDate);
+            const formattedDate = reservationDate.toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+            let row = `<tr class="book-row"><td>${hold.title}</td><td class="queue-position">${hold.queue}</td><td>${formattedDate}</td></tr>`;
+            holdsTable.innerHTML += row;
+        });
+    } catch (error) {
+        console.error("Error loading hold requests:", error);
+    }
 }
 
 // Checked Out Books Data
-let checkedOutData = [
-    { title: "To Kill a Mockingbird", daysLeft: 10 },
-    { title: "The Catcher in the Rye", daysLeft: 3 },
-    { title: "Moby Dick", daysLeft: 7 }
-];
+let checkedOutData = [];
 
-function loadCheckedOutBooks() {
-    const checkedOutTable = document.getElementById("checkedOutTable");
-    checkedOutTable.innerHTML = "";
-    checkedOutData.forEach((book) => {
-        let row = `<tr class="book-row"><td>${book.title}</td><td>${book.daysLeft} days</td></tr>`;
-        checkedOutTable.innerHTML += row;
-    });
+async function loadCheckedOutBooks() {
+    try {
+        const response = await fetch('/mylib/completed-holds', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',},
+            body: JSON.stringify({})
+        });
+        if (!response.ok) {
+            alert("Failed to fetch checked out books");
+            return;
+        }
+
+        checkedOutData = await response.json();
+        const checkedOutTable = document.getElementById("checkedOutTable");
+        checkedOutTable.innerHTML = ""; //reset the table
+
+        checkedOutData.forEach((book) => {
+            const expirationDate = new Date(book.expirationDate);
+            const formattedDate = expirationDate.toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+            let row = `<tr class="book-row"><td>${book.title}</td><td>${book.daysLeft} days</td><td>${formattedDate}</td></tr>`;
+            checkedOutTable.innerHTML += row;
+        });
+    } catch (error) {
+        console.error("Error loading checked out books:", error);
+    }
 }
 
-// Wishlist Data
-function loadWishlist() {
-    const wishlistData = ["Moby Dick", "Pride and Prejudice", "War and Peace"];
-    const wishlist = document.getElementById("wishlist");
-    wishlist.innerHTML = "";
-    wishlistData.forEach((book) => {
-        let listItem = `<li class="list-group-item wishlist-item">${book}</li>`;
-        wishlist.innerHTML += listItem;
-    });
+let selectedWishlistItems = new Set();
+let wishlistData = [];
+
+// Wishlist
+async function loadWishlist() {
+    try {
+        // Send a POST request to fetch the wishlist from the FastAPI backend
+        const response = await fetch('/mylib/wishlist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', },
+        });
+
+        if (!response.ok) {
+            alert("Failed to load wishlist");
+            return;
+        }
+
+        wishlistData = await response.json(); 
+        const wishlist = document.getElementById("wishlist");
+        wishlist.innerHTML = "";
+
+        if (wishlistData.length === 0) {
+            wishlist.innerHTML = `
+                 <p class="empty-wishlist-message">
+                    <span>📚</span> Your wishlist is empty! Add some books to get started. <span>✨</span>
+                </p>
+            `;
+        } else {
+            // Iterate over the wishlist items and add them to the list
+            wishlistData.forEach((book) => {
+            let listItem = document.createElement("li");
+            listItem.classList.add("list-group-item", "wishlist-item");
+            listItem.innerHTML = `<b>${book.title}</b>&nbsp;&nbsp;|&nbsp;&nbsp;<i>${book.isbn}</i>`;
+
+            // Toggle selection on click
+            listItem.addEventListener("click", function () {
+                if (selectedWishlistItems.has(book.isbn)) {
+                    selectedWishlistItems.delete(book.isbn);
+                    listItem.classList.remove("bg-light", "selected");
+                } else {
+                    selectedWishlistItems.add(book.isbn);
+                    listItem.classList.add("bg-light", "selected");
+                }
+            });
+
+            wishlist.appendChild(listItem);
+        });
+        }
+    } catch (error) {
+        console.error("Error loading wishlist:", error);
+    }
 }
+
 
 // Add to Wishlist
 function addToWishlist() {
-    const newBook = prompt("Enter book title to add to wishlist:");
-    if (newBook) {
-        const wishlist = document.getElementById("wishlist");
-        let listItem = `<li class="list-group-item wishlist-item">${newBook}</li>`;
-        wishlist.innerHTML += listItem;
+    window.location = '/mylib/search';
+}
+
+// Remove from Wishlist
+async function removeFromWishlist() {
+    if (selectedWishlistItems.size === 0) {
+        alert("No items selected to remove.");
+        return;
     }
+
+    const items = encodeURIComponent(Array.from(selectedWishlistItems).join(","));
+    await fetch(`/mylib/wishlist/remove/${items}`, {
+        method: 'GET',
+        credentials: 'same-origin',
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        window.location = "/mylib/dashboard";
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was an error removing books from your wishlist.');
+    });
+}
+
+// Clear Wishlist
+function clearWishlist() {
+    fetch('/mylib/wishlist/clear', {
+        method: 'GET',
+        credentials: 'same-origin',
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        window.location = "/mylib/dashboard";
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was an error clearing the wishlist.');
+    });
 }
 
 // Filter Books by Name
@@ -67,8 +172,33 @@ function filterBooks() {
     });
 }
 
-// Sort Checked Out Books by Due Date
+let asc = true;
+
 function sortByDueDate() {
-    checkedOutData.sort((a, b) => a.daysLeft - b.daysLeft);
-    loadCheckedOutBooks();
+    asc = !asc;
+    checkedOutData.sort((a, b) => {
+        return asc ? a.daysLeft - b.daysLeft : b.daysLeft - a.daysLeft;
+    });
+    const sortButton = document.querySelector("button.btn.btn-dark");
+    sortButton.textContent = asc ? "Sort by Due Date 🔼" : "Sort by Due Date 🔽";
+    
+    // Update table
+    const checkedOutTable = document.getElementById("checkedOutTable");
+    checkedOutTable.innerHTML = ""; // Clear existing rows
+
+    checkedOutData.forEach((book) => {
+        const expirationDate = new Date(book.expirationDate);
+        const formattedDate = expirationDate.toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        let row = `<tr class="book-row"><td>${book.title}</td><td>${book.daysLeft} days</td><td>${formattedDate}</td></tr>`;
+        checkedOutTable.innerHTML += row;
+    });
 }
+
+window.onload = function() {
+    loadHolds();
+    loadCheckedOutBooks();
+    loadWishlist();
+};

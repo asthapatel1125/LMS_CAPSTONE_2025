@@ -23,8 +23,55 @@ async def login_page():
 
 @router.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_page(request: Request):
-    return templates.TemplateResponse("myLibrary.html", {"request": request})
+    name = request.cookies.get('user_name')
+    return templates.TemplateResponse("myLibrary.html", {"request": request, "name": name})
 
 @router.get("/search", response_class=HTMLResponse)
 async def search_page():
     return RedirectResponse(url=USER_SEARCH_PAGE, status_code=status.HTTP_303_SEE_OTHER)
+
+@router.post("/completed-holds")
+async def completed_holds(request: Request):
+    email = get_user_email_from_token(request.cookies.get("login_token"))
+    book_holds = get_completed_reservations(email)
+    
+    for hold in book_holds:
+        temp_title = get_book_by_isbn(hold["isbn"])
+        hold["title"] = temp_title
+    
+    return book_holds   # {ISBN, Days left, due Date, book title}
+
+@router.post("/pending-holds")
+async def pending_holds(request: Request):
+    email = get_user_email_from_token(request.cookies.get("login_token"))
+    book_holds = get_pending_reservations(email)
+    
+    for hold in book_holds:
+        temp_title = get_book_by_isbn(hold["isbn"])
+        hold["title"] = temp_title
+    
+    return book_holds   # {ISBN, Queue, Hold Date, book title}
+
+@router.post("/wishlist")
+async def get_wishlist(request: Request):
+    email = get_user_email_from_token(request.cookies.get("login_token"))
+    wishlist = get_wishlist_by_email(email)
+    for dict in wishlist:
+        temp_title = get_book_by_isbn(dict["isbn"])
+        dict["title"] = temp_title
+    return wishlist
+
+@router.get("/wishlist/clear")
+async def reset_wishlist(request: Request):
+    email = get_user_email_from_token(request.cookies.get("login_token"))
+    return clear_wishlist(email)
+
+@router.get("/wishlist/remove/{items}")
+async def wishlist_remove_items(request: Request, items: str):
+    email = get_user_email_from_token(request.cookies.get("login_token"))
+    items_list = items.split(",")
+    for i in items_list:
+        msg = delete_item_from_wishlist(email, i)
+        if msg == "Error":
+            return {"message": "Error deleting books from your wishlist"}
+    return {"message": "Successfully deleted books from your wishlist"} 

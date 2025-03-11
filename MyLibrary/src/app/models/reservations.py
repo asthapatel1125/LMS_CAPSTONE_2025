@@ -34,3 +34,37 @@ class Reservations(BaseModel):
     class Config:
         json_encoders = {ObjectId: str, datetime: lambda v: v.isoformat()}
 
+@app.get("/reservations/completed", response_model=List[Reservations])
+def get_completed_reservations(email: str):
+    current_date = datetime.utcnow()
+
+    completed_reservations = db["reservations"].find({"user_email": email, "status": "complete"})
+    
+    # {ISBN, Days left, Due Date}
+    reservations_data = []
+    for r in completed_reservations:
+        expiration_date = r["expiration_date"]
+        days_left = (expiration_date - current_date).days
+        reservations_data.append({"isbn": r["isbn"], "daysLeft": days_left, "expirationDate": r["expiration_date"].isoformat()})
+    
+    return reservations_data
+
+@app.get("/reservations/pending", response_model=List[Reservations])
+def get_pending_reservations(email: str):
+
+    pending_reservations = db["reservations"].find({"user_email": email, "status": "pending"})
+    
+    # {ISBN, Queue position, Hold Date}
+    reservations_data = []
+    for r in pending_reservations:        
+        # Figure out the queue position
+        existing_holds = db["reservations"].find({"isbn": r["isbn"], "status": {'$in': ['pending', 'complete']}})
+        queue = 0
+        for h in existing_holds:
+            if r["book_id"] == h["book_id"]:
+                break
+            queue += 1
+        
+        reservations_data.append({"isbn": r["isbn"], "queue": queue, "reservationDate": r["reservation_date"].isoformat()})
+    
+    return reservations_data

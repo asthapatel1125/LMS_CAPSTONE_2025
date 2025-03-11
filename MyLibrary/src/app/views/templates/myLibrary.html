@@ -27,14 +27,18 @@
 
     <main class="container my-auto d-flex justify-content-center">
         <div class="container library-container">
-            <h2>My Library 📚</h2>
+            <h2>{{name}}'s Library 📚</h2>
 
             <!-- Holds Section -->
             <div class="book-list mt-4">
                 <h4>Hold Requests</h4>
                 <table class="table table-bordered">
                     <thead>
-                        <tr><th>Title</th><th>Queue Position</th></tr>
+                        <tr>
+                            <th class="col-5">Title</th>
+                            <th class="col-3">Queue</th>
+                            <th class="col-4">Hold Start Date</th>
+                        </tr>
                     </thead>
                     <tbody id="holdsTable"></tbody>
                 </table>
@@ -43,7 +47,7 @@
             <!-- Search & Sort -->
             <div class="d-flex justify-content-between mt-3">
                 <input type="text" id="bookFilter" class="form-control w-50" placeholder="Search books..." onkeyup="filterBooks()">
-                <button class="btn btn-dark" onclick="sortByDueDate()">Sort by Due Date</button>
+                <button class="btn btn-dark" onclick="sortByDueDate()">Sort by Due Date 🔼</button>
             </div>
 
             <!-- Checked Out Books -->
@@ -51,7 +55,11 @@
                 <h4>Checked Out Books</h4>
                 <table class="table table-bordered">
                     <thead>
-                        <tr><th>Title</th><th>Days Left</th></tr>
+                        <tr>
+                            <th class="col-5">Title</th>
+                            <th class="col-3">Days Left</th>
+                            <th class="col-4">Expiration Date</th>
+                        </tr>
                     </thead>
                     <tbody id="checkedOutTable"></tbody>
                 </table>
@@ -59,9 +67,23 @@
 
             <!-- Wishlist -->
             <div class="wishlist-container mt-5">
-                <h4 class="wishlist-heading">Wishlist</h4>
-                <ul id="wishlist" class="list-group wishlist-list"></ul>
-                <button class="btn add-wishlist-btn mt-3" onclick="addToWishlist()">Add to Wishlist</button>
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light text-gray">
+                        <h4 class="wishlist-heading mb-0">📌 Wishlist</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul id="wishlist" class="list-group wishlist-list text-center">
+                            <!-- Wishlist items will be dynamically added here -->
+                        </ul>
+                    </div>
+                    <div class="card-footer text-center">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-success flex-fill" onclick="addToWishlist()">➕ Add to Wishlist</button>
+                            <button class="btn btn-outline-warning flex-fill" onclick="removeFromWishlist()">➖ Remove from Wishlist</button>
+                            <button class="btn btn-outline-danger flex-fill" onclick="clearWishlist()">🔄 Clear Wishlist</button>
+                        </div>
+                    </div>                    
+                </div>
             </div>
         </div>
     </main>

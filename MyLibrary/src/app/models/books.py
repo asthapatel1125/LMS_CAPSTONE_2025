@@ -20,3 +20,7 @@ class Book(BaseModel):
     publisher: str
     status: str
 
+@app.get("/books/titles", response_model=List[str])
+def get_book_by_isbn(isbn: str):
+    book = db["books"].find_one({"isbn": isbn})
+    return book["title"]
