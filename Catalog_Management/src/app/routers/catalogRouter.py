@@ -6,7 +6,7 @@ from controllers.inventory import *
 from datetime import datetime
 import os
 
-MANAGER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/manager"
+MANAGER_LOGIN_PAGE = "http://34.152.10.54/auth/manager"
 MANAGE_HOLDS_ADMIN = "http://127.0.0.1:8004/reservations/holds-admin"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
