@@ -62,6 +62,10 @@ def shutdown_db_client():
 
 app.include_router(catalog_router, prefix="/catalog")
 
+app.get("/")
+async def root_home():
+    return RedirectResponse(url="/catalog", status_code=status.HTTP_200_OK)
+
 @app.get("/catalog")
 async def root(request: Request):
     login_token = request.cookies.get("manager_login_token")

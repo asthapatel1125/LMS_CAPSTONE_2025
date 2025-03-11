@@ -16,4 +16,4 @@ spec:
       - name: catalog
         image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/catalog:v1
         ports:
-        - containerPort: 8000
+        - containerPort: 8002
