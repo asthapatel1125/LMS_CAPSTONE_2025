@@ -64,6 +64,10 @@ def shutdown_db_client():
 
 app.include_router(auth_router, prefix="/auth")
 
+@app.get("/")
+async def home(request: Request):
+    return RedirectResponse(url="/auth", status_code=status.HTTP_200_OK)
+
 @app.get("/auth")
 async def root(request: Request):
     login_token = request.cookies.get("login_token")

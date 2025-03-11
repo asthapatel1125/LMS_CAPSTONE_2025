@@ -8,5 +8,5 @@ spec:
     app: customer-authentication
   ports:
     - protocol: TCP
-      port: 8000  # the external user is using this port
-      targetPort: 8000  # the container's port where the app listens (must be different)
+      port: 8001  # the external user is using this port
+      targetPort: 8001  # the container's port where the app listens (must be different)
