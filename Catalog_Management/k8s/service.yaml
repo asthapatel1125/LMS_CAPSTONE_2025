@@ -7,6 +7,6 @@ spec:
   selector:
     app: catalog
   ports:
-    - protocol: TCP
+    - protocol: HTTPS
       port: 8002
       targetPort: 8002
