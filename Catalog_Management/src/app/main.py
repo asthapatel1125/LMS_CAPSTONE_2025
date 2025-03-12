@@ -15,7 +15,7 @@ load_dotenv(dotenv_path='./app/config/.env')
 app = FastAPI()
 
 
-origins = ["http://35.203.36.97:8002/catalog"]
+origins = ["http://34.152.10.54:8001/auth/manager"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -59,12 +59,7 @@ def shutdown_db_client():
     close_db()
     print("MongoDB connection closed!")
 
-
 app.include_router(catalog_router, prefix="/catalog")
-
-app.get("/")
-async def root_home():
-    return RedirectResponse(url="/catalog", status_code=status.HTTP_200_OK)
 
 @app.get("/catalog")
 async def root(request: Request):
