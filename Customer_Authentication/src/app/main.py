@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from routers.auth_router import router as auth_router
-import uvicorn, os
+import uvicorn, os, ssl
 from fastapi import Request, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -14,8 +14,10 @@ load_dotenv(dotenv_path='./app/config/.env')
 
 app = FastAPI()
 
-origins = ["http://127.0.0.1:8001/auth",
-           "http://35.203.36.97:8002/catalog/manager-login"]
+ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+ssl_context.load_cert_chain(certfile="/certs/cert.pem", keyfile="/certs/key.pem")
+
+origins = ["http://35.203.36.97:8002/catalog/manager-login"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -76,6 +78,7 @@ if __name__ == "__main__":
         app="main:app",
         host="0.0.0.0",
         port=8001,  # Use a different port
+        ssl_context=ssl_context,
         reload=True if os.environ.get("ENVIRONMENT") == "dev" else False,
         workers=1,
         proxy_headers=True
