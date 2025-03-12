@@ -17,7 +17,7 @@ app = FastAPI()
 ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 ssl_context.load_cert_chain(certfile="/certs/cert.pem", keyfile="/certs/key.pem")
 
-origins = ["http://35.203.36.97:8002/catalog/manager-login"]
+origins = ["http://34.152.10.54:8002/catalog/manager-login"]
 
 app.add_middleware(
     CORSMiddleware,
