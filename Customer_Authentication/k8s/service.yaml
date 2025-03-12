@@ -7,6 +7,6 @@ spec:
   selector:
     app: customer-authentication
   ports:
-    - protocol: TCP
+    - protocol: HTTPS
       port: 8001  # the external user is using this port
       targetPort: 8001  # the container's port where the app listens (must be different)
