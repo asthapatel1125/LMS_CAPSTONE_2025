@@ -7,8 +7,8 @@ from controllers.email_verif_code import *
 from datetime import datetime, timedelta
 import os
 
-CATALOG_SERVICE_URL = "https://35.234.252.105.com/catalog"
-USER_HOME_PAGE = "https://35.234.252.105.com/search/home"
+CATALOG_SERVICE_URL = "https://35.234.252.105/catalog"
+USER_HOME_PAGE = "https://35.234.252.105/search/home"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
