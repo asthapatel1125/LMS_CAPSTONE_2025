@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: reservations
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: reservations
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8000
+      port: 8004
+      targetPort: 8004
