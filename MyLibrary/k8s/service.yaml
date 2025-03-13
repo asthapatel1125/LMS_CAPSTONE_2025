@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: mylibrary
 spec:
-  type: LoadBalancer
+  type: clusterIP
   selector:
     app: mylibrary
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8000
+      port: 8005
+      targetPort: 8005

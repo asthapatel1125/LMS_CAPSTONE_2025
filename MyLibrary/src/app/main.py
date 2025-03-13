@@ -40,7 +40,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, "views", "static")
 templates_dir = os.path.join(base_dir, "views", "templates")
 
-app.mount("/static", StaticFiles(directory=static_dir), name="static")
+app.mount("/mylibary/static", StaticFiles(directory=static_dir), name="static")
 
 templates = Jinja2Templates(directory=templates_dir)
 
