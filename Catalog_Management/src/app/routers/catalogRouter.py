@@ -6,8 +6,8 @@ from controllers.inventory import *
 from datetime import datetime
 import os
 
-MANAGER_LOGIN_PAGE = "https://lmscapstone.com/auth/manager"
-MANAGE_HOLDS_ADMIN = "https://lmscapstone.com/reservations/holds-admin"
+MANAGER_LOGIN_PAGE = "https://35.234.252.105/auth/manager"
+MANAGE_HOLDS_ADMIN = "https://35.234.252.105/reservations/holds-admin"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
