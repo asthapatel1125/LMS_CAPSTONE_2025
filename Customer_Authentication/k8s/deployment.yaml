@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customer-authentication
+  name: customer-auth
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: customer-authentication
+      app: customer-auth
   template:
     metadata:
       labels:
-        app: customer-authentication
+        app: customer-auth
     spec:
       containers:
-      - name: customer-authentication
+      - name: customer-auth
         image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/customer_auth:v1
         ports:
         - containerPort: 8001

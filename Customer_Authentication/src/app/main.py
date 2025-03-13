@@ -14,7 +14,7 @@ load_dotenv(dotenv_path='./app/config/.env')
 
 app = FastAPI()
 
-origins = ["http://34.152.10.54:8002/catalog/manager-login"]
+origins = []
 
 app.add_middleware(
     CORSMiddleware,

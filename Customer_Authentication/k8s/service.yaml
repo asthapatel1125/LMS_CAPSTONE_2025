@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: customer-auth
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: customer-auth
   ports:
