@@ -7,8 +7,8 @@ from controllers.email_verif_code import *
 from datetime import datetime, timedelta
 import os
 
-CATALOG_SERVICE_URL = "https://lmscapstone.com/catalog"
-USER_HOME_PAGE = "http://lmscapstone.com/search/home"
+CATALOG_SERVICE_URL = "https://35.234.252.105.com/catalog"
+USER_HOME_PAGE = "https://35.234.252.105.com/search/home"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
@@ -35,11 +35,11 @@ def login(email: str = Form(), pword: str = Form()):
         expiration_time = datetime.utcnow() + timedelta(seconds=TOKEN_EXPIRATION_TIME)
         expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
         response = RedirectResponse(url="/auth/home", status_code=status.HTTP_303_SEE_OTHER)
-        response.set_cookie(key="login_token", value=jwt_token, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME, domain=".lmscapstone.com")
+        response.set_cookie(key="login_token", value=jwt_token, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME)
         
         user = get_user(email)
         user_name = user.firstName if user else "Guest"
-        response.set_cookie(key="user_name", value=user_name, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME, domain=".lmscapstone.com")
+        response.set_cookie(key="user_name", value=user_name, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME)
         return response
     else:
         return JSONResponse(
@@ -91,8 +91,8 @@ async def forgot_password(response: Response, request: Request, email: str = For
         code_token = generate_code_token(verif_code, expiration_time) 
         
         response = RedirectResponse(url="/auth/verification-code", status_code=status.HTTP_303_SEE_OTHER)
-        response.set_cookie(key="verif_code", value=code_token, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME, domain=".lmscapstone.com")
-        response.set_cookie(key="verif_email", value=email, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME, domain=".lmscapstone.com")
+        response.set_cookie(key="verif_code", value=code_token, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME)
+        response.set_cookie(key="verif_email", value=email, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME)
         
         send_verif_email(email, verif_code)
         return response
@@ -155,11 +155,11 @@ def manager_login(manager_id: str = Form(), password: str = Form()):
         expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
         # to be changed
         response = RedirectResponse(url=CATALOG_SERVICE_URL, status_code=status.HTTP_303_SEE_OTHER)
-        response.set_cookie(key="manager_login_token", value=jwt_token, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME, domain=".lmscapstone.com")
+        response.set_cookie(key="manager_login_token", value=jwt_token, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME)
 
         manager = get_manager(manager_id)
         manager_name = manager.firstName if manager else "Manager"
-        response.set_cookie(key="manager_name", value=manager_name, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME, domain=".lmscapstone.com")
+        response.set_cookie(key="manager_name", value=manager_name, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME)
 
         return response
     else:
