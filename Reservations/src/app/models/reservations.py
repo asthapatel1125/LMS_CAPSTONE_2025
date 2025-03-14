@@ -111,7 +111,7 @@ def update_status_invalid(isbn: str, book_id: str):
     if hold.get("status") == "complete":
         if expiration_date.date() >= today_date.date():
             return False
-    if reservation_date.date() >= today_date.date():
+    if reservation_date.date() >= today_date.date() or expiration_date.date() >= today_date.date():
         new_status = "pending"
     else:
         new_status = "no longer valid"

@@ -5,8 +5,8 @@ from controllers.token import *
 from controllers.holds import *
 import os
 
-MANAGER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/manager"
-ADMIN_DASHBOARD_PAGE = "http://127.0.0.1:8002/catalog/admin_dashboard"
+MANAGER_LOGIN_PAGE = "https://35.234.252.105/auth/manager"
+ADMIN_DASHBOARD_PAGE = "https://35.234.252.105/catalog/admin_dashboard"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
