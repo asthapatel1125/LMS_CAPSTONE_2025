@@ -44,8 +44,15 @@ async function handleLoginFormSubmit(event) {
     setTimeout(() => {
       formErrorMessage.style.display = 'none'; // Hide it after 1.5s
     }, 1500);
+  } else {
+    const successData = await response.json();
+    console.log(successData);
+    if (successData.url) {
+      window.location.href = successData.url;
+    } else {
+      window.location.href = "/auth/login";
+    }
   }
-
 }
 
 // Add an event listener for the form submission

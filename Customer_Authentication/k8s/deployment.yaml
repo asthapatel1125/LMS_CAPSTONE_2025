@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: customer-auth
-        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/customer_auth:v6
+        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/customer_auth:v7
         ports:
         - containerPort: 8001

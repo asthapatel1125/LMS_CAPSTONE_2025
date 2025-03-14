@@ -155,7 +155,8 @@ def manager_login(manager_id: str = Form(), password: str = Form()):
         expiration_time = datetime.utcnow() + timedelta(seconds=TOKEN_EXPIRATION_TIME)
         expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
         # to be changed
-        response = RedirectResponse(url=CATALOG_SERVICE_URL, status_code=status.HTTP_303_SEE_OTHER)
+        response = JSONResponse(status_code=status.HTTP_200_OK, content={"url": CATALOG_SERVICE_URL})
+        #response = RedirectResponse(url=CATALOG_SERVICE_URL, status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="manager_login_token", value=jwt_token, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME)
 
         manager = get_manager(manager_id)
