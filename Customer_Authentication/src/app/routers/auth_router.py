@@ -6,6 +6,7 @@ from controllers.token import *
 from controllers.email_verif_code import *
 from datetime import datetime, timedelta
 import os
+from urllib.parse import urlencode
 
 CATALOG_SERVICE_URL = "https://35.234.252.105/catalog"
 USER_HOME_PAGE = "https://35.234.252.105/search/home"
@@ -165,7 +166,7 @@ def manager_login(manager_id: str = Form(), password: str = Form()):
     else:
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"detail": "Invalid manager ID or password"}
+            content={"error": "Invalid manager ID or password"}
         )
 
 @router.get("/admin_dashboard", response_class = HTMLResponse)

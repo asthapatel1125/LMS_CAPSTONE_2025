@@ -1,33 +1,52 @@
 // Define a function to handle the form submission
 async function handleLoginFormSubmit(event) {
-    // Prevent the form from submitting normally (page reload)
-    event.preventDefault();
+  // Prevent the form from submitting normally (page reload)
+  event.preventDefault();
+
+  // Get the values of the userId and password fields
+  const userId = document.getElementById('user-id').value;
+  const password = document.getElementById('password').value;
+
+  // Get the error message container
+  const formErrorMessage = document.getElementById('errorMessage');
   
-    // Get the values of the email and password fields
-    const userId = document.getElementById('user-id').value;
-    const password = document.getElementById('password').value;
-    const itemData = {userId: userId, password: password};
+  // Clear any previous error message
+  formErrorMessage.style.display = 'none';
+  formErrorMessage.textContent = '';
 
-    // Get the error message container
-    const errorMessage = document.getElementById('errorMessage');
-    
-    // Clear any previous error message
-    errorMessage.style.display = 'none';
-    errorMessage.textContent = '';
-
-    // Check if either email or password is empty
-    if (userId === ''){
-      errorMessage.textContent = 'Enter your admin id';
-      errorMessage.style.display = 'block'; // Show error message
-    }
-    else if (password === ''){
-      errorMessage.textContent = 'Enter your password';
-      errorMessage.style.display = 'block'; // Show error message
-    }
-    else {
-      window.location.href = "/auth/manager";
-    }
+  // Check if either userId or password is empty
+  if (userId === '') {
+    formErrorMessage.textContent = 'Enter your admin id';
+    formErrorMessage.style.display = 'block'; // Show error message
+    setTimeout(() => {
+      formErrorMessage.style.display = 'none';
+    }, 1500);
+    return; 
   }
-  // Add an event listener for the form submission
-  document.getElementById('loginForm').addEventListener('submit', handleLoginFormSubmit);
-  
+  if (password === '') {
+    formErrorMessage.textContent = 'Enter your password';
+    formErrorMessage.style.display = 'block'; // Show error message
+    setTimeout(() => {
+      formErrorMessage.style.display = 'none';
+    }, 1500);
+    return;
+  }
+  const response = await fetch('/auth/manager', {
+    method: 'POST',
+    body: new FormData(document.getElementById('loginForm')),
+  });
+
+  if (!response.ok) {
+    // If the login failed, get the error message from the JSON response
+    const errorData = await response.json();
+    formErrorMessage.textContent = errorData.error;  // Display the error message
+    formErrorMessage.style.display = 'block';  // Show error message
+    setTimeout(() => {
+      formErrorMessage.style.display = 'none'; // Hide it after 1.5s
+    }, 1500);
+  }
+
+}
+
+// Add an event listener for the form submission
+document.getElementById('loginForm').addEventListener('submit', handleLoginFormSubmit);
