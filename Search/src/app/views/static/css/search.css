@@ -36,7 +36,7 @@
 
 /* Styling for the search header */
 .searchHeader {
-    background-image: linear-gradient(rgba(58, 75, 77, 0.675), rgba(76, 147, 153, 0.379)), url('/static/images/background_search.png');
+    background-image: linear-gradient(rgba(58, 75, 77, 0.675), rgba(76, 147, 153, 0.379)), url('/search/static/images/background_search.png');
     background-size: cover;
     background-position: center;
     height: 400px;
@@ -195,6 +195,19 @@
 #bookList .list-group-item:hover {
     background-color: #e3e3e3;
 }
+
+.my-library-link {
+    background-color: #e3e3e3;
+    border-radius: 15px;
+    padding: 6px 12px;
+    text-decoration: none;
+    color: #162d3a;
+}
+
+.my-library-link:hover {
+    background-color: #c9c9c9;
+}
+
 /* Ensure the search input and button are responsive */
 @media (max-width: 768px) {
     .searchHeader .form-control {

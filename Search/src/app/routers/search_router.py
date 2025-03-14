@@ -10,8 +10,9 @@ from datetime import datetime, timedelta
 import os
 from pydantic import BaseModel, HttpUrl
 
-USER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/login"
-USER_LOGOUT_PAGE = "http://127.0.0.1:8001/auth/logout"
+USER_LOGIN_PAGE = "https://35.234.252.105/auth/login"
+USER_LOGOUT_PAGE = "https://35.234.252.105/auth/logout"
+MYLIBRARY_PAGE = "https://35.234.252.105/mylib/dashboard"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
@@ -31,6 +32,10 @@ def item_info_page(request: Request):
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return RedirectResponse(url=USER_LOGIN_PAGE, status_code=status.HTTP_303_SEE_OTHER)
+
+@router.get("/mylibrary", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return RedirectResponse(url=MYLIBRARY_PAGE, status_code=status.HTTP_303_SEE_OTHER)
 
 @router.get("/logout", response_class=HTMLResponse)
 async def logout_page(request: Request):
