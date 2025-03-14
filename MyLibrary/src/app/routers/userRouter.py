@@ -5,8 +5,8 @@ from controllers.token import *
 from controllers.mylib import *
 import os
 
-USER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/login"
-USER_SEARCH_PAGE = "http://127.0.0.1:8003/search/home"
+USER_LOGIN_PAGE = "https://35.234.252.105/auth/login"
+USER_SEARCH_PAGE = "https://35.234.252.105/search/home"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
