@@ -5,3 +5,7 @@ function editInventory(){
 function manageHolds(){
     location.href = "/catalog/manage-holds";
 }
+
+function viewInventory(){
+    location.href = "/catalog/view-inventory";
+}

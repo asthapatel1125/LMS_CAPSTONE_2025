@@ -45,6 +45,11 @@ def manager_login_page(response: Response):
 def manage_holds_page(response: Response):
     return RedirectResponse(url=MANAGE_HOLDS_ADMIN, status_code=status.HTTP_303_SEE_OTHER)
 
+# View Inventory page button
+@router.get("/view-inventory", response_class=HTMLResponse)
+def view_inventory_page(request: Request):
+    return templates.TemplateResponse("view_inventory.html", {"request": request})
+
 # Edit inventory page buttons (x3)
 
 @router.get("/add-item", response_class=HTMLResponse)
