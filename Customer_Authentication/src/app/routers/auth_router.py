@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 
 CATALOG_SERVICE_URL = "https://35.234.252.105/catalog"
 USER_HOME_PAGE = "https://35.234.252.105/search/home"
+MYLIBRARY_PAGE = "https://35.234.252.105/mylib"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
@@ -173,3 +174,7 @@ def manager_login(manager_id: str = Form(), password: str = Form()):
 @router.get("/admin_dashboard", response_class = HTMLResponse)
 async def get_admin_dashboard(request: Request):
     return templates.TemplateResponse("admin_dashboard.html", {"request": request})
+
+@router.get("/mylibrary", response_class = HTMLResponse)
+async def get_mylib_page():
+    return RedirectResponse(MYLIBRARY_PAGE, status_code=status.HTTP_303_SEE_OTHER)
