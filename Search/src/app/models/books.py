@@ -1,5 +1,7 @@
+from datetime import datetime
+from bson import ObjectId
 from fastapi import FastAPI, APIRouter
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, field_validator
 from .database.db import *
 from typing import List, Literal
 from fastapi.responses import JSONResponse
@@ -9,19 +11,23 @@ router = APIRouter()
 db = get_db()
 
 def normalize_bson(book: dict) -> dict:
-    
     if "_id" in book:
         del book["_id"]
-    """Normalize MongoDB BSON types to standard Python types."""
+
     fields = ["pageNumber", "numCopies", "numOfMins"]
     for field in fields:
         if isinstance(book.get(field), dict) and "$numberInt" in book[field]:
             book[field] = int(book[field]["$numberInt"])
-    
+        else:
+            book[field] = int(book.get(field, 0))  # Default to 0 if missing
+
     if isinstance(book.get("kidFriendly"), dict) and "$numberInt" in book["kidFriendly"]:
         book["kidFriendly"] = bool(book["kidFriendly"]["$numberInt"])
-    
+    else:
+        book["kidFriendly"] = book.get("kidFriendly", False)  # Default to False if missing
+
     return book
+
 
 class Book(BaseModel):
     title: str
@@ -42,7 +48,31 @@ class BookImages(BaseModel):
     _id: str
     bookISBN: str
     imageURL: HttpUrl
+class Reservations(BaseModel):
+    reservation_id: str
+    user_email: str
+    book_id: str
+    reservation_date: str
+    expiration_date: str
+    status: str
+    user_id: str
+    isbn: str
+    
+    @field_validator('reservation_id', 'user_id', mode='before')
+    def convert_objectid(cls, v):
+        if isinstance(v, ObjectId):
+            return str(v)
+        return v
 
+    @field_validator('reservation_date', 'expiration_date', mode='before')
+    def convert_datetime(cls, v):
+        if isinstance(v, datetime):
+            return v.isoformat()
+        return v
+
+    class Config:
+        json_encoders = {ObjectId: str, datetime: lambda v: v.isoformat()}
+        
 book_list = [
         Book(
             title="The Great Adventure",
@@ -80,99 +110,74 @@ def list_books():
 # Get a list of books by title
 @app.get("/books/{title}", response_model=List[Book])
 def get_books_by_title(title: str):
-    print(f'title from models: {title}')
-    books_cursor = db["books"].find({"title": {"$regex": title}})
+    # Adding the 'i' flag for case-insensitive matching
+    books_cursor = db["books"].find({"title": {"$regex": title, "$options": "i"}})
     books = [Book(**normalize_bson(book)) for book in books_cursor]
-    print(f'final books object: {books}')
     return books
-
-
-
-# Get a list of books by isbn (Already done above)
 
 
 # Get a list of books by author
 @app.get("/books/{author}", response_model=List[Book])
 def get_books_by_author(author: str):
-    books_cursor = db["books"].find({"author": {"$regex": author}})
+    # Adding the 'i' flag for case-insensitive matching
+    books_cursor = db["books"].find({"author": {"$regex": author, "$options": "i"}})
     books = [Book(**normalize_bson(book)) for book in books_cursor]
-
     return books
 
-
+# Get a list of books with a rating greater than or equal to the given rating
+@app.get("/books/rating/{rating}", response_model=List[Book])
+def get_books_by_rating(rating: float):
+    # Adding the 'i' flag for case-insensitive matching isn't necessary for numeric comparisons
+    books_cursor = db["books"].find({"rating": {"$gte": rating}})
+    books = [Book(**normalize_bson(book)) for book in books_cursor]
+    return books
 
 # Get a list of books by publisher
 @app.get("/books/{publisher}", response_model=List[Book])
 def get_books_by_publisher(publisher: str):
-    books_cursor = db["books"].find({"publisher": {"$regex": publisher}})
+    # Adding the 'i' flag for case-insensitive matching
+    books_cursor = db["books"].find({"publisher": {"$regex": publisher, "$options": "i"}})
     books = [Book(**normalize_bson(book)) for book in books_cursor]
-
     return books
 
 
-
-
-'''Filter Queries (Some can be utilized for search bar queires too)'''
-
-# Get a list of books with ratings higher than or equal to given rating.
-@app.get("/books/{rating}", response_model=List[Book])
-def get_books_by_rating(rating: float):
-    books_cursor = db["books"].find({"rating": {"$regex": rating}})
-    books = [Book(**normalize_bson(book)) for book in books_cursor]
-
-    return books
-
-
-
-'''not finished'''
-# Get Newest books (NOT FINISHED)
-@app.get("/books/{release_date}", response_model=List[Book])
-def get_latest_releases(release_date: str):
-    
-    return book_list
-
-
-# Get Avialable books
-@app.get("/books/{status}", response_model=List[Book])
-def get_books_by_status(status: str):
-    books_cursor = db["books"].find({"status": {"$regex": status}})
-    books = [Book(**normalize_bson(book)) for book in books_cursor]
-
-    return books
-
-
-
-# Get specifically formatted items
-@app.get("/books/{format}", response_model=List[Book])
-def get_books_by_format(format: str):
-    books_cursor = db["books"].find({"format": {"$regex": format}})
-    books = [Book(**normalize_bson(book)) for book in books_cursor]
-
-    return books
-
-
-
-# Get a list of items based on a given genre
+# Get a list of books by genre
 @app.get("/books/{genre}", response_model=List[Book])
 def get_books_by_genre(genre: str):
-    books_cursor = db["books"].find({"genre": {"$regex": genre}})
+    # Adding the 'i' flag for case-insensitive matching
+    books_cursor = db["books"].find({"genre": {"$regex": genre, "$options": "i"}})
     books = [Book(**normalize_bson(book)) for book in books_cursor]
-
     return books
 
 
-# Get a list of items based on the type of audience chosen
+# Get a list of books by status
+@app.get("/books/{status}", response_model=List[Book])
+def get_books_by_status(status: str):
+    # Adding the 'i' flag for case-insensitive matching
+    books_cursor = db["books"].find({"status": {"$regex": status, "$options": "i"}})
+    books = [Book(**normalize_bson(book)) for book in books_cursor]
+    return books
+
+
+# Get a list of books by format
+@app.get("/books/{format}", response_model=List[Book])
+def get_books_by_format(format: str):
+    # Adding the 'i' flag for case-insensitive matching
+    books_cursor = db["books"].find({"format": {"$regex": format, "$options": "i"}})
+    books = [Book(**normalize_bson(book)) for book in books_cursor]
+    return books
+
+
+# Get a list of books by audience (kid-friendly)
 @app.get("/books/{kidFriendly}", response_model=List[Book])
 def get_books_by_audience(kidFriendly: bool):
-    books_cursor = db["books"].find({"kidFriendly": {"$regex": kidFriendly}})
+    # Adding the 'i' flag for case-insensitive matching if the field is a string
+    books_cursor = db["books"].find({"kidFriendly": {"$regex": str(kidFriendly), "$options": "i"}})
     books = [Book(**normalize_bson(book)) for book in books_cursor]
-
     return books
-
 
 
 # Get Book image
-@app.get("/book_images/{_id}", response_model=BookImages)
-def get_book_images(_id: str):
-    
+@app.get("/book_images/{bookISBN}", response_model=BookImages)
+def get_book_images(bookISBN: str):
     return book_list

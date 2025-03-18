@@ -46,7 +46,7 @@ async function fetchNewestBooks() {
 
 // Function to search books dynamically when "Search" input changes
 async function searchBooks() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
+    const query = document.getElementById('searchInput').value;
     
     if (query === "") {
         clearSearchResults();
@@ -87,8 +87,8 @@ async function searchBooks() {
 
 // Handle search button click - Redirect to search result page
 function handleSearchButtonClick() {
-    const query = document.getElementById("searchInput").value.toLowerCase();
-    console.log(query);
+    const query = document.getElementById('searchInput').value;
+    console.log("Search Button Clicked - Query Entered:", query);
     
     if (query) {
         // Set the redirect URL dynamically using setAttribute
@@ -181,7 +181,7 @@ function createCarouselItem(bookChunk, index) {
 }
 
 document.getElementById('searchButton').addEventListener('click', function(event) {
-    const query = document.getElementById('searchInput').value.toLowerCase();
+    const query = document.getElementById('searchInput').value;
     if (!query) {
         event.preventDefault(); // Stop form submission if the query is empty
         return;

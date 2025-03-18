@@ -39,7 +39,5 @@
 
 .card{
     background-color: rgb(225, 230, 232, 0.3);
-    border-radius: 15px;
     border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

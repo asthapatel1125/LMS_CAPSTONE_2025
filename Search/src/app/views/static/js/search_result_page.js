@@ -4,6 +4,17 @@ document.addEventListener("DOMContentLoaded", function() {
     const query = urlParams.get("query") || ""; // Default to empty string if no query is provided
     // Assign the search query to a global variable or store it for later use
     window.searchQuery = query;
+    document.addEventListener("DOMContentLoaded", function() {
+    // Get the search query from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get("query") || ""; // Default to empty string if no query is provided
+    // Assign the search query to a global variable or store it for later use
+    console.log("Search Result Page - Query Entered:", query);
+
+    window.searchQuery = query;
+    // Fetch books based on the query (initial load)
+    fetchBooks(query);
+});
     // Fetch books based on the query (initial load)
     fetchBooks(query);
 });
@@ -56,7 +67,10 @@ function displayBooks(books) {
                     <div class="col-10">
                         <h5 class="card-header">${book.title}</h5>
                         <div class="card-body">
-                          <h6 class="card-title">${book.author}</h6>
+                          <h6 class="card-title">Author: ${book.author}</h6>
+                          <h6 class="card-title">Genre: ${book.genre}</h6>
+                          <h6 class="card-title">Format: ${book.format}</h6>
+                          <h6 class="card-title">Status: ${book.status}</h6>
                           <button type="submit" class="btn btn-custom-size px-5">Place Hold</button>
                         </div>
                     </div> 

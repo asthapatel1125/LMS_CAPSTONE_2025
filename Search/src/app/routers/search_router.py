@@ -12,6 +12,7 @@ from pydantic import BaseModel, HttpUrl
 
 USER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/login"
 USER_LOGOUT_PAGE = "http://127.0.0.1:8001/auth/logout"
+BOOK_INFO_PAGE = "http://127.0.0.1:8006/book_info/_reviews"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
@@ -42,9 +43,10 @@ async def logout_page(request: Request):
 
 @router.get("/searchQuery", response_class=JSONResponse)
 async def search_query_page(request: Request, query: str):
-    print(query)
+    
     # Call the method to retrieve books based on the search query
     results = retrieve_searchQuery_list(query)
+    
     search_results = [{
         "title": book.title,
         "author":book.author,
@@ -71,7 +73,8 @@ async def search_query_page(request: Request, query: str):
 async def get_popular_books():
     
     # Popular books: Ratings highter than or equal to 5 stars
-    results = get_books_by_rating(4.5)
+    results = retrieve_popular_books(5.0)
+    
     popular_books = [{
         "title": book.title,
         "author":book.author,
@@ -94,6 +97,7 @@ async def get_newest_books():
     
     # Newest books: Latest releases 
     results = retrieve_newest_books()
+    
     newest_books = [{
         "title": book.title,
         "author":book.author,
@@ -115,6 +119,7 @@ async def get_newest_books():
 
 @router.get("/search_result_page", response_class=HTMLResponse)
 async def get_search_result_page(request: Request, query: str):
+    
     # Pass the query to the HTML template (if present)
     print(f'search_result_page query value:',query)
     return templates.TemplateResponse("search_result_page.html", {"request": request, "query": query})
@@ -124,9 +129,9 @@ async def get_search_result_page(request: Request, query: str):
 # Define the endpoint to receive filters and return filtered books
 @router.post("/filter_books", response_class=JSONResponse)
 async def filter_books(filters: FilterRequest):
-    print(f'filters query:',filters.searchQuery)
+    
     books = retrieve_searchQuery_list(filters.searchQuery)
-    # books = retrieve_searchQuery_list(filters.searchQuery)
+    
     # Filter the books based on the given filters
     filtered_books = [book for book in books if
                       (not filters.genres or book.genre in filters.genres) and
@@ -188,5 +193,17 @@ async def get_book_info_page(request: Request, isbn: str):
 
 @router.post("/place_hold")
 async def place_hold(request: Request, book: Book):
+    
+    '''
+    generate a random id for reservation_id
+    reservation date
+    expriration date
+    random book id for this table
+    
+    '''
+    return ""
+
+@router.post("/write_review")
+async def write_review(request: Request, review: str):
     
     return ""
