@@ -71,7 +71,7 @@ async def root(request: Request):
             return RedirectResponse(url="/mylib/dashboard", status_code=status.HTTP_303_SEE_OTHER)
         except HTTPException:
             pass
-    return RedirectResponse(url="/mylib/dashboard", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/mylib/login", status_code=status.HTTP_303_SEE_OTHER)
 
 if __name__ == "__main__":
     uvicorn.run(

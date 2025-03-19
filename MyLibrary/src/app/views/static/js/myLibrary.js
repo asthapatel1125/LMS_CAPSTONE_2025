@@ -192,7 +192,11 @@ function sortByDueDate() {
             year: 'numeric', month: 'long', day: 'numeric'
         });
 
-        let row = `<tr class="book-row"><td>${book.title}</td><td>${book.daysLeft} days</td><td>${formattedDate}</td></tr>`;
+        let row = `
+            <button type="submit">
+                <tr class="book-row"><td>${book.title}</td><td>${book.daysLeft} days</td><td>${formattedDate}</td></tr>
+            </button>
+        `;
         checkedOutTable.innerHTML += row;
     });
 }

@@ -26,6 +26,11 @@ async def dashboard_page(request: Request):
     name = request.cookies.get('user_name')
     return templates.TemplateResponse("myLibrary.html", {"request": request, "name": name})
 
+@router.get("/read", response_class=HTMLResponse)
+async def read_book_page(request: Request):
+    return templates.TemplateResponse("read_book.html", {"request": request})
+
+
 @router.get("/search", response_class=HTMLResponse)
 async def search_page():
     return RedirectResponse(url=USER_SEARCH_PAGE, status_code=status.HTTP_303_SEE_OTHER)
