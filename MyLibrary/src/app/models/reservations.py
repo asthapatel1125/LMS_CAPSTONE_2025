@@ -44,9 +44,14 @@ def get_completed_reservations(email: str):
     reservations_data = []
     for r in completed_reservations:
         expiration_date = r["expiration_date"]
+        current_date = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        expiration_date = r["expiration_date"].replace(hour=0, minute=0, second=0, microsecond=0)
+        
         days_left = (expiration_date - current_date).days
-        reservations_data.append({"isbn": r["isbn"], "daysLeft": days_left, "expirationDate": r["expiration_date"].isoformat()})
-    
+        if days_left < 0:
+            db["reservations"].update_one({"isbn": r["isbn"]}, {"$set": {"status": "no longer valid"}})
+        else:
+            reservations_data.append({"isbn": r["isbn"], "daysLeft": days_left, "expirationDate": r["expiration_date"].isoformat()})
     return reservations_data
 
 @app.get("/reservations/pending", response_model=List[Reservations])

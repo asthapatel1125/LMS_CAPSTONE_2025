@@ -1,45 +1,58 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Check if ePub.js is loaded correctly
+    let rendition;
+
     if (typeof ePub === "undefined") {
         console.error("ePub.js is not loaded correctly.");
         return;
     }
 
     const container = document.getElementById("epub-container");
+    const bookElement = document.getElementById("book");
+    const epubUrl = bookElement.getAttribute("data-epub-url");
 
-    // Replace with actual EPUB path
-    const epubPath = "/mylib/static/pdfs/demo.epub";
-    const book = ePub(epubPath);
-    console.log(ePub); // Should print the ePub object if loaded
+    if (epubUrl) {
+        fetchEpub(epubUrl);
+    }
 
+    async function fetchEpub(url) {
+        try {
+            let response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 
-    const rendition = book.renderTo(container, {
-        width: "100%",
-        height: "100%"
-    });
-    console.log(rendition);
-    rendition.display();
+            let blob = await response.blob();
+            console.log("Received EPUB Blob:", blob);
 
-    // When the EPUB is ready, log success
-    book.on("ready", function () {
-        console.log("EPUB loaded successfully");
-    });
+            let epubBlob = new Blob([blob], { type: "application/epub+zip" });
+            let blobUrl = URL.createObjectURL(epubBlob);
+            console.log("Created Blob URL:", blobUrl);
 
-    // Handle error during opening of EPUB
-    book.on("openFailed", function (error) {
-        console.error("Failed to open EPUB:", error);
-    });
+            const epubBook = ePub(blobUrl, { openAs: "epub" });
+            console.log("EPUB Object Created:", epubBook);
 
-    // Handle errors in EPUB.js
-    book.on("error", function (error) {
-        console.error("EPUB.js encountered an error:", error);
-    });
+            epubBook.ready
+                .then(() => console.log("EPUB is ready!"))
+                .catch(err => console.error("Error waiting for EPUB ready:", err));
+
+            epubBook.opened
+                .then(() => console.log("EPUB fully opened!"))
+                .catch(err => console.error("Error waiting for EPUB opened:", err));
+
+            rendition = epubBook.renderTo("epub-container", {
+                width: "100%",
+                height: "100%"
+            });
+            rendition.display();
+
+        } catch (error) {
+            console.error("Error fetching EPUB:", error);
+        }
+    }
 
     document.getElementById("prev").addEventListener("click", () => {
-        rendition.prev();
+        if (rendition) rendition.prev();
     });
 
     document.getElementById("next").addEventListener("click", () => {
-        rendition.next()
+        if (rendition) rendition.next();
     });
 });

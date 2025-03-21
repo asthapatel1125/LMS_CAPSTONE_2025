@@ -54,7 +54,13 @@ async function loadCheckedOutBooks() {
             const formattedDate = expirationDate.toLocaleDateString('en-US', {
                 year: 'numeric', month: 'long', day: 'numeric'
             });
-            let row = `<tr class="book-row"><td>${book.title}</td><td>${book.daysLeft} days</td><td>${formattedDate}</td></tr>`;
+            let row = `
+                <tr class="book-row">
+                    <td>${book.title}, (${book.format})</td>
+                    <td>${book.daysLeft} days</td>
+                    <td>${formattedDate}</td>
+                    <td><a href="/mylib/access/${book.isbn}">Access</a></td>
+                </tr>`;
             checkedOutTable.innerHTML += row;
         });
     } catch (error) {

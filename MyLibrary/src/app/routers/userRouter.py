@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Body, status, Request
-from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResponse
+from fastapi import APIRouter, Body, status, Request, BackgroundTasks
+from fastapi.responses import RedirectResponse, HTMLResponse, StreamingResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from controllers.token import *
 from controllers.mylib import *
-import os
+import os, base64
+from io import BytesIO
+import tempfile
 
 USER_LOGIN_PAGE = "https://35.234.252.105/auth/login"
 USER_SEARCH_PAGE = "https://35.234.252.105/search/home"
@@ -26,10 +28,33 @@ async def dashboard_page(request: Request):
     name = request.cookies.get('user_name')
     return templates.TemplateResponse("myLibrary.html", {"request": request, "name": name})
 
-@router.get("/read", response_class=HTMLResponse)
-async def read_book_page(request: Request):
-    return templates.TemplateResponse("read_book.html", {"request": request})
+@router.get("/access/{isbn}")
+async def read_book_page(request: Request, isbn: str):
+    title = get_book_by_isbn(isbn)
+    format = get_book_format_by_isbn(isbn)
+    if format == "eBook":
+        epub_url = f"/mylib/epub/{isbn}"
+        return templates.TemplateResponse("read_book.html", {"request": request, "title": title, "epub_url": epub_url})
+    elif format == "Audio":
+        audio_url = f"/mylib/audio/{isbn}"
+        return templates.TemplateResponse("listen_book.html", {"request": request, "title": title, "audio_url": audio_url})
+    else:
+        epub_url = ""
+        return templates.TemplateResponse("myLibrary.html", {"request": request})
 
+@router.get("/epub/{isbn}", response_class=StreamingResponse)
+async def serve_epub(isbn: str):
+    epub_data = await get_book_epub(isbn)
+    epub_file = BytesIO(epub_data)
+    response = StreamingResponse(epub_file, media_type="application/epub+zip", headers={"Content-Disposition": f"attachment"})
+    return response
+
+@router.get("/audio/{isbn}", response_class=FileResponse)
+async def serve_audio(isbn: str):
+    audio_data = await get_book_audio(isbn)
+    audio_file = BytesIO(audio_data)
+    response = StreamingResponse(audio_file, media_type="audio/mp3", headers={"Content-Disposition": f"attachment"})
+    return response
 
 @router.get("/search", response_class=HTMLResponse)
 async def search_page():
@@ -42,9 +67,11 @@ async def completed_holds(request: Request):
     
     for hold in book_holds:
         temp_title = get_book_by_isbn(hold["isbn"])
+        temp_format = get_book_format_by_isbn(hold["isbn"])
         hold["title"] = temp_title
+        hold["format"] = temp_format
     
-    return book_holds   # {ISBN, Days left, due Date, book title}
+    return book_holds   # {ISBN, Days left, due Date, book title, book format}
 
 @router.post("/pending-holds")
 async def pending_holds(request: Request):

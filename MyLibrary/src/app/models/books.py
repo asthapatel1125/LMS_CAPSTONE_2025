@@ -24,3 +24,8 @@ class Book(BaseModel):
 def get_book_by_isbn(isbn: str):
     book = db["books"].find_one({"isbn": isbn})
     return book["title"]
+
+@app.get("/books/formats", response_model=str)
+def get_book_format_by_isbn(isbn: str):
+    book = db["books"].find_one({"isbn": isbn})
+    return book["format"]
