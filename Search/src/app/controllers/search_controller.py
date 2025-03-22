@@ -1,5 +1,10 @@
 from models.books import *
+from models.customers import *
+from models.filters import *
+from models.bookCovers import *
 from typing import List
+
+
 books = [
         Book(
             title="The Great Adventure",
@@ -35,11 +40,3 @@ def retrieve_searchQuery_list(query: str) -> List[Book]:
     search_result = [Book(**dict(book)) for book in unique_books]  # Convert back to Book instances
     
     return search_result
-
-
-def retrieve_popular_books(rating: float) -> List[Book]:
-    return get_books_by_rating(rating)  # return popular books list
-
-def retrieve_newest_books() -> List[Book]:
-    # return get_latest_releases()  # return newest releases list
-    return books

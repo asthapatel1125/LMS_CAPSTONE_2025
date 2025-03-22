@@ -2,34 +2,47 @@
 //const urlParams = new URLSearchParams(window.location.search);
 //const isbn = urlParams.get('isbn');
 document.addEventListener("DOMContentLoaded", function() {
-    // Get the search query from the URL
-    console.log("Inside Book_info.js");
     const urlParams = new URLSearchParams(window.location.search);
     const isbn = urlParams.get("isbn") || ""; // Default to empty string if no query is provided
     console.log(isbn)
     // Fetch books based on the query (initial load)
     fetchBooks(isbn);
 
-    // Assign the search query to a global variable or store it for later use
+    let wishButton = document.getElementById('wishlist-button');
+    wishButton.addEventListener('click', function() {
+        addToWishlist(isbn);
+    });
+
     window.searchQuery = query;
 });
 
-function fetchBooks(isbn) {
-    // Fetch the book information based on the ISBN
-    fetch(`/search/book_info/${isbn}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch book data');
-            }
-            return response.json();
-        })
-        .then(itemData => {
-            // Pass the data to the displayBookInfo function
-            displayBookInfo(itemData.book_info);
-        })
-        .catch(error => console.error('Error fetching book info:', error));
-}
+async function fetchBooks(isbn) {
+    try {
+        const response = await fetch(`/search/book_info/${isbn}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch book data');
+        }
+        const itemData = await response.json();
 
+        try {
+            const coverResponse = await fetch(`/search/serve-book-cover/${isbn}`);
+            if (coverResponse.ok) {
+                let blob = await coverResponse.blob();
+                let coverBlob = new Blob([blob], { type: "image/jpg" });
+                let blobUrl = URL.createObjectURL(coverBlob);
+                itemData.coverImage = blobUrl;
+            } else {
+                itemData.coverImage = "/search/static/images/error.png";
+            }
+        } catch (coverError) {
+            console.error(`Error fetching cover for ISBN: ${isbn}`, coverError);
+            itemData.coverImage = "/search/static/images/error.png";
+        }
+        displayBookInfo(itemData);
+    } catch (error) {
+        console.error('Error fetching book info:', error);
+    }
+}
 
 function displayBookInfo(itemData) {
     const title = document.getElementById("book-title");
@@ -39,17 +52,26 @@ function displayBookInfo(itemData) {
 
     document.getElementById("main-book-info").innerHTML = `
         <h6 class="card-title">${itemData.author}</h6>
-        <p class="card-text">Rating: ${getRating(itemData)}</p>
-        <p class="card-text">${itemData.synopsis}</p>
-        <p class="card-text">Copies Available: ${itemData.copies}</p>`;
+        <p class="card-text">Rating: ${itemData.rating}</p>
+        <p class="card-text">${itemData.description}</p>
+        <p class="card-text">Copies Available: ${itemData.numCopies}</p>`;
 
-    document.getElementById("book-info").innerHTML = `
+    let bookDetails = `
         <p class="card-text">ISBN: ${itemData.isbn}</p>
         <p class="card-text">Format: ${itemData.format}</p>
-        <p class="card-text">Genre(s):</p>
-        <p class="card-text">Book Length:</p>
-        <p class="card-text">Publisher:</p>
-        <p class="card-text">Release Date: ${itemData.year}</p>`;
+        <p class="card-text">Genre: ${itemData.genre}</p>`;
+
+    if (itemData.format === "eBook") {
+        bookDetails += `<p class="card-text">Page Numbers: ${itemData.pageNumber}</p>`;
+    }
+    if (itemData.format === "Audio") {
+        bookDetails += `<p class="card-text">Number of Minutes: ${itemData.numOfMins}</p>`;
+    }
+    bookDetails += `
+        <p class="card-text">Publisher: ${itemData.publisher}</p>
+        <p class="card-text">Status: ${itemData.status}</p>`;
+
+    document.getElementById("book-info").innerHTML = bookDetails;
 
     itemData.reviews.forEach(review => {
         const card = document.createElement('div');
@@ -63,6 +85,17 @@ function displayBookInfo(itemData) {
             </div>`;
         document.getElementById('commentsList').appendChild(card);
     });
+
+    const holdButton = document.getElementById('hold-button');
+    wishButton = document.getElementById('wishlist-button');
+    holdButton.disabled = false;
+    wishButton.disabled = false;
+
+    if (itemData.numCopies <= 0) {
+        holdButton.disabled = true;
+    } else if(itemData.status === "Not Available"){
+        holdButton.disabled = true;
+    }
 }
 
 // Get number of stars for review
@@ -82,4 +115,20 @@ function getRating(itemData) {
     });
     const avgRating = (totalRating / itemData.reviews.length).toFixed(1);
     return avgRating;
+}
+
+function addToWishlist(isbn) {
+    fetch(`/search/add-to-wishlist`, {
+        method: "POST",
+        credentials: "include",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ isbn: isbn })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+    })
+    .catch(error => {
+        console.error("Error adding to wishlist:", error);
+    });
 }

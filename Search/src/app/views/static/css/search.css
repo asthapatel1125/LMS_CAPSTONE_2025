@@ -10,7 +10,7 @@
     /* Make carousel container relative to position the button on top */
 .carousel {
     position: relative;
-    }
+}
 
 .carousel-item img {
     width: 200px;
@@ -23,7 +23,6 @@
     background-color:rgba(134, 179, 141, 0.2); 
     border-radius: 15px;
     color: #162d3a;
-    ;
 }
 
 .searchHeader{
@@ -62,8 +61,7 @@
 
 .carousel-control-prev-icon, .carousel-control-next-icon {
     background-color: #162D3A;
-    border-radius: 8px;
-    
+    border-radius: 10px;
 }
 
 /* Hover effect for book items */

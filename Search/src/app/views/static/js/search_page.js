@@ -1,5 +1,7 @@
 let selectedBook = null;
 let searchResults = []; // Store search results globally
+let popularBooks = [];
+let newestBooks = [];
 
 document.addEventListener("DOMContentLoaded", function() {
     fetchPopularBooks();
@@ -19,12 +21,31 @@ async function fetchPopularBooks() {
     try {
         const response = await fetch("/search/popular");
         const data = await response.json();
-        
-        if (data.popular_books) {
+        console.log(data);
+        if (data.isbns) {
             const numBooksSlide = 5;
-            const numSlides = 3;
-            carouselBooks = data.popular_books.slice(0, numBooksSlide * numSlides);
-            displayBooksForCarousel(carouselBooks, "popular-inner");
+            const numSlides = 2;
+            popularBooks = data.isbns.slice(0, numBooksSlide * numSlides);
+            
+            // Get cover images
+            for (let i = 0; i < popularBooks.length; i++) {
+                let isbn = popularBooks[i];
+                try {
+                    const coverResponse = await fetch(`/search/serve-book-cover/${isbn}`);
+                    if (coverResponse.ok) {
+                        let blob = await coverResponse.blob();
+                        let coverBlob = new Blob([blob], { type: "image/jpg" });
+                        let blobUrl = URL.createObjectURL(coverBlob);
+                        popularBooks[i] = { isbn, coverUrl: blobUrl };
+                    } else {
+                        popularBooks[i] = { isbn, coverUrl: "/search/static/images/error.png" };
+                    }
+                } catch (coverError) {
+                    console.error(`Error fetching cover for ISBN: ${isbn}`, coverError);
+                    popularBooks[i] = { isbn, coverUrl: "/search/static/images/error.png" };
+                }
+            }
+            displayBooksForCarousel(popularBooks, "popular-inner");
         } else {
             console.error('No popular books found in the response');
         }
@@ -38,12 +59,30 @@ async function fetchNewestBooks() {
     try {
         const response = await fetch("/search/newest");
         const data = await response.json();
-        
-        if (data.newest_books) {
+        console.log(data);
+        if (data.isbns) {
             const numBooksSlide = 5;
-            const numSlides = 3;
-            carouselBooks = data.newest_books.slice(0, numBooksSlide * numSlides);
-            displayBooksForCarousel(carouselBooks, "newest-inner");
+            const numSlides = 2;
+            newestBooks = data.isbns.slice(0, numBooksSlide * numSlides);
+            // Get cover images
+            for (let i = 0; i < newestBooks.length; i++) {
+                let isbn = newestBooks[i];
+                try {
+                    const coverResponse = await fetch(`/search/serve-book-cover/${isbn}`);
+                    if (coverResponse.ok) {
+                        let blob = await coverResponse.blob();
+                        let coverBlob = new Blob([blob], { type: "image/jpg" });
+                        let blobUrl = URL.createObjectURL(coverBlob);
+                        newestBooks[i] = { isbn, coverUrl: blobUrl };
+                    } else {
+                        newestBooks[i] = { isbn, coverUrl: "/search/static/images/error.png" };
+                    }
+                } catch (coverError) {
+                    console.error(`Error fetching cover for ISBN: ${isbn}`, coverError);
+                    carousnewestBookselBooks[i] = { isbn, coverUrl: "/search/static/images/error.png" };
+                }
+            }
+            displayBooksForCarousel(newestBooks, "newest-inner");
         }
     } catch (error) {
         console.error("Error fetching newest books:", error);
@@ -53,7 +92,6 @@ async function fetchNewestBooks() {
 // Function to search books dynamically when "Search" input changes
 async function searchBooks() {
     const query = document.getElementById('searchInput').value;
-    console.log(query);
     if (query === "") {
         clearSearchResults();
         selectedBook = null;
@@ -104,7 +142,6 @@ function handleSearchButtonClick() {
 
 // Function to display books as search results (but not redirect yet)
 function displaySearchResults(books) {
-    console.log(books)
     const bookList = document.getElementById('bookList');
     bookList.innerHTML = ''; // Clear previous results
 
@@ -129,7 +166,6 @@ function clearSearchResults() {
 function displayBooksForCarousel(booksToDisplay, carouselId) {
     const carouselInner = document.getElementById(carouselId);
     const chunkedBooks = chunkBooks(booksToDisplay, 5);
-    console.log(chunkedBooks);
     
     chunkedBooks.forEach((chunk, index) => {
         const carouselSlide = createCarouselSlide(chunk, index);
@@ -144,7 +180,6 @@ function chunkBooks(booksToDisplay, size) {
     for (let i = 0; i < booksToDisplay.length; i += size) {
         result.push(booksToDisplay.slice(i, i + size));
     }
-    result.push(result) //REMOVE just to test multiple slides work
     return result;
 }
 
@@ -161,7 +196,6 @@ function createCarouselSlide(bookChunk, index) {
         carouselItem.classList.add('carousel-item');
     }   
 
-    console.log(index);
     id = "carousel-item-" + index + "-image-";
     
     bookChunk.forEach((book, i) =>{   
@@ -173,9 +207,9 @@ function createCarouselSlide(bookChunk, index) {
         aTag.href = `/search/book_info?isbn=${book.isbn}`;
 
         const imgTag = document.createElement('img');
-        imgTag.src = "/search/static/images/Screenshot 2025-02-12 165957.png"; //replace with book.imageUrl;
+        imgTag.src = book.coverUrl || "/search/static/images/error.png";
         imgTag.classList.add('img-fluid');
-        imgTag.alt = "Image" + i; 
+        imgTag.alt = book.title || "Book Cover"; 
 
         aTag.appendChild(imgTag);
         bookCard.appendChild(aTag);
@@ -183,7 +217,6 @@ function createCarouselSlide(bookChunk, index) {
     });
 
     carouselItem.append(carouselItemInner);
-    console.log(carouselItem);
     return carouselItem;
 }
 

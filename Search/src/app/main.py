@@ -14,8 +14,6 @@ load_dotenv(dotenv_path='./app/config/.env')
 
 app = FastAPI()
 
-
-
 origins = [
     "http://127.0.0.1:8001",
 ]
@@ -36,7 +34,7 @@ class CustomMiddleware(BaseHTTPMiddleware):
         print("Custom middleware: After request processing")
         return response
 
-app.add_middleware(CustomMiddleware)
+#app.add_middleware(CustomMiddleware)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, "views", "static")

@@ -1,10 +1,10 @@
 from datetime import datetime
 from bson import ObjectId
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 from .database.db import *
-from typing import List, Literal
-from fastapi.responses import JSONResponse
+from typing import List
+from pymongo import DESCENDING
 
 app = FastAPI()
 router = APIRouter()
@@ -48,6 +48,7 @@ class BookImages(BaseModel):
     _id: str
     bookISBN: str
     imageURL: HttpUrl
+    
 class Reservations(BaseModel):
     reservation_id: str
     user_email: str
@@ -91,13 +92,12 @@ book_list = [
         )
     ]
 
-@app.get("/books/{isbn}", response_model=List[Book])
+@app.get("/books/{isbn}", response_model=Book)
 def get_book(isbn: str):
-    
-    books_cursor = db["books"].find({"isbn": isbn})
-    books = [Book(**normalize_bson(book)) for book in books_cursor]
-
-    return books
+    book_data = db["books"].find_one({"isbn": isbn})
+    if not book_data:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return Book(**normalize_bson(book_data))
 
 @router.get("/books", response_model=List[Book])
 def list_books():
@@ -176,8 +176,14 @@ def get_books_by_audience(kidFriendly: bool):
     books = [Book(**normalize_bson(book)) for book in books_cursor]
     return books
 
+@app.get("/newest-books", response_model=List[Book])
+def get_newest():
+    books = db["books"].find()
+    books_list = list(books)
+    return books_list[-10:]
 
-# Get Book image
-@app.get("/book_images/{bookISBN}", response_model=BookImages)
-def get_book_images(bookISBN: str):
-    return book_list
+@app.get("/popular-books", response_model=List[Book])
+def get_popular():
+    books = db["books"].find().sort("rating", -1).limit(10)
+    books_list = list(books)
+    return books_list

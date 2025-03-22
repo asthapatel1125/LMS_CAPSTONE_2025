@@ -18,7 +18,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item px-2">
-              <a class="nav-link active" aria-current="page" href="/search/login">Home</a>
+              <a class="nav-link active my-library-link" aria-current="page" href="/search/mylib">My Library</a>
             </li>
             <li class="nav-item px-2">
               <a class="nav-link" href="/search/home">Browse</a>
@@ -37,79 +37,93 @@
 
   <!-- Main Content -->
   <main class="container my-auto d-flex justify-content-center">
-    <!-- Content goes here -->
-    <div class="row w-100">
-        <div class="card w-100 m-3">
-            <div class="row g-0 p-1">
-                <!-- Image on the left -->
-                <div class="col-2 d-flex justify-content-center align-items-center" id="book-cover">
+    <div class="row w-100 d-flex justify-content-center">
+      <div class="card w-100 m-2 p-0">
+        <div class="row g-0 p-2">
+          <!-- Image on the left -->
+          <div class="col-2 d-flex justify-content-center align-items-center" id="book-cover">
+          </div>
+          <!-- Text on the right -->
+          <div class="col-10">
+            <h5 class="card-header" id="book-title"></h5>
+            <div class="container row">
+              <div class="col-9">  
+                <div class="card-body" id="main-book-info">
                 </div>
-                <!-- Text on the right -->
-                <div class="col-10">
-                    <h5 class="card-header" id="book-title"></h5>
-                    <div class="container row">
-                        <div class="col-9">  
-                            <div class="card-body" id="main-book-info">
-                            </div>
-                        </div>
-                        <div class="col-3 d-flex flex-column justify-content-center">
-                            <button type="submit" class="btn btn-custom-size p-2 m-2" id="hold-button">Place Hold</button>
-                            <button type="submit" class="btn btn-custom-size p-2 m-2" id="wishlist-button">Add to Wishlist</button>
-                        </div> 
-                    </div>
-                </div> 
-            </div>
-        </div>
-        <div class="container-fluid m-1">
-            <div class="row">
-                <!-- Make accordion take full width -->
-                <div class="accordion w-100" id="accordionExample"> 
-                    <div class="accordion-item">
-                        <h1 class="accordion-header">
-                            <button class="card-header accordion-button collapsed p-2 w-100" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                <h5 class="m-0">Book Details ℹ️</h5>
-                            </button>
-                        </h1>
-                        <div id="collapseOne" class="accordion-collapse collapse">
-                            <div class="accordion-body" id="book-info">
-                            </div>
-                        </div>
-                    </div>
-                </div>      
-            </div>
-        </div>
-        <div class="card w-100 m-3">
-            <div class="row">    
-                <h5 class="card-header">Reviews and Ratings ⭐</h5>
-                <div id="commentsList"></div>
-            </div> 
-        </div>
-        <div class="card w-100 m-3 pb-3">
-          <div class="row">    
-              <h5 class="card-header">Leave a Review ✏️</h5>
-              <div id="review-box">
-                <div class="col-2 mt-3">
-                  <label for="status" class="form-label">Rating:</label>
-                  <select id="status" name="status" class="form-select" required>
-                    <option selected disabled>Choose...</option>
-                    <option>⭐️</option>
-                    <option>⭐️⭐️</option>
-                    <option>⭐️⭐️⭐️</option>
-                    <option>⭐️⭐️⭐️⭐️</option>
-                    <option>⭐️⭐️⭐️⭐️⭐️</option>
-                  </select>
-                </div> 
-                <div class="col-11 mt-3">
-                  <label for="description" class="form-label">Comment:</label>
-                  <textarea class="form-control" id="description" name="description" rows="2" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-custom-size px-4 mt-3" id="wishlist-button">Submit</button>
               </div>
+              <div class="col-3 d-flex flex-column justify-content-center">
+                <button type="submit" class="btn btn-custom-size p-2 m-2" id="hold-button">Place Hold</button>
+                <button type="button" class="btn btn-custom-size p-2 m-2" id="wishlist-button">Add to Wishlist</button>
+              </div> 
+            </div>
           </div> 
+        </div>
       </div>
-      </div>  
-    </div>
-</main>
+      <!-- Book Details Section -->
+      <div class="container w-100 d-flex justify-content-center">
+        <div class="row w-100 m-2">
+          <!-- Make accordion take full width -->
+          <div class="accordion w-100" id="accordionExample"> 
+            <div class="accordion-item">
+              <h1 class="accordion-header">
+                <button class="card-header accordion-button p-2 w-100" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  <h5 class="m-0">Book Details ℹ️</h5>
+                </button>
+              </h1>
+              <div id="collapseOne" class="accordion-collapse collapse show">
+                <div class="accordion-body" id="book-info">
+                </div>
+              </div>
+            </div>
+          </div>      
+        </div>
+      </div>
+      <!-- Reviews Section -->
+      <div class="container w-100 d-flex justify-content-center">
+        <div class="row w-100 m-2">
+          <div class="accordion w-100" id="accordionReviews">
+            <div class="accordion-item">
+              <h1 class="accordion-header">
+                <button class="card-header accordion-button p-2 w-100" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReviews" aria-expanded="true" aria-controls="collapseReviews">
+                  <h5 class="m-0">Reviews and Ratings ⭐</h5>
+                </button>
+              </h1>
+              <div id="collapseReviews" class="accordion-collapse collapse show">
+                <div class="accordion-body" id="commentsList">
+                  <!-- Reviews and Ratings dynamically loaded -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Review Submission Section -->
+      <div class="card w-100 m-3 pb-3">
+        <div class="row">    
+          <h5 class="card-header">Leave a Review ✏️</h5>
+          <div id="review-box">
+            <div class="col-2 mt-3">
+              <label for="status" class="form-label">Rating:</label>
+              <select id="status" name="status" class="form-select" required>
+                <option value="" selected disabled>Choose...</option>
+                <option value="1">⭐️</option>
+                <option value="2">⭐️⭐️</option>
+                <option value="3">⭐️⭐️⭐️</option>
+                <option value="4">⭐️⭐️⭐️⭐️</option>
+                <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
+              </select>
+            </div> 
+            <div class="col-11 mt-3">
+              <label for="description" class="form-label">Comment:</label>
+              <textarea class="form-control" id="description" name="description" rows="2" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-custom-size px-4 mt-3" id="wishlist-button">Submit</button>
+          </div>
+        </div> 
+      </div>
+    </div>  
+  </main>
+
 
   <!-- Footer -->
   <footer class="text-white text-center p-1 mt-auto" style="background-color: #162D3A; color: white;">

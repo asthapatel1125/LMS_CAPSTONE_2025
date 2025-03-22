@@ -15,13 +15,17 @@
 }
 
 .btn-custom-size {
-    padding: 6px 12px; /* Adjust padding for smaller size */
+    padding: 6px 12px;
     border-radius: 15px;
     font-size: 16px;
     cursor: pointer;
     background-color: #162D3A;
     color: white;
     transition: background-color 0.3s;
+}
+
+.accordion, .accordion-item {
+    width: 100%;
 }
 
 .accordion-button {
@@ -48,8 +52,9 @@
 .card-header{
     border: none;
 }
+
 #commentsList {
-    height: 50vh; 
+    height: auto; 
     overflow-y: auto; 
     border-radius: 15px;
     padding: 10px;

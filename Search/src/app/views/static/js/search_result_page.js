@@ -37,7 +37,7 @@ async function fetchBooks(query) {
     }
 }
 
-// Function to display books as clickable buttons that lead to book_info.html
+// Function to display books as clickable buttons that lead to item_info.html
 function displayBooks(books) {
     const bookCardContainer = document.getElementById('bookCardContainer');
     bookCardContainer.innerHTML = ''; // Clear any existing cards

@@ -1,18 +1,15 @@
-import json
 from fastapi import APIRouter, Form, HTTPException, status, Request
-from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from controllers.search_controller import *
 from controllers.token import *
-from models.books import *  
-from models.filters import *
-from datetime import datetime, timedelta
 import os
-from pydantic import BaseModel, HttpUrl
+from io import BytesIO
 
-USER_LOGIN_PAGE = "http://127.0.0.1:8001/auth/login"
-USER_LOGOUT_PAGE = "http://127.0.0.1:8001/auth/logout"
+USER_LOGIN_PAGE = "https://35.234.252.105/auth/login"
+USER_LOGOUT_PAGE = "https://35.234.252.105/auth/logout"
 BOOK_INFO_PAGE = "http://127.0.0.1:8006/book_info/_reviews"
+MYLIBRARY_PAGE = "https://35.234.252.105/mylib/dashboard"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
@@ -40,6 +37,16 @@ async def logout_page(request: Request):
     response.delete_cookie("user_name")
     return response
 
+@router.get("/mylib", response_class=HTMLResponse)
+def mylibrary_page(request: Request):
+    login_token = request.cookies.get("login_token")
+    if login_token:
+        try:
+            verify_jwt(login_token)
+            return RedirectResponse(url=MYLIBRARY_PAGE, status_code=status.HTTP_303_SEE_OTHER)
+        except HTTPException:
+            pass
+    return RedirectResponse(url="/search/logout", status_code=status.HTTP_303_SEE_OTHER)
 
 @router.get("/searchQuery", response_class=JSONResponse)
 async def search_query_page(request: Request, query: str):
@@ -71,51 +78,28 @@ async def search_query_page(request: Request, query: str):
 
 @router.get("/popular", response_class=JSONResponse)
 async def get_popular_books():
-    
-    # Popular books: Ratings highter than or equal to 5 stars
-    results = retrieve_popular_books(5.0)
-    
-    popular_books = [{
-        "title": book.title,
-        "author":book.author,
-        "genre": book.genre,
-        "rating": book.rating,
-        "kidFriendly": book.kidFriendly,
-        "description":  book.description,
-        "format": book.format,
-        "pageNumber":  book.pageNumber,
-        "publisher":  book.publisher,
-        "status":  book.status,
-        "isbn": book.isbn,
-        "numOfMins": book.numOfMins,
-        "numCopies": book.numCopies
-    } for book in results]
-    return JSONResponse(content={"popular_books": popular_books})
+    results = get_popular()
+    content = {'titles':[], 'isbns':[]}
+    for book in results:
+        content["titles"].append(book["title"])
+        content["isbns"].append(book["isbn"])
+    return JSONResponse(content)
 
 @router.get("/newest", response_class=JSONResponse)
 async def get_newest_books():
-    
-    # Newest books: Latest releases 
-    results = retrieve_newest_books()
-    
-    newest_books = [{
-        "title": book.title,
-        "author":book.author,
-        "genre": book.genre,
-        "rating": book.rating,
-        "kidFriendly": book.kidFriendly,
-        "description":  book.description,
-        "format": book.format,
-        "pageNumber":  book.pageNumber,
-        "publisher":  book.publisher,
-        "status":  book.status,
-        "isbn": book.isbn,
-        "numOfMins": book.numOfMins,
-        "numCopies": book.numCopies
-    } for book in results]
-    
-    return JSONResponse(content={"newest_books": newest_books})
+    results = get_newest()  
+    content = {'titles':[], 'isbns':[]}
+    for book in results:
+        content["titles"].append(book["title"])
+        content["isbns"].append(book["isbn"])
+    return JSONResponse(content) 
 
+@router.get("/serve-book-cover/{isbn}", response_class=StreamingResponse)
+async def serve_cover(isbn: str):
+    data = await get_book_cover(isbn)
+    file = BytesIO(data)
+    response = StreamingResponse(file, media_type="image/jpg")
+    return response
 
 @router.get("/search_result_page", response_class=HTMLResponse)
 async def get_search_result_page(request: Request, query: str):
@@ -165,25 +149,12 @@ async def filter_books(filters: FilterRequest):
     return JSONResponse(content=books_list, status_code=200)
 
 
-@router.get("/book_info/{isbn}", response_class=HTMLResponse)
+@router.get("/book_info/{isbn}")
 async def get_book_info(isbn: str):
-    # book_info = get_book(isbn)
-    book_info = {
-        "coverImage": "https://via.placeholder.com/150",
-        "title": "The Great Gatsby",
-        "author": "F. Scott Fitzgerald",
-        "year": "1925",
-        "isbn": "ASDBU1273712UGFSD",
-        "format": "EPUB",
-        "synopsis": "The Great Gatsby, F. Scott Fitzgerald’s third book, stands as the supreme achievement of his career. First published by Scribner in 1925, this quintessential novel of the Jazz Age has been acclaimed by generations of readers. The story of the mysteriously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan is an exquisitely crafted tale of America in the 1920s.",
-        "reviews": [
-            {"user": "Alice", "rating": 5, "text": "Loved it! A timeless classic."},
-            {"user": "Bob", "rating": 4, "text": "Great book with deep themes."},
-            {"user": "Charlie", "rating": 3, "text": "Interesting but not my style."}
-        ],
-        "copies": 5
-    }
-    return JSONResponse(content={"book_info": book_info})
+    book_info = get_book(isbn)
+    if isinstance(book_info, Book):  
+        book_info = book_info.model_dump()  
+    return book_info
 
 @router.get("/book_info", response_class=HTMLResponse)
 async def get_book_info_page(request: Request, isbn: str):
@@ -202,6 +173,14 @@ async def place_hold(request: Request, book: Book):
     
     '''
     return ""
+
+@router.post("/add-to-wishlist")
+async def add_to_wishlist(request: Request):
+    login_token = request.cookies.get("login_token")
+    user_email = verify_jwt(login_token)["subject"]
+    body = await request.json()
+    isbn = body.get("isbn")
+    return update_user_wishlist(user_email, isbn)
 
 @router.post("/write_review")
 async def write_review(request: Request, review: str):
