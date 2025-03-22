@@ -21,7 +21,10 @@ async function fetchPopularBooks() {
         const data = await response.json();
         
         if (data.popular_books) {
-            displayBooksForCarousel(data.popular_books, "popularCarouselInner");
+            const numBooksSlide = 5;
+            const numSlides = 3;
+            carouselBooks = data.popular_books.slice(0, numBooksSlide * numSlides);
+            displayBooksForCarousel(carouselBooks, "popular-inner");
         } else {
             console.error('No popular books found in the response');
         }
@@ -37,7 +40,10 @@ async function fetchNewestBooks() {
         const data = await response.json();
         
         if (data.newest_books) {
-            displayBooksForCarousel(data.newest_books, "newestCarouselInner");
+            const numBooksSlide = 5;
+            const numSlides = 3;
+            carouselBooks = data.newest_books.slice(0, numBooksSlide * numSlides);
+            displayBooksForCarousel(carouselBooks, "newest-inner");
         }
     } catch (error) {
         console.error("Error fetching newest books:", error);
@@ -47,11 +53,11 @@ async function fetchNewestBooks() {
 // Function to search books dynamically when "Search" input changes
 async function searchBooks() {
     const query = document.getElementById('searchInput').value;
-    
+    console.log(query);
     if (query === "") {
         clearSearchResults();
         selectedBook = null;
-        document.getElementById('bookDetails').innerHTML = '';
+        document.getElementById('bookList').innerHTML = '';
     } else {
         try {
             const response = await fetch(`/search/searchQuery?query=${encodeURIComponent(query)}`, {
@@ -74,7 +80,7 @@ async function searchBooks() {
             } else {
                 clearSearchResults();
                 const bookList = document.getElementById('bookList');
-                bookList.innerHTML = '<li class="list-group-item">Error fetching books.</li>';
+                bookList.innerHTML = `<li class="list-group-item">Nothing matched ${query}.</li>`;
             }
         } catch (error) {
             console.error("Error searching for books:", error);
@@ -88,7 +94,6 @@ async function searchBooks() {
 // Handle search button click - Redirect to search result page
 function handleSearchButtonClick() {
     const query = document.getElementById('searchInput').value;
-    console.log("Search Button Clicked - Query Entered:", query);
     
     if (query) {
         // Set the redirect URL dynamically using setAttribute
@@ -96,8 +101,6 @@ function handleSearchButtonClick() {
         window.location.setAttribute('href', searchUrl); // Using setAttribute for setting the location.href
     }
 }
-
-
 
 // Function to display books as search results (but not redirect yet)
 function displaySearchResults(books) {
@@ -125,14 +128,14 @@ function clearSearchResults() {
 // Function to display books in a carousel
 function displayBooksForCarousel(booksToDisplay, carouselId) {
     const carouselInner = document.getElementById(carouselId);
-    carouselInner.innerHTML = '';  // Clear existing content
-
     const chunkedBooks = chunkBooks(booksToDisplay, 5);
-
+    console.log(chunkedBooks);
+    
     chunkedBooks.forEach((chunk, index) => {
-        const carouselItem = createCarouselItem(chunk, index);
-        carouselInner.appendChild(carouselItem);
+        const carouselSlide = createCarouselSlide(chunk, index);
+        carouselInner.appendChild(carouselSlide);
     });
+   
 }
 
 // Helper function to group books into chunks
@@ -141,42 +144,46 @@ function chunkBooks(booksToDisplay, size) {
     for (let i = 0; i < booksToDisplay.length; i += size) {
         result.push(booksToDisplay.slice(i, i + size));
     }
+    result.push(result) //REMOVE just to test multiple slides work
     return result;
 }
 
 // Function to create a carousel item with book images
-function createCarouselItem(bookChunk, index) {
+function createCarouselSlide(bookChunk, index) {
     const carouselItem = document.createElement('div');
-    carouselItem.classList.add('carousel-item');
-    if (index === 0) {
-        carouselItem.classList.add('active');
-    }
-
     const carouselItemInner = document.createElement('div');
-    carouselItemInner.classList.add('row');
+    carouselItemInner.classList.add('row', 'justify-content-center');
 
-    bookChunk.forEach(book => {
+    if (index === 0){
+        carouselItem.classList.add('carousel-item', 'active');
+    }
+    else{
+        carouselItem.classList.add('carousel-item');
+    }   
+
+    console.log(index);
+    id = "carousel-item-" + index + "-image-";
+    
+    bookChunk.forEach((book, i) =>{   
+        
         const bookCard = document.createElement('div');
-        bookCard.classList.add('col-2', 'mb-4');
+        bookCard.classList.add('col-2', 'd-flex', 'justify-content-center', 'align-items-center'); 
+       
+        const aTag = document.createElement('a');
+        aTag.href = `/search/book_info?isbn=${book.isbn}`;
 
-        const card = document.createElement('div');
-        card.classList.add('card');
+        const imgTag = document.createElement('img');
+        imgTag.src = "/search/static/images/Screenshot 2025-02-12 165957.png"; //replace with book.imageUrl;
+        imgTag.classList.add('img-fluid');
+        imgTag.alt = "Image" + i; 
 
-        const cardBody = document.createElement('div');
-        cardBody.classList.add('card-body');
-
-        const bookImage = document.createElement('img');
-        bookImage.src = book.imageUrl;
-        bookImage.classList.add('card-img-top');
-        bookImage.alt = `${book.title} cover image`;
-
-        cardBody.appendChild(bookImage);
-        card.appendChild(cardBody);
-        bookCard.appendChild(card);
-        carouselItemInner.appendChild(bookCard);
+        aTag.appendChild(imgTag);
+        bookCard.appendChild(aTag);
+        carouselItemInner.appendChild(bookCard);        
     });
 
-    carouselItem.appendChild(carouselItemInner);
+    carouselItem.append(carouselItemInner);
+    console.log(carouselItem);
     return carouselItem;
 }
 

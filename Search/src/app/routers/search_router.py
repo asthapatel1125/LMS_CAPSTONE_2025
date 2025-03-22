@@ -189,7 +189,7 @@ async def get_book_info(isbn: str):
 async def get_book_info_page(request: Request, isbn: str):
     # Pass the query to the HTML template (if present)
     print(f'isbn from book_info', isbn)
-    return templates.TemplateResponse("book_info.html", {"request": request, "isbn": isbn})
+    return templates.TemplateResponse("item_info.html", {"request": request, "isbn": isbn})
 
 @router.post("/place_hold")
 async def place_hold(request: Request, book: Book):

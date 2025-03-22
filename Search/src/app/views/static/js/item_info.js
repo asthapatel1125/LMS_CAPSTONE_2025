@@ -63,17 +63,6 @@ function displayBookInfo(itemData) {
             </div>`;
         document.getElementById('commentsList').appendChild(card);
     });
-
-    const holdButton = document.getElementById('hold-button');
-    const waitButton = document.getElementById('waitlist-button');
-
-    if (itemData.copies === 0) {
-        holdButton.disabled = true;
-        waitButton.disabled = false;
-    } else {
-        holdButton.disabled = false;
-        waitButton.disabled = true;
-    }
 }
 
 // Get number of stars for review
