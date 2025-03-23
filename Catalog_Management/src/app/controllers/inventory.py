@@ -1,15 +1,38 @@
 from controllers.token import *
 from models.books import *
+from models.bookCovers import *
+from models.digitalMaterial import *
 
 def handle_add_book(title: str, isbn: str, author: str, genre: str, rating: float,
                     kidFriendly: bool, description: str, format: str, pageNumber: int, 
-                    numCopies: int, publisher: str, status: str):
+                    numCopies: int, numOfMins: int, publisher: str, status: str, image: str, content: str):
+    # Check if book isbn is already in the database
     book = get_book(isbn)
+    
     if book is None:
-        return create_book(Book(title=title, isbn=isbn, author=author, genre=genre, rating=rating,
-                kidFriendly=kidFriendly, description=description, format=format, pageNumber=pageNumber, 
-                numCopies=numCopies, publisher=publisher, status=status))
-    return "Error"
+        response1 = create_book(Book(title=title, isbn=isbn, author=author, genre=genre, rating=rating,
+            kidFriendly=kidFriendly, description=description, format=format, pageNumber=pageNumber, 
+            numCopies=numCopies, numOfMins=numOfMins, publisher=publisher, status=status))
+        
+        # Check if image is uploaded
+        if image is not None:
+            response2 = add_book_cover(isbn, image)
+            
+            # Check if book content is uploaded
+            if content is not None:
+                response3 = add_book_file(isbn, content)
+                
+        else:
+            response2 = "Error"
+    else:
+        response1 = "Error"
+        response2 = "Error"
+        response3 = "Error"
+        
+    if response1=="Error" or response2=="Error" or response3=="Error":
+        return "Error"
+    else:
+        return response2
 
 def handle_modify_book(title: str, isbn: str, author: str, genre: str, numCopies: int, description: str, kidFriendly: bool, format: str, pageNumber: int, publisher: str, status: str):
     book = get_book(isbn)

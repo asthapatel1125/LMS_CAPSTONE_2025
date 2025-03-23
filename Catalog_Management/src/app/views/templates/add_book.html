@@ -78,12 +78,25 @@
           </div>
           <div class="col-md-6">
             <label for="format" class="form-label">Book Format:</label>
-            <input type="text" class="form-control" id="format" name="format" required>
-          </div> 
-          <div class="col-md-6">
-            <label for="pageNumber" class="form-label">Page Number:</label>
-            <input type="number" class="form-control" id="pageNumber" name="pageNumber" min="1" required>
+            <select id="format" name="format" class="form-select" required onchange="toggleFileUpload()">
+              <option selected disabled>Choose...</option>
+              <option value="eBook">eBook</option>
+              <option value="Audio">Audio</option>
+            </select>
           </div>
+          <!-- File Upload Section for eBook (.epub) or Audio (.mp3) -->
+          <div class="col-md-6" id="fileUploadSection" style="display: none;">
+            <label for="bookFile" class="form-label">Upload Book File:</label>
+            <input type="file" class="form-control" id="bookFile" name="bookFile" accept=".mp3,.epub" required>
+          </div>         
+          <div class="col-md-6" id="pageField">
+            <label for="pageNumber" class="form-label">Numer of Pages:</label>
+            <input type="number" class="form-control" id="pageNumber" name="pageNumber" min="1">
+          </div>
+          <div class="col-md-6" id="minuteField" style="display: none;">
+            <label for="numOfMins" class="form-label">Number of Minutes:</label>
+            <input type="number" class="form-control" id="numOfMins" name="numOfMins" min="1">
+          </div>   
           <div class="col-md-6">
             <label for="numCopies" class="form-label">Number of Copies:</label>
             <input type="number" class="form-control" id="numCopies" name="numCopies" min="1" max="6" required>
@@ -99,19 +112,19 @@
               <option>Available</option>
               <option>Not Available</option>
             </select>
-          </div>       
+          </div>    
           <div class="col-12">
               <div class="mb-3">
                 <label for="imageUpload" class="form-label">Upload Book Cover:</label>
-                <input type="file" class="form-control" id="imageUpload" name="imageUpload" accept="image/*" onchange="previewImage(event)">
+                <input type="file" class="form-control" id="imageUpload" name="imageUpload" accept="image/*" onchange="previewImage(event)" required>
               </div>
               <div class="mb-3">
-                <img id="imagePreview" src="#" alt="Image Preview" style="display: none; width: 100%; max-width: 300px;"/>
+                <img id="imagePreview" src="#" alt="Image Preview" style="display: none; width: 100%; max-width: 14rem;"/>
               </div>       
           </div>   
           <div class="col-12">
-            <button type="submit" class="btn btn-custom-size px-4 mx-2" onclick="submitBook()">Submit</button>
-            <button type="reset"  class="btn btn-clear-size px-4 mx-2" onclick="clear()">Clear</button>
+            <button type="submit" class="btn btn-custom-size px-4 mx-2" onclick="submitBook(event)">Submit</button>
+            <button type="button" class="btn btn-clear-size px-4 mx-2" onclick="clear()">Clear</button>
             <button type="button" class="btn btn-clear-size px-4 mx-2" onclick="cancel()">Cancel</button>
           </div>
         </form>

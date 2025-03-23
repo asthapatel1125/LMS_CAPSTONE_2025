@@ -18,6 +18,7 @@ class Book(BaseModel):
     format: str
     pageNumber: int
     numCopies: int
+    numOfMins: int
     publisher: str
     status: str
 
@@ -38,6 +39,10 @@ def get_book(isbn: str):
 
     if isinstance(book["pageNumber"], dict) and "$numberInt" in book["pageNumber"]:
         book["pageNumber"] = int(book["pageNumber"]["$numberInt"])
+    if isinstance(book["numCopies"], dict) and "$numberInt" in book["numCopies"]:
+        book["numCopies"] = int(book["numCopies"]["$numberInt"])
+    if isinstance(book["numOfMins"], dict) and "$numberInt" in book["numOfMins"]:
+        book["numOfMins"] = int(book["numOfMins"]["$numberInt"])
     if isinstance(book["rating"], dict) and "$numberInt" in book["rating"]:
         book["rating"] = float(book["rating"]["$numberInt"])
     if isinstance(book['kidFriendly'], dict) and "$numberInt" in book['kidFriendly']:
@@ -55,7 +60,7 @@ def list_books():
 @app.delete("/books/{isbn}", response_model=dict)
 def delete_book(isbn: str):
     result = db["books"].delete_one({"isbn": isbn})
-    if result.deleted_count == 1:
+    if result.deleted_count > 0:
         return {"message": "Book deleted successfully."}
     else:
         return {"message": "Error deleting book."}

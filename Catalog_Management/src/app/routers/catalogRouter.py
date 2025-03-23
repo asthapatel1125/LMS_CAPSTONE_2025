@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Body, status, Request
-from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResponse
+from fastapi import APIRouter, Body, status, Request, UploadFile, File
+from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from controllers.token import *
 from controllers.inventory import *
 from datetime import datetime
-import os
+import os, base64
+from io import BytesIO
 
 MANAGER_LOGIN_PAGE = "https://35.234.252.105/auth/manager"
 MANAGE_HOLDS_ADMIN = "https://35.234.252.105/reservations/holds-admin"
@@ -57,15 +58,24 @@ def add_item_page(request: Request):
     return templates.TemplateResponse("add_book.html", {"request": request})
 
 @router.post("/add-item", response_class=HTMLResponse)
-def add_item(title: str = Body(...), isbn: str = Body(...), author: str = Body(...), genre: str = Body(...), rating: float = Body(...),
+async def add_item(title: str = Body(...), isbn: str = Body(...), author: str = Body(...), genre: str = Body(...), rating: float = Body(...),
             kidFriendly: bool = Body(...), description: str = Body(...), format: str = Body(...), pageNumber: int = Body(...), 
-            numCopies: int = Body(...), publisher: str = Body(...), status: str = Body(...) ):
-    result = handle_add_book(title, isbn, author, genre, rating, kidFriendly, description, format, pageNumber, numCopies, publisher, status)
+            numCopies: int = Body(...), numOfMins: int = Body(...), publisher: str = Body(...), status: str = Body(...) ,
+            imageUpload: UploadFile = File(...), bookFile: UploadFile = File(...)):
+    if imageUpload:
+        image_data = await imageUpload.read()
+        image_base64 = base64.b64encode(image_data).decode('utf-8')
+        if bookFile:
+            file_data = await bookFile.read()
+            file_base64 = base64.b64encode(file_data).decode('utf-8')
+            result = result = handle_add_book(title, isbn, author, genre, rating, kidFriendly, description, format, pageNumber, numCopies, numOfMins, publisher, status, image_base64, file_base64)
+        else:
+            result = handle_add_book(title, isbn, author, genre, rating, kidFriendly, description, format, pageNumber, numCopies, numOfMins, publisher, status, image_base64, None)
+    else:
+        result = handle_add_book(title, isbn, author, genre, rating, kidFriendly, description, format, pageNumber, numCopies, numOfMins, publisher, status, None, None)
+        
     if result == "Error":
-        return JSONResponse(
-            status_code=409,
-            content={"detail": "Item already exists."}
-        )
+        return JSONResponse(status_code=409, content={"detail": "Item already exists."})
     return RedirectResponse(url="/catalog/edit_inventory", status_code=303)
 
 @router.get("/remove-item", response_class=HTMLResponse)
@@ -78,10 +88,20 @@ def list_books_json():
     books = list_books()
     return JSONResponse(content=[book.dict() for book in books])
 
-@router.get("/books/{isbn}", response_model=dict)
+@router.get("/delete-books/{isbn}")
 def delete_book_request(isbn: str):
-    result = delete_book(isbn)
-    return result
+    book_result = delete_book(isbn)
+    cover_result = delete_book_cover(isbn)
+    file_result = delete_book_file(isbn)
+    
+    if book_result["message"] == "Error deleting book.":
+        return JSONResponse(status_code=409, content=book_result)
+    if cover_result["message"] == "Error deleting book cover.":
+        return JSONResponse(status_code=409, content=cover_result)
+    if file_result["message"] == "Error deleting book file.":
+        return JSONResponse(status_code=409, content=cover_result)
+    
+    return JSONResponse(status_code=200, content={"message": "Book metadata, file, and cover deleted successfully."})
 
 @router.get("/modify-item", response_class=HTMLResponse)
 def modify_item_page(request: Request):
@@ -99,3 +119,11 @@ def modify_item(title: str = Body(...), isbn: str = Body(...), author: str = Bod
             content={"detail": "Nothing has been updated."}
         )
     return RedirectResponse(url="/catalog/edit_inventory", status_code=200)
+
+# Routes to handle book covers 
+@router.get("/serve-book-cover/{isbn}", response_class=StreamingResponse)
+async def serve_cover(isbn: str):
+    data = await get_book_cover(isbn)
+    file = BytesIO(data)
+    response = StreamingResponse(file, media_type="image/jpg")
+    return response

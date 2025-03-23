@@ -20,24 +20,24 @@ async function fetchBooks() {
     }
 }
 
-// Function to display books as cards
 function displayBooks(filteredBooks) {
     const bookGrid = document.getElementById("bookGrid");
     bookGrid.classList.remove("d-none");
     bookGrid.innerHTML = "";
 
-    filteredBooks.forEach((book, index) => {
+    filteredBooks.forEach((book) => {
         const bookCard = document.createElement("div");
         bookCard.className = "col";
         bookCard.innerHTML = `
-            <button type="submit" class="h-100" style="border: none; background:none; " onclick="displayBookDetails(${index})">
+            <button type="submit" class="h-100" style="border: none; background:none;" 
+                onclick="displayBookDetails('${book.isbn}')">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">${book.title}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">${book.author}</h6>
                         <p class="card-text"><strong>ISBN:</strong> ${book.isbn}</p>
                         <p class="card-text"><strong>Genre:</strong> ${book.genre}</p>
-                            <p class="card-text"><strong>Availability:</strong> ${book.status}</p>
+                        <p class="card-text"><strong>Availability:</strong> ${book.status}</p>
                         <p class="card-text"><strong>Kid Friendly:</strong> ${book.kidFriendly ? "Yes" : "No"}</p>
                         <p class="card-text"><strong>Copies:</strong> ${book.numCopies}</p>
                     </div>
@@ -81,16 +81,17 @@ function searchBooks() {
     displayBooks(filteredBooks);
 }
 
-function displayBookDetails(index) {
-    const book = filteredBooks.length === 0 ? books[index] : filteredBooks[index];
+async function displayBookDetails(bookISBN) {
+    const book = books.find(b => b.isbn === bookISBN);
     if (!book) return;
-
+    console.log(book);
     const bookGrid = document.getElementById("bookGrid");
     bookGrid.classList.add("d-none");
 
-    const bookDetailsDiv = document.getElementById('bookDetails');
+    const bookDetailsDiv = document.getElementById("bookDetails");
     bookDetailsDiv.classList.remove("d-none");
-    
+    const imageUrl = await getImage(book.isbn);
+
     bookDetailsDiv.innerHTML = `
         <div class="card shadow-sm p-4 rounded">
             <h2 class="text-center mb-4">${book.title}</h2>
@@ -102,9 +103,6 @@ function displayBookDetails(index) {
                     <p><strong>Number of Copies:</strong> ${book.numCopies}</p>
                     <p><strong>Rating:</strong> ${book.rating}</p>
                     <p><strong>Kid Friendly:</strong> ${book.kidFriendly ? "Yes" : "No"}</p>
-                    <p><strong>Format:</strong> ${book.format}</p>
-                    <p><strong>Number of Minutes:</strong> ${book.numOfMins}</p>
-                    <p><strong>Page Number:</strong> ${book.pageNumber}</p>
                     <p><strong>Publisher:</strong> ${book.publisher}</p>
                     <p><strong>Status:</strong> ${book.status}</p>
                 </div>
@@ -113,11 +111,9 @@ function displayBookDetails(index) {
                     <p><strong>Format:</strong> ${book.format}</p>
                     <p><strong>Number of Minutes:</strong> ${book.numOfMins}</p>
                     <p><strong>Page Number:</strong> ${book.pageNumber}</p>
-                    <p><strong>Publisher:</strong> ${book.publisher}</p>
-                    <p><strong>Status:</strong> ${book.status}</p>
                 </div>
                 <div class="col-md-3">
-                    <img class="img-fluid rounded" src=${getImage()}></img>
+                    <img class="img-fluid rounded-4" src="${imageUrl}" alt="${book.title} Book Cover">
                 </div>
             </div>
             <button class="btn btn-primary mt-4 custom-back-btn" onclick="closeAndShowBooks()">Back</button>
@@ -133,8 +129,18 @@ function closeAndShowBooks(){
     bookDeets.classList.add("d-none");
 }
 
-
 // change this to an API call to get the book cover
-function getImage(){
-    return "https://i.harperapps.com/covers/9780063388475/y648.jpg";
+async function getImage(isbn){
+    try {
+        const coverResponse = await fetch(`/catalog/serve-book-cover/${isbn}`);
+        if (coverResponse.ok) {
+            let blob = await coverResponse.blob();
+            let coverBlob = new Blob([blob], { type: "image/jpg" });
+            let blobUrl = URL.createObjectURL(coverBlob);
+            return blobUrl;
+        }
+    } catch (coverError) {
+        console.error(`Error fetching cover for ISBN: ${isbn}`, coverError);
+    }
+    return "";
 }

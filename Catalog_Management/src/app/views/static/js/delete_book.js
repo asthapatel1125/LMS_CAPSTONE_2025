@@ -111,7 +111,7 @@ async function deleteBook() {
   const formIsValid = validateForm();
   if (formIsValid) {
     try {
-      const response = await fetch(`/catalog/books/${selectedBook.isbn}`, {
+      const response = await fetch(`/catalog/delete-books/${selectedBook.isbn}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
