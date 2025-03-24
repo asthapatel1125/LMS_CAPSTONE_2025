@@ -56,3 +56,10 @@ spec:
             name: mylibrary
             port:
               number: 8005
+      - path: /userManage
+        pathType: Prefix
+        backend:
+          service:
+            name: userManage
+            port:
+              number: 8006
