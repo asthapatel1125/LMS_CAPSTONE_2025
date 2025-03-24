@@ -1,0 +1,28 @@
+a {
+    text-decoration: none;
+    opacity: 0.8;
+  }
+
+  .btn-custom-size {
+    border-radius: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #162D3A;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.table{
+    background-color: white;
+    border-radius: 15px;
+    
+}
+
+.table-container{
+    background-color: #E3E3E3;
+    border-radius: 15px;
+}
+
+.btn-clear-size{
+    background-color: white;
+}

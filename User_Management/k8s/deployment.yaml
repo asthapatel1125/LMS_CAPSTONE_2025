@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userManage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userManage
+  template:
+    metadata:
+      labels:
+        app: userManage
+    spec:
+      containers:
+      - name: userManage
+        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/usermanage:v1
+        ports:
+        - containerPort: 8006
