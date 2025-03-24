@@ -155,24 +155,31 @@ async def get_book_info(isbn: str):
         book_info = book_info.model_dump()  
     return book_info
 
+
 @router.get("/book_info", response_class=HTMLResponse)
 async def get_book_info_page(request: Request, isbn: str):
     # Pass the query to the HTML template (if present)
     print(f'isbn from book_info', isbn)
     return templates.TemplateResponse("item_info.html", {"request": request, "isbn": isbn})
 
+
+# place an item on hold
 @router.post("/place_hold")
 async def place_hold(request: Request, book: Book):
     
     '''
-    generate a random id for reservation_id
-    reservation date
-    expriration date
-    random book id for this table
+    - generate a random id for reservation_id
+    - reservation date
+    - expriration date
+    - random book id for this table
+    - update users' position in the waiting queue
     
     '''
+    
     return ""
 
+
+# add to wishlist
 @router.post("/add-to-wishlist")
 async def add_to_wishlist(request: Request):
     login_token = request.cookies.get("login_token")
@@ -181,13 +188,23 @@ async def add_to_wishlist(request: Request):
     isbn = body.get("isbn")
     return update_user_wishlist(user_email, isbn)
 
+
+# write reviews
 @router.post("/write_review")
 async def write_review(request: Request, review: str):
     
     return ""
 
-# wishlist
-
-# filters refining
 
 # join queue
+@router.post("/join_queue")
+# should also expxect username as a field in the following async method
+async def join_queue(request: Request ):
+    
+    '''
+    - receive a username
+    - add this user to the queue database with associated book isbn
+    - give it a queue_status number in the queue 
+    '''
+    
+    return ""
