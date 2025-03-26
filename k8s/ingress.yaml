@@ -60,6 +60,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: userManage
+            name: usermanage
             port:
               number: 8006
