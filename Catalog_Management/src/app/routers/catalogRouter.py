@@ -9,6 +9,7 @@ from io import BytesIO
 
 MANAGER_LOGIN_PAGE = "https://35.234.252.105/auth/manager"
 MANAGE_HOLDS_ADMIN = "https://35.234.252.105/reservations/holds-admin"
+USER_MANAGEMENT_PAGE = "https://35.234.252.105/userManage/main"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
@@ -50,6 +51,11 @@ def manage_holds_page(response: Response):
 @router.get("/view-inventory", response_class=HTMLResponse)
 def view_inventory_page(request: Request):
     return templates.TemplateResponse("view_inventory.html", {"request": request})
+
+# View User Management page button
+@router.get("/userManage", response_class=HTMLResponse)
+def view_inventory_page(request: Request):
+    return RedirectResponse(url=USER_MANAGEMENT_PAGE, status_code=status.HTTP_303_SEE_OTHER)
 
 # Edit inventory page buttons (x3)
 

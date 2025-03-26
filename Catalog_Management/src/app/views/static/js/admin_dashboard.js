@@ -9,3 +9,7 @@ function manageHolds(){
 function viewInventory(){
     location.href = "/catalog/view-inventory";
 }
+
+function manageUsers(){
+    location.href = "/catalog/userManage";
+}
