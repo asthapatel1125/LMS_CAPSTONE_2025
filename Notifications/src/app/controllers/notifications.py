@@ -1,6 +1,9 @@
 from controllers.token import *
+from controllers.send_emails import *
 from models.books import *
 from models.reservations import *
+from models.customers import *
+from datetime import datetime
 
 def handle_get_available_books():
     recent = get_recently_available()
@@ -30,6 +33,11 @@ def handle_return_books_today():
             "email": holds[i]["user_email"]
         })
     return due_today
+
+def handle_send_due_today_email(email, title, bookID):
+    name = f"{get_user_firstName(email)} {get_user_lastName(email)}"
+    today_date = datetime.today().strftime("%B %d, %Y")
+    return send_due_today_email(email, title, name, today_date, bookID)
     
 def handle_return_books_soon():
     holds = get_due_soon()

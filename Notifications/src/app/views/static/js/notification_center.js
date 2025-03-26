@@ -137,12 +137,38 @@ function createAvailableTable(){
 }
 
 // Function to alert when notifcation sent
-function notify(tableType){
-  if (getCheckedRow(tableType)){
-    alert('Notification sent!')
+async function sendNotification(tableType){
+  const selectedRow = getCheckedRow(tableType);
+  if (!selectedRow) {
+    alert('Select a row!');
+    return;
   }
-  else {
-    alert('Select a row!')
+
+  const bookData = {
+    title: selectedRow.cells[1].textContent,
+    isbn: selectedRow.cells[2].textContent,
+    bookID: selectedRow.cells[3].textContent,
+    email: selectedRow.cells[4].textContent,
+  };
+
+  try {
+    const response = await fetch(`/notif/send/${tableType}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(bookData)
+    });
+    console.log(JSON.stringify(bookData));
+    if (!response.ok) {
+      alert('Failed to send notification');
+    }
+    if(response.ok){
+      const result = await response.json();
+      if(result.success){ alert(`📩 Notification sent successfully to ${bookData.email}`); }
+    }
+    
+  } catch (error) {
+    console.error('Error sending notification:', error);
+    alert('❌ Error sending notification. Please try again.');
   }
  
 }
@@ -155,6 +181,10 @@ function getCheckedRow(tableType) {
     return row; 
   }
   return null; 
+}
+
+function notify(tableType) {
+  sendNotification(tableType);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

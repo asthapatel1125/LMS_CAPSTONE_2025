@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from controllers.token import *
 from controllers.notifications import *
 from datetime import datetime
-import os, base64
+import os, base64, json
 from io import BytesIO
 
 MANAGER_LOGIN_PAGE = "https://35.234.252.105/auth/manager"
@@ -45,3 +45,15 @@ def return_today(request: Request):
 def return_soon(request: Request):
     result = handle_return_books_soon()
     return result
+
+@router.post("/send/{tableType}")
+async def return_today_email(request: Request, tableType: str):
+    body = await request.body()
+    data = json.loads(body)
+    
+    result = False
+    if tableType == "selectTodayRow":
+        result = handle_send_due_today_email(data.get('email'), data.get('title'), data.get('bookID'))
+        return JSONResponse(content={"success": result}, status_code=200)
+    
+    return JSONResponse(content={"success": result}, status_code=500)
