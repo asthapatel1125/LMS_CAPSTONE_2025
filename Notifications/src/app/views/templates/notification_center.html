@@ -56,12 +56,11 @@
                           <thead>
                               <tr><th colspan="7" id="date"></th></tr>
                               <tr>
-                              <th></th>
-                              <th>Title</th>       
-                              <th>ISBN</th>
-                              <th>Copy No.</th>
-                              <th>Time</th>
-                              <th>User</th>
+                              <th class="col-1"></th>
+                              <th class="col-4">Title</th>       
+                              <th class="col-2">ISBN</th>
+                              <th class="col-2">Reservation ID</th>
+                              <th class="col-3">User Email</th>
                               </tr>
                           </thead>
                           <tbody id="returns-today-table">
@@ -78,7 +77,7 @@
         <div class="card col-12 my-4">
           <div class="card-body">
             <h4>📅 Upcoming Returns</h4>
-            <p>Send reminders for upcoming returns.</p>
+            <p>Send reminders for upcoming returns within 3 days.</p>
             <div class="accordion" id="upcoming-accordion">
               <div class="accordion-item">
                   <h5 class="accordion-header">
@@ -91,12 +90,12 @@
                         <table class="table table-bordered">
                           <thead>
                               <tr>
-                              <th></th>
-                              <th>Title</th>
-                              <th>ISBN</th>
-                              <th>Copy No.</th>
-                              <th>Date</th>
-                              <th>User</th>
+                                <th class="col-1"></th>
+                                <th class="col-3">Title</th>       
+                                <th class="col-2">ISBN</th>
+                                <th class="col-1">Hold ID</th>
+                                <th class="col-2">Due Date</th>
+                                <th class="col-3">User Email</th>
                               </tr>
                           </thead>
                           <tbody id="upcoming-returns-table">
@@ -126,11 +125,11 @@
                         <table class="table table-bordered">
                           <thead>
                               <tr>
-                              <th></th>
-                              <th>Title</th>
-                              <th>ISBN</th>
-                              <th>Copy No.</th>
-                              <th>Next in queue</th>
+                              <th class="col-1"></th>
+                              <th class="col-4">Title</th>
+                              <th class="col-2">ISBN</th>
+                              <th class="col-1">Rating</th>
+                              <th class="col-4">Next in queue</th>
                               </tr>
                           </thead>
                           <tbody id="available-today-table">

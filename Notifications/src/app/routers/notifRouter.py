@@ -30,3 +30,18 @@ def admin_dashboard_page(response: Response):
 @router.get("/main", response_class=HTMLResponse)
 def main_page(request: Request):
     return templates.TemplateResponse("notification_center.html", {"request": request})
+
+@router.get("/available-now")
+def available_now(request: Request):
+    result = handle_get_available_books()
+    return result
+
+@router.get("/returns-today")
+def return_today(request: Request):
+    result = handle_return_books_today()
+    return result
+
+@router.get("/return-soon")
+def return_soon(request: Request):
+    result = handle_return_books_soon()
+    return result
