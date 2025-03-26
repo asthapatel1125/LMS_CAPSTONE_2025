@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notifications
+  template:
+    metadata:
+      labels:
+        app: notifications
+    spec:
+      containers:
+      - name: notifications
+        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/notif:v1
+        ports:
+        - containerPort: 8008
