@@ -5,6 +5,7 @@ from .database.db import *
 from typing import List, Optional
 from bson import ObjectId
 from datetime import datetime
+from pymongo import ReturnDocument
 
 app = FastAPI()
 
@@ -47,3 +48,46 @@ def customer_created_on_date(customer):
     created_on = obj_id.generation_time
     return created_on
 
+def get_customer_metadata(email: str):
+    user = db["customers"].find_one({"email": email})
+    if not user:
+        return {
+            "firstName": "undefined",
+            "lastName": "undefined",
+            "age": 0,
+            "email": "undefined",
+            "password": "undefined"
+        }
+    return {
+        "firstName": user.get("firstName"),
+        "lastName": user.get("lastName"),
+        "age": user.get("age"),
+        "email": user.get("email"),
+        "password": user.get("password")
+    }
+    
+def delete_customer(email: str):
+    result = db["customers"].delete_one({"email": email})
+    if result.deleted_count > 0:
+        return {"message": f"Customer with email {email} was successfully deleted."}
+    else:
+        return {"message": f"No customer found with email {email}."}
+
+def edit_customer(username: str, first_name: str, last_name: str, age: int, email: str):   
+    updated_document = db["customers"].find_one_and_update({"email": username}, 
+        {"$set": {"age":age, "firstName":first_name, "lastName":last_name}}, 
+        return_document = ReturnDocument.AFTER)
+    if email != updated_document["email"]:
+        db["customers"].update_one({"_id":updated_document["_id"]}, {"$set": {"email":email}})
+    return {"message": "Customer details updated successfully"}
+
+def add_customer(firstName: str, lastName: str, age: int, email: str, password: str):
+    existing_customer = db["customers"].find_one({"email": email})
+    if existing_customer:
+        return {"message": "Customer with this email already exists."}
+    
+    result = db["customers"].insert_one({"firstName": firstName, "lastName": lastName, "age": age, "email": email, "password": password})
+    if result:
+        return {"message": "Customer successfully created!"}
+    else:
+        return {"message": "Error creating customer."}

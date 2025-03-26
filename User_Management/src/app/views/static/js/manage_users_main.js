@@ -1,11 +1,3 @@
-/* Notes:
--status column would be like if they are active (in queue or have things checked out) or inactive(nothing checked out) the more in detail info about
-their book history is in the manage holds page
--the user info from the row should be sent to the action forms when selected (ex. edit or delete forms)
--direct add user button to add_user.html
--can split up the name into first name and last name columns
- */
-
 let users = [];
 
 async function fetchUsers() {
@@ -29,17 +21,18 @@ async function fetchUsers() {
       });
       user.created_on = formattedDate;
     });
-    createTable();
+    createTable();  // Call createTable after fetching users
   } catch (error) {
     console.error("Error fetching users:", error);
   }
 }
-  
-//create the user table
+
+// Create the user table and limit to 10 users
 function createTable() {
   const userTable = document.getElementById('user-table');
-  userTable.innerHTML = '';
+  userTable.innerHTML = ''; // Clear the table before adding rows
 
+  // Loop through only the first 15 users
   users.forEach(user => {
       const row = document.createElement('tr');
       row.id = `${user.email}`;
@@ -49,22 +42,20 @@ function createTable() {
           <td>${user.status}</td>
           <td>${user.created_on}</td>
           <td>
-              <a href='/userManage/edit-user/${user.email}'>✏️</a>
-              <a href="/userManage/delete-user/${user.email}">✖️</a>
+            <a href="/userManage/edit-user/${user.email}/${user.status}">✏️</a>
+            <a href="/userManage/delete-user/${user.email}/${user.status}">✖️</a>
           </td>
       `;
       userTable.appendChild(row);
   });
 }
 
-// Function to search the books dynamically
+// Function to search the users dynamically
 function searchUsers() {
   const query = document.getElementById('searchInput').value.toLowerCase();
   if (query === "") {
-    // If the query is empty, reset the table
     resetTable();
   } else {
-    // Filter users based on name or email
     const filteredUsers = users.filter(user =>
       user.name.toLowerCase().includes(query) ||
       user.email.toLowerCase().includes(query)
@@ -72,48 +63,43 @@ function searchUsers() {
     displayUsers(filteredUsers);
   }
 }
+
+function displayUsers(usersToDisplay) {
+  const userList = document.getElementById('user-list');
+  userList.innerHTML = ''; // Clear existing search results
   
-  // Function to display the list of books as buttons
-  function displayUsers(usersToDisplay) {
-    const userList = document.getElementById('user-list');
-    userList.innerHTML = ''; // Clear the existing search results
+  if (usersToDisplay.length === 0) {
+    userList.innerHTML = '<li class="list-group-item">No user found.</li>';
+  } else {
+    usersToDisplay.forEach(user => {
+      const listItem = document.createElement('li');
+      listItem.classList.add('list-group-item');
   
-    if (usersToDisplay.length === 0) {
-      userList.innerHTML = '<li class="list-group-item">No user found.</li>';
-    } else {
-      usersToDisplay.forEach(user => {
-        const listItem = document.createElement('li');
-        listItem.classList.add('list-group-item');
+      const userButton = document.createElement('button');
+      userButton.classList.add('btn', 'btn-custom-search', 'w-100', 'p-1');
+      userButton.innerHTML = `<p>${user.name} (${user.email})</p>`;
   
-        // Create a button for each user
-        const userButton = document.createElement('button');
-        userButton.classList.add('btn', 'btn-custom-search', 'w-100', 'p-1');
-        userButton.innerHTML = `<p>${user.name} (${user.email})</p>`;
-  
-        // When the user is clicked, filter the table
-        userButton.addEventListener('click', () => {
-          filterTable(user);  
-        });
-  
-        listItem.appendChild(userButton);
-        userList.appendChild(listItem);
+      // When clicked, filter the table
+      userButton.addEventListener('click', () => {
+        filterTable(user);
       });
-    }
-  } 
   
-const table = document.getElementById('user-table');
-const tableRows = table.querySelectorAll('tr');
+      listItem.appendChild(userButton);
+      userList.appendChild(listItem);
+    });
+  }
+}
 
 function filterTable(user) {
   const query = user.email.toLowerCase(); 
-  const tableRows = document.querySelectorAll('#user-table tr'); // Get all rows in the table
+  const tableRows = document.querySelectorAll('#user-table tr'); 
 
   tableRows.forEach(row => {
-    const emailCell = row.querySelector('td:nth-child(2)');  // Assuming the email is in the second column
+    const emailCell = row.querySelector('td:nth-child(2)');
     if (emailCell && emailCell.textContent.toLowerCase().includes(query)) {
-      row.style.display = 'table-row'; // Show the matching row
+      row.style.display = 'table-row'; 
     } else {
-      row.style.display = 'none'; // Hide non-matching rows
+      row.style.display = 'none'; 
     }
   });
 }
@@ -127,12 +113,19 @@ function resetTable(){
     const table = document.getElementById('user-table');
     const tableRows = table.querySelectorAll('tr');
     tableRows.forEach(row => {row.style.display = '' });
+    document.getElementById('searchForm').reset();
+    document.getElementById('user-list').innerHTML = '';
 }
 
-function addUser(){
+function adduser(){
   window.location.href = "/userManage/add-user";
 }
 
-window.onload = function () {
+document.addEventListener("DOMContentLoaded", function () {
   fetchUsers();
-};
+});
+
+document.getElementById('searchForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  searchUsers();
+});
