@@ -63,3 +63,10 @@ spec:
             name: usermanage
             port:
               number: 8006
+      - path: /notif
+        pathType: Prefix
+        backend:
+          service:
+            name: notifications
+            port:
+              number: 8008
