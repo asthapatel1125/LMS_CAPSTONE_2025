@@ -11,6 +11,14 @@ document.addEventListener("DOMContentLoaded", function() {
     wishButton.addEventListener('click', function() {
         addToWishlist(isbn);
     });
+
+    let reviewButton = document.getElementById("review-button");
+    if (reviewButton) {
+        reviewButton.addEventListener("click", function(event) {
+            event.preventDefault();
+            submitReview();
+        });
+    }
 });
 
 async function fetchBooks(isbn) {
@@ -146,4 +154,47 @@ function addToWishlist(isbn) {
     .catch(error => {
         console.error("Error adding to wishlist:", error);
     });
+}
+
+async function submitReview() {
+    const isbn = document.querySelector('input[name="isbn"]').value;
+    const rating = document.getElementById("status").value;
+    const reviewComment = document.getElementById("description").value;
+    const reviewButton = document.getElementById("review-button");
+
+    if (!rating || !reviewComment.trim()) {
+        alert("Please select a rating and enter a comment.");
+        return;
+    }
+    reviewButton.disabled = true;
+
+    try {
+        const response = await fetch("/search/write-review", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                isbn: isbn,
+                rating: rating,
+                review_comment: reviewComment,
+            }),
+        });
+
+        if (!response.ok) {
+            alert("Failed to submit review");
+            return;
+        }
+
+        alert("Review submitted successfully!");
+        document.getElementById("status").value = "";
+        document.getElementById("description").value = "";
+
+        fetchReviews(isbn);
+
+    } catch (error) {
+        console.error("Error submitting review:", error);
+        alert("Error submitting review. Please try again.");
+    } finally {
+        reviewButton.disabled = false;
+    }
 }

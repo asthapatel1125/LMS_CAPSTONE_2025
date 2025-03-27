@@ -1,27 +1,21 @@
 document.addEventListener("DOMContentLoaded", function() {
     // Get the search query from the URL
     const urlParams = new URLSearchParams(window.location.search);
-    const query = urlParams.get("query") || ""; // Default to empty string if no query is provided
-    // Assign the search query to a global variable or store it for later use
+    const query = urlParams.get("query") || "";
     window.searchQuery = query;
-    document.addEventListener("DOMContentLoaded", function() {
-    // Get the search query from the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const query = urlParams.get("query") || ""; // Default to empty string if no query is provided
-    // Assign the search query to a global variable or store it for later use
-    console.log("Search Result Page - Query Entered:", query);
-
-    window.searchQuery = query;
-    // Fetch books based on the query (initial load)
-    fetchBooks(query);
-});
-    // Fetch books based on the query (initial load)
     fetchBooks(query);
 });
 
 // Function to fetch books from the backend based on the search query
 async function fetchBooks(query) {
     try {
+        // Ensure query is correctly passed in the URL for the backend request
+        if (!query) {
+            console.log("No search query provided");
+            return; // Do not proceed if the query is empty
+        }
+
+        // Construct URL to fetch books based on the query
         const response = await fetch(`/search/searchQuery?query=${encodeURIComponent(query)}`);
         const data = await response.json();
 
@@ -38,7 +32,7 @@ async function fetchBooks(query) {
 }
 
 // Function to display books as clickable buttons that lead to item_info.html
-function displayBooks(books) {
+async function displayBooks(books) {
     const bookCardContainer = document.getElementById('bookCardContainer');
     bookCardContainer.innerHTML = ''; // Clear any existing cards
 
@@ -47,7 +41,8 @@ function displayBooks(books) {
         return;
     }
 
-    books.forEach(book => {
+    // Use a for...of loop to handle async/await properly
+    for (const book of books) {
         const card = document.createElement('div');
         card.classList.add("col-12", "col-md-6", "col-lg-4", "my-3");
 
@@ -56,15 +51,29 @@ function displayBooks(books) {
         bookButton.classList.add('btn', 'btn-outline-dark', 'w-100');
         bookButton.setAttribute('onclick', `window.location.href='/search/book_info?isbn=${book.isbn}'`);
 
+        // Fetch the book cover image
+        let coverImageUrl = "/search/static/images/error.png"; // Default image if no cover found
+        try {
+            const coverResponse = await fetch(`/search/serve-book-cover/${book.isbn}`);
+            if (coverResponse.ok) {
+                let blob = await coverResponse.blob();
+                let coverBlob = new Blob([blob], { type: "image/jpg" });
+                coverImageUrl = URL.createObjectURL(coverBlob); // Create blob URL for the cover image
+            }
+        } catch (coverError) {
+            console.error(`Error fetching cover for ISBN: ${book.isbn}`, coverError);
+        }
+
+        // Add the book's information and cover to the button
         bookButton.innerHTML = `
             <div class="card w-100">
                 <div class="row g-0 p-1">
                     <!-- Image on the left -->
-                    <div class="col-2 d-flex justify-content-center align-items-center">
-                        <img src="${book.imageUrl}" class="book-cover img-fluid" alt="...">
+                    <div class="col-3 d-flex justify-content-center align-items-center">
+                        <img src="${coverImageUrl}" class="book-cover img-fluid" alt="Book Cover">
                     </div>
                     <!-- Text on the right -->
-                    <div class="col-10">
+                    <div class="col-9">
                         <h5 class="card-header">${book.title}</h5>
                         <div class="card-body">
                           <h6 class="card-title">Author: ${book.author}</h6>
@@ -79,7 +88,7 @@ function displayBooks(books) {
         `;
 
         bookCardContainer.appendChild(bookButton);
-    });
+    }
 }
 
 // Function to apply all the filters and send to the backend

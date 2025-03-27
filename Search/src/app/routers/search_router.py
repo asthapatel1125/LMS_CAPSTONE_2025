@@ -50,9 +50,13 @@ def mylibrary_page(request: Request):
 
 @router.get("/searchQuery", response_class=JSONResponse)
 async def search_query_page(request: Request, query: str):
-    
-    # Call the method to retrieve books based on the search query
+    import re
+    query = query.lower().strip()
+    query_regex = r'\b' + re.escape(query) + r'\b'  # Using re.escape to handle special characters safely
     results = retrieve_searchQuery_list(query)
+    
+    # Filter the results to only include books where the title matches the query exactly
+    filtered_results = [book for book in results if re.search(query_regex, book.title.lower())]
     
     search_results = [{
         "title": book.title,
@@ -68,9 +72,9 @@ async def search_query_page(request: Request, query: str):
         "isbn": book.isbn,
         "numOfMins": book.numOfMins,
         "numCopies": book.numCopies
-    } for book in results]
+    } for book in filtered_results]
 
-    if not results:
+    if not filtered_results:
         return JSONResponse(content={"message": "No books found matching your search."}, status_code=status.HTTP_404_NOT_FOUND)
     
     # Return books as JSON data
