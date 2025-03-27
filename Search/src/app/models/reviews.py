@@ -3,7 +3,6 @@ from fastapi.responses import JSONResponse
 import jwt
 from pydantic import BaseModel
 from datetime import datetime
-
 from controllers.token import SECRET_KEY
 from .database.db import db
 
@@ -38,7 +37,6 @@ async def add_review(request: Request, rating: int, review_comment: str, isbn: s
 
     # add to databse
     db["reviews"].insert_one(review_data)
-
 
 
 # get reviews from db

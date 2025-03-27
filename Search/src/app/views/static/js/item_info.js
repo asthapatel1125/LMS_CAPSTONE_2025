@@ -37,6 +37,7 @@ async function fetchBooks(isbn) {
         }
         
         displayBookInfo(itemData);
+        
         // Fetch reviews
         fetchReviews(isbn);
     } catch (error) {
@@ -44,31 +45,9 @@ async function fetchBooks(isbn) {
     }
 }
 
-async function fetchReviews(isbn) {
-
-    try {
-        // Pass the ISBN as a query parameter in the URL
-        const response = await fetch(`/search/retrieve-reviews?isbn=${isbn}`, {
-            method: "GET",
-            headers: {"Content-Type": "application/json"}
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch reviews');
-        }
-
-        const reviewData = await response.json();
-        displayReviews(reviewData.reviews);
-    } catch (error) {
-        console.error('Error fetching reviews:', error);
-    }
-}
-
-
 function displayBookInfo(itemData) {
     const title = document.getElementById("book-title");
     title.textContent = '📖 ' + itemData.title;
-
     document.getElementById("book-cover").innerHTML = `<img src="${itemData.coverImage}" class="book-cover img-fluid" alt="Book Cover">`;
 
     document.getElementById("main-book-info").innerHTML = `
@@ -105,6 +84,26 @@ function displayBookInfo(itemData) {
         holdButton.disabled = true;
     }
 }
+
+async function fetchReviews(isbn) {
+    try {
+        // Pass the ISBN as a query parameter in the URL
+        const response = await fetch(`/search/retrieve-reviews?isbn=${isbn}`, {
+            method: "GET",
+            headers: {"Content-Type": "application/json"}
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch reviews');
+        }
+
+        const reviewData = await response.json();
+        displayReviews(reviewData.reviews);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+    }
+}
+
 
 function displayReviews(reviews) {
     const commentsList = document.getElementById('commentsList');
