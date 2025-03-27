@@ -74,23 +74,6 @@ class Reservations(BaseModel):
     class Config:
         json_encoders = {ObjectId: str, datetime: lambda v: v.isoformat()}
         
-book_list = [
-        Book(
-            title="The Great Adventure",
-            author="John Doe",
-            genre="Adventure",
-            rating=4,
-            kidFriendly=True,
-            description="A thrilling journey through uncharted territories.",
-            format="Hardcover",
-            pageNumber=300,
-            publisher="Adventure Press",
-            status="Available",
-            isbn="123-456-7890",
-            numOfMins=360,
-            numCopies=10
-        )
-    ]
 
 @app.get("/books/{isbn}", response_model=Book)
 def get_book(isbn: str):

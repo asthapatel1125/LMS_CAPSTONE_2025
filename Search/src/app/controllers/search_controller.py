@@ -4,24 +4,6 @@ from models.filters import *
 from models.bookCovers import *
 from typing import List
 
-
-books = [
-        Book(
-            title="The Great Adventure",
-            author="John Doe",
-            genre="Adventure",
-            rating=4,
-            kidFriendly=True,
-            description="A thrilling journey through uncharted territories.",
-            format="Hardcover",
-            pageNumber=300,
-            publisher="Adventure Press",
-            status="Available",
-            isbn="123-456-7890",
-            numOfMins=360,
-            numCopies=10
-        )
-    ]
    
 # Get Search query
 def retrieve_searchQuery_list(query: str) -> List[Book]:

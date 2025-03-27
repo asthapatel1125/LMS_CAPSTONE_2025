@@ -99,27 +99,32 @@
       </div>
       <!-- Review Submission Section -->
       <div class="card w-100 m-3 pb-3">
-        <div class="row">    
-          <h5 class="card-header">Leave a Review ✏️</h5>
-          <div id="review-box">
-            <div class="col-2 mt-3">
-              <label for="status" class="form-label">Rating:</label>
-              <select id="status" name="status" class="form-select" required>
-                <option value="" selected disabled>Choose...</option>
-                <option value="1">⭐️</option>
-                <option value="2">⭐️⭐️</option>
-                <option value="3">⭐️⭐️⭐️</option>
-                <option value="4">⭐️⭐️⭐️⭐️</option>
-                <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
-              </select>
-            </div> 
-            <div class="col-11 mt-3">
-              <label for="description" class="form-label">Comment:</label>
-              <textarea class="form-control" id="description" name="description" rows="2" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-custom-size px-4 mt-3" id="wishlist-button">Submit</button>
-          </div>
-        </div> 
+        <form method="POST" action="/search/write-review" class="card w-100 m-3 pb-3">
+          <input type="hidden" name="isbn" value="{{ request.query_params.get('isbn', '') }}">
+          <div class="row">    
+              <h5 class="card-header">Leave a Review ✏️</h5>
+              <div id="review-box" class="d-flex flex-wrap">
+                  <div class="col-2 mt-3">
+                      <label for="status" class="form-label">Rating:</label>
+                      <select id="status" name="rating" class="form-select" required>
+                          <option value="" selected disabled>Choose...</option>
+                          <option value="1">⭐️</option>
+                          <option value="2">⭐️⭐️</option>
+                          <option value="3">⭐️⭐️⭐️</option>
+                          <option value="4">⭐️⭐️⭐️⭐️</option>
+                          <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
+                      </select>
+                  </div> 
+                  <div class="col-11 mt-3">
+                      <label for="description" class="form-label">Comment:</label>
+                      <textarea class="form-control" id="description" name="review_comment" rows="2" required></textarea>
+                  </div>
+                  <div class="col-12 mt-3">
+                      <button type="submit" class="btn btn-custom-size px-4" id="review-button">Submit</button>
+                  </div>
+              </div>
+          </div> 
+        </form>      
       </div>
     </div>  
   </main>

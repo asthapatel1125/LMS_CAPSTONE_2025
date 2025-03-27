@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse, Stre
 from fastapi.templating import Jinja2Templates
 from controllers.search_controller import *
 from controllers.token import *
+from models.reviews import *
 import os
 from io import BytesIO
 
@@ -189,11 +190,24 @@ async def add_to_wishlist(request: Request):
     return update_user_wishlist(user_email, isbn)
 
 
-# write reviews
-@router.post("/write_review")
-async def write_review(request: Request, review: str):
+# write a review
+@router.post("/write-review")
+async def write_review(
+    request: Request,
+    rating: int = Form(...),
+    review_comment: str = Form(...),
+    isbn: str = Form(...)
+)->None:
     
-    return ""
+    await add_review(request, rating, review_comment, isbn )
+
+
+# retrieve review from db
+@router.get("/retrieve-reviews")
+async def get_reviews(request: Request, isbn: str):
+    # given isbn, return a list of reviews with 'username, rating, review'
+    reviews_list=get_reviews_db(isbn)
+    return {"reviews":reviews_list }
 
 
 # join queue

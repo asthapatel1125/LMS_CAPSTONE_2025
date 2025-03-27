@@ -1,19 +1,16 @@
-// Get the ISBN from the URL
-//const urlParams = new URLSearchParams(window.location.search);
-//const isbn = urlParams.get('isbn');
 document.addEventListener("DOMContentLoaded", function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const isbn = urlParams.get("isbn") || ""; // Default to empty string if no query is provided
-    console.log(isbn)
-    // Fetch books based on the query (initial load)
+    const isbn = urlParams.get("isbn") || ""; // Default to empty string if no isbn is provided
+
+    // Fetch book data based on the query (initial load)
     fetchBooks(isbn);
 
+
+    // Set up wishlist button
     let wishButton = document.getElementById('wishlist-button');
     wishButton.addEventListener('click', function() {
         addToWishlist(isbn);
     });
-
-    window.searchQuery = query;
 });
 
 async function fetchBooks(isbn) {
@@ -38,11 +35,35 @@ async function fetchBooks(isbn) {
             console.error(`Error fetching cover for ISBN: ${isbn}`, coverError);
             itemData.coverImage = "/search/static/images/error.png";
         }
+        
         displayBookInfo(itemData);
+        // Fetch reviews
+        fetchReviews(isbn);
     } catch (error) {
         console.error('Error fetching book info:', error);
     }
 }
+
+async function fetchReviews(isbn) {
+
+    try {
+        // Pass the ISBN as a query parameter in the URL
+        const response = await fetch(`/search/retrieve-reviews?isbn=${isbn}`, {
+            method: "GET",
+            headers: {"Content-Type": "application/json"}
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch reviews');
+        }
+
+        const reviewData = await response.json();
+        displayReviews(reviewData.reviews);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+    }
+}
+
 
 function displayBookInfo(itemData) {
     const title = document.getElementById("book-title");
@@ -73,21 +94,8 @@ function displayBookInfo(itemData) {
 
     document.getElementById("book-info").innerHTML = bookDetails;
 
-    itemData.reviews.forEach(review => {
-        const card = document.createElement('div');
-        card.innerHTML = `
-            <div class="card mt-3 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">${review.user}</h5>
-                    <p class="card-text">${getStars(review.rating)} </p>
-                    <p class="card-text">${review.text}</p>
-                </div>
-            </div>`;
-        document.getElementById('commentsList').appendChild(card);
-    });
-
     const holdButton = document.getElementById('hold-button');
-    wishButton = document.getElementById('wishlist-button');
+    let wishButton = document.getElementById('wishlist-button');
     holdButton.disabled = false;
     wishButton.disabled = false;
 
@@ -98,23 +106,31 @@ function displayBookInfo(itemData) {
     }
 }
 
-// Get number of stars for review
-function getStars(review) {
-    let rating = '';
-    for (let i = 1; i <= review; i++) {
-        rating += '⭐';
-    }
-    return rating;
+function displayReviews(reviews) {
+    const commentsList = document.getElementById('commentsList');
+    commentsList.innerHTML = ''; // Clear any existing reviews
+    reviews.forEach(review => {
+        const card = document.createElement('div');
+        card.innerHTML = `
+            <div class="card mt-3 mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">${review.user}</h5>
+                    <p class="card-text">${getStars(review.rating)} </p>
+                    <p class="card-text">${review.review_text}</p>
+                    <p class="card-text">${review.created_at} </p>
+                </div>
+            </div>`;
+        commentsList.appendChild(card);
+    });
 }
 
-// Get the average rating for the book
-function getRating(itemData) {
-    let totalRating = 0;
-    itemData.reviews.forEach(review => {
-        totalRating += review.rating;
-    });
-    const avgRating = (totalRating / itemData.reviews.length).toFixed(1);
-    return avgRating;
+// Get number of stars for review
+function getStars(rating) {
+    let stars = '';
+    for (let i = 1; i <= rating; i++) {
+        stars += '⭐';
+    }
+    return stars;
 }
 
 function addToWishlist(isbn) {
