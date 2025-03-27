@@ -13,3 +13,7 @@ function viewInventory(){
 function manageUsers(){
     location.href = "/catalog/userManage";
 }
+
+function manageNotifications(){
+    location.href = "/catalog/notifications";
+}
