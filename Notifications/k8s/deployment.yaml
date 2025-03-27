@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: notifications
-        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/notif:v1
+        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/notif:v2
         ports:
         - containerPort: 8008
