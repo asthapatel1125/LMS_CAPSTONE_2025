@@ -38,6 +38,14 @@ def handle_send_due_today_email(email, title, bookID):
     name = f"{get_user_firstName(email)} {get_user_lastName(email)}"
     today_date = datetime.today().strftime("%B %d, %Y")
     return send_due_today_email(email, title, name, today_date, bookID)
+
+def handle_send_due_soon_email(email, title, bookID, dueDate):
+    name = f"{get_user_firstName(email)} {get_user_lastName(email)}"
+    return send_due_soon_email(email, title, name, bookID, dueDate)
+
+def handle_send_avail_now_email(email, title, rating, isbn):
+    name = f"{get_user_firstName(email)} {get_user_lastName(email)}"
+    return send_avail_now_email(email, title, name, rating, isbn)
     
 def handle_return_books_soon():
     holds = get_due_soon()

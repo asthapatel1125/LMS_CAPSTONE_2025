@@ -143,13 +143,31 @@ async function sendNotification(tableType){
     alert('Select a row!');
     return;
   }
-
-  const bookData = {
-    title: selectedRow.cells[1].textContent,
-    isbn: selectedRow.cells[2].textContent,
-    bookID: selectedRow.cells[3].textContent,
-    email: selectedRow.cells[4].textContent,
-  };
+  let bookData = {};
+  
+  if (tableType === "selectTodayRow"){
+    bookData = {
+      title: selectedRow.cells[1].textContent,
+      isbn: selectedRow.cells[2].textContent,
+      bookID: selectedRow.cells[3].textContent,
+      email: selectedRow.cells[4].textContent,
+    };
+  } else if (tableType === "selectUpcomingRow"){
+    bookData = {
+      title: selectedRow.cells[1].textContent,
+      isbn: selectedRow.cells[2].textContent,
+      bookID: selectedRow.cells[3].textContent,
+      dueDate: selectedRow.cells[4].textContent,
+      email: selectedRow.cells[5].textContent,
+    };
+  } else if (tableType === "selectAvailRow"){
+    bookData = {
+      title: selectedRow.cells[1].textContent,
+      isbn: selectedRow.cells[2].textContent,
+      rating: selectedRow.cells[3].textContent,
+      email: selectedRow.cells[4].textContent,
+    };
+  }
 
   try {
     const response = await fetch(`/notif/send/${tableType}`, {
@@ -164,6 +182,7 @@ async function sendNotification(tableType){
     if(response.ok){
       const result = await response.json();
       if(result.success){ alert(`📩 Notification sent successfully to ${bookData.email}`); }
+      else { alert(`📩 Notification cannot be sent to ${bookData.email}`); }
     }
     
   } catch (error) {
@@ -173,18 +192,35 @@ async function sendNotification(tableType){
  
 }
 
-// Function to get the checked row
+// Function to get the checked row, only one checkbox is selected at a time
 function getCheckedRow(tableType) {
-  const checkedCheckbox = document.querySelector(`.${tableType}:checked`); 
+  const checkboxes = document.querySelectorAll(`.${tableType}`);
+
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      checkboxes.forEach((otherCheckbox) => {
+        if (otherCheckbox !== checkbox) {
+          otherCheckbox.checked = false;
+        }
+      });
+    });
+  });
+
+  const checkedCheckbox = document.querySelector(`.${tableType}:checked`);
   if (checkedCheckbox) {
-    const row = checkedCheckbox.closest('tr'); 
-    return row; 
+    const row = checkedCheckbox.closest('tr');
+    return row;
   }
-  return null; 
+  return null;
 }
+
 
 function notify(tableType) {
   sendNotification(tableType);
+}
+
+function goToDashboard(){
+  window.location.href = "/notif/admin_dashboard";
 }
 
 document.addEventListener('DOMContentLoaded', function() {
