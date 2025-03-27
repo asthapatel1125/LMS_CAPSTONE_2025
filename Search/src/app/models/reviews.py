@@ -4,7 +4,7 @@ import jwt
 from pydantic import BaseModel
 from datetime import datetime
 
-from LMS_CAPSTONE_2025.search.src.app.controllers.token import SECRET_KEY
+from controllers.token import SECRET_KEY
 from .database.db import db
 
 app = FastAPI()
@@ -23,7 +23,7 @@ async def add_review(request: Request, rating: int, review_comment: str, isbn: s
         return {"message": "Your session has expired. Please login again."}
     
     payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-    email = payload.get('sub')
+    email = payload.get("sub")
     
     if not email:
         return {"message": "Invalid session."}
@@ -37,7 +37,8 @@ async def add_review(request: Request, rating: int, review_comment: str, isbn: s
     }
 
     # add to databse
-    db["reviews"].insert_one(review_data)  
+    db["reviews"].insert_one(review_data)
+
 
 
 # get reviews from db
