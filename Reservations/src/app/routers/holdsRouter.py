@@ -57,15 +57,12 @@ def extend_hold_json(isbn: str, book_id: str):
 # Updating the status of the reservations
 @router.get("/update-status/{isbn}/{book_id}")
 async def update_status(isbn: str, book_id: str):
-    reservations_count = db["reservations"].count_documents({"isbn": isbn, "status": "complete"})
+    reservations_count_waiting = db["reservations"].count_documents({"isbn": isbn, "status": "pending"})
     copies = get_book_copies(isbn)
-    print(f"\n\n{reservations_count} || {copies} || {isbn}, {book_id}\n\n")
-    if copies is not None and reservations_count < copies:
-        print(f"\n\nI AM IN FIRST\n\n")
+    print(f"\n{reservations_count_waiting} || {copies} || {isbn}, {book_id}\n")
+    response = False
+    if copies >= 1 and reservations_count_waiting > 0:
         response = update_hold_status(isbn, book_id)
-    else:
-        print(f"\n\nI AM IN SECOND\n\n")
-        response = update_status_invalid(isbn, book_id)
     
     if response:
         return JSONResponse(status_code=200, content={"message": f"Status updated {isbn} | {book_id}."})
@@ -73,5 +70,9 @@ async def update_status(isbn: str, book_id: str):
 
 @router.post("/delete-hold/{isbn}/{book_id}")
 async def delete_hold_json(isbn: str, book_id: str):
-    response = delete_reservation(isbn, book_id)
-    return response
+    response1 = delete_reservation(isbn, book_id)
+    if response1.status_code == 200:
+        response2 = incr_book_copies(isbn)
+        return response2
+    else:
+        return response1

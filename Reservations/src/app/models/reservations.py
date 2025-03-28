@@ -7,6 +7,7 @@ from bson import ObjectId
 from pydantic import field_validator
 from fastapi.responses import JSONResponse
 import pytz
+from models.books import *
 
 app = FastAPI()
 
@@ -17,10 +18,9 @@ class Reservations(BaseModel):
     reservation_date: str
     expiration_date: str
     status: str
-    user_id: str
     isbn: str
     
-    @field_validator('reservation_id', 'user_id', mode='before')
+    @field_validator('reservation_id', mode='before')
     def convert_objectid(cls, v):
         if isinstance(v, ObjectId):
             return str(v)
@@ -42,7 +42,6 @@ def list_holds():
     for hold in holds:
         hold["_id"] = str(hold["_id"]) 
         hold["reservation_id"] = str(hold["reservation_id"]) if isinstance(hold["reservation_id"], ObjectId) else hold["reservation_id"]
-        hold["user_id"] = str(hold["user_id"]) if isinstance(hold["user_id"], ObjectId) else hold["user_id"]
     return [Reservations(**hold) for hold in holds]
 
 @app.get("/extendHold/")
@@ -79,7 +78,7 @@ def update_hold_status(isbn: str, book_id: str):
     local_tz = pytz.timezone("America/New_York") 
     today_date = datetime.now(local_tz)
     hold = db["reservations"].find_one({"isbn": isbn, "book_id": book_id})
-
+    
     reservation_date = hold.get("reservation_date")
     expiration_date = hold.get("expiration_date")
 
@@ -87,39 +86,18 @@ def update_hold_status(isbn: str, book_id: str):
         reservation_date = datetime.fromisoformat(reservation_date)
     if isinstance(expiration_date, str):
         expiration_date = datetime.fromisoformat(expiration_date)
-
+    
+    update_result = None
     if (reservation_date.date() == today_date.date()) or ((today_date.date() > reservation_date.date()) and (today_date.date() <= expiration_date.date())):
         new_status = "complete"
-    elif reservation_date.date() > today_date.date():
-        new_status = "pending"
-    elif expiration_date.date() < today_date.date():
-        new_status = "no longer valid"
-    
-    update_result = db["reservations"].update_one({"_id": hold["_id"]}, {"$set": {"status": new_status}})
-    if update_result.modified_count <= 0:
-        return False
-    return True
-
-
-def update_status_invalid(isbn: str, book_id: str):
-    hold = db["reservations"].find_one({"isbn": isbn, "book_id": book_id})
-    reservation_date = hold.get("reservation_date")
-    expiration_date = hold.get("expiration_date")
-    local_tz = pytz.timezone("America/New_York") 
-    today_date = datetime.now(local_tz)
-    
-    if hold.get("status") == "complete":
-        if expiration_date.date() >= today_date.date():
-            return False
-    if reservation_date.date() >= today_date.date() or expiration_date.date() >= today_date.date():
-        new_status = "pending"
-    else:
-        new_status = "no longer valid"
+        update_result = db["reservations"].update_one({"_id": hold["_id"]}, {"$set": {"status": new_status}})
         
-    update_result = db["reservations"].update_one({"_id": hold["_id"]}, {"$set": {"status": new_status}})
-    if update_result.modified_count <= 0:
-        return False
-    return True
+    if update_result and update_result.modified_count > 0:
+        book_response = decr_book_copies(isbn)
+        if book_response.status_code == 200:
+            return True
+    else:
+        return False    
 
 @app.delete("/delete-reservation/")
 def delete_reservation(isbn: str, book_id: str):
