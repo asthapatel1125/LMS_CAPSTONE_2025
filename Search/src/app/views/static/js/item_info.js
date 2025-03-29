@@ -12,6 +12,12 @@ document.addEventListener("DOMContentLoaded", function() {
         addToWishlist(isbn);
     });
 
+    // Set up wishlist button
+    let placeHoldButton = document.getElementById("hold-button");
+    placeHoldButton.addEventListener('click', function() {
+        placeHold(isbn);
+    });
+
     let reviewButton = document.getElementById("review-button");
     if (reviewButton) {
         reviewButton.addEventListener("click", function(event) {
@@ -196,5 +202,27 @@ async function submitReview() {
         alert("Error submitting review. Please try again.");
     } finally {
         reviewButton.disabled = false;
+    }
+}
+
+async function placeHold(isbn) {
+    try {
+        const response = await fetch('/search/place_hold', {
+            method: "POST",
+            credentials: "include",
+            headers: {"Content-Type": "application/json" },
+            body: JSON.stringify({ isbn: isbn })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Hold placed successfully!");
+        } else {
+            alert(`Failed to place hold: ${data.detail || "Unknown error"}`);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
     }
 }

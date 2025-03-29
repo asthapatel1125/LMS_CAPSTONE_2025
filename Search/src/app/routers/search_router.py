@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from controllers.search_controller import *
 from controllers.token import *
 from models.reviews import *
+from models.reservations import *
 import os
 from io import BytesIO
 
@@ -122,11 +123,14 @@ async def filter_books(filters: FilterRequest):
     
     # Filter the books based on the given filters
     filtered_books = [book for book in books if
-                      (not filters.genres or book.genre in filters.genres) and
-                      (not filters.formats or book.format in filters.formats) and
-                      (not filters.availability or book.numCopies > 0) and
-                      (not filters.audience or book.kidFriendly in filters.audience) and
-                      (not filters.ratings or book.rating in filters.ratings)]
+        (not filters.genres or book.genre in filters.genres) and
+        (not filters.formats or book.format in filters.formats) and
+        (not filters.availability or book.numCopies > 0) and
+        (not filters.audience or 
+            (("Kids" in filters.audience and book.kidFriendly) or  # kidFriendly = True
+            ("Adult" in filters.audience and not book.kidFriendly))) and  # kidFriendly = False
+        (not filters.ratings or book.rating in filters.ratings)
+        ]
 
     # If no books match the filters, return an empty list
     if not filtered_books:
@@ -170,18 +174,19 @@ async def get_book_info_page(request: Request, isbn: str):
 
 # place an item on hold
 @router.post("/place_hold")
-async def place_hold(request: Request, book: Book):
+async def place_hold(request: Request, isbn: str):
     
-    '''
-    - generate a random id for reservation_id
-    - reservation date
-    - expriration date
-    - random book id for this table
-    - update users' position in the waiting queue
+    # check if the book is available for hold
+    print("checking status from router")
+    is_available = get_book_status(isbn)
+    print(f'checked status {is_available}')
     
-    '''
-    
-    return ""
+    if not is_available:
+        print("Adding to queue from router")
+        add_user_to_queue(request, isbn)  # add user to queue if it's not available
+    else: 
+        print("Placing hold from router")
+        place_hold_db(request, isbn)  # if available then place hold 
 
 
 # add to wishlist
@@ -220,7 +225,7 @@ async def get_reviews(request: Request, isbn: str):
 async def join_queue(request: Request ):
     
     '''
-    - receive a username
+    - receive a user
     - add this user to the queue database with associated book isbn
     - give it a queue_status number in the queue 
     '''
