@@ -3,7 +3,7 @@ let searchResults = []; // Store search results globally
 let popularBooks = [];
 let newestBooks = [];
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
     fetchPopularBooks();
     fetchNewestBooks();
     
@@ -14,6 +14,20 @@ document.addEventListener("DOMContentLoaded", function() {
     // Monitor input changes to display suggestions dynamically
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', searchBooks);
+
+    try {
+        const response = await fetch("/search/review-reservations", {
+            method: "GET",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const data = await response.json();
+        alert(data.message);
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to update reservations.");
+    }
 });
 
 // Function to fetch popular books from the backend

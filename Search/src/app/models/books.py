@@ -1,10 +1,10 @@
 from datetime import datetime
 from bson import ObjectId
 from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 from .database.db import *
 from typing import List
-from pymongo import DESCENDING
 
 app = FastAPI()
 router = APIRouter()
@@ -170,3 +170,41 @@ def get_popular():
     books = db["books"].find().sort("rating", -1).limit(10)
     books_list = list(books)
     return books_list
+
+# handling Placing a hold logic
+
+@app.put("/books/decr/{isbn}")
+def decr_book_copies(isbn: int):
+    book = db["books"].find_one({"isbn": isbn})
+    if not book:
+        return False
+    result = db["books"].update_one({"isbn": isbn}, {"$inc": {"numCopies": -1}})
+
+    if result.modified_count > 0:
+        return True
+    else:
+        return False
+    
+@app.put("/books/incr/{isbn}")
+def incr_book_copies(isbn: int):
+    book = db["books"].find_one({"isbn": isbn})
+    if not book:
+        return JSONResponse(status_code=404, content={"message": "Book on hold is not found"})
+
+    result = db["books"].update_one({"isbn": isbn}, {"$inc": {"numCopies": 1}})
+    if result.modified_count > 0:
+        return JSONResponse(status_code=200, content={"message": "Copy successfully returned!"})
+    else:
+        return JSONResponse(status_code=500, content={"message": "Failed to update book for reservation."})
+    
+@app.get("/books/{isbn}")
+def get_book_copies(isbn: int):
+    book = db["books"].find_one({"isbn": isbn})
+    if not book:
+        return None
+    book["_id"] = str(book["_id"])
+
+    if isinstance(book["numCopies"], dict) and "$numberInt" in book["numCopies"]:
+        book["numCopies"] = int(book["numCopies"]["$numberInt"])
+
+    return book["numCopies"]

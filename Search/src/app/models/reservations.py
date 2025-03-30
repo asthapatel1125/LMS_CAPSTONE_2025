@@ -1,13 +1,14 @@
 from datetime import datetime, timedelta
 import uuid
 from bson import ObjectId
-from fastapi import FastAPI, APIRouter, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request
 import jwt
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, field_validator
 from controllers.token import SECRET_KEY
 from .database.db import *
-from typing import List
-from pymongo import DESCENDING
+import random
+import pytz
+from models.books import *
 
 app = FastAPI()
 db = get_db()
@@ -86,7 +87,6 @@ def get_book(isbn: str):
 
 @app.get("/books/{isbn}")
 def get_book_status(isbn:str):
-    print("checking status from db")
     # Fetch the book from the database
     book_data = db["books"].find_one({"isbn": isbn})
     book = normalize_bson(book_data)
@@ -96,7 +96,8 @@ def get_book_status(isbn:str):
     return status  # Returns True if available, False otherwise
 
 
-
+# FUNCTION NOT REFERENCED FOR NOW
+#-------------------------------------------
 @app.post("reserve_book")
 def place_hold_db(request: Request, isbn: str):
     print("placing hold from db")
@@ -149,39 +150,114 @@ def place_hold_db(request: Request, isbn: str):
         db["books"].update_one({"isbn": isbn}, {"$set": {"status": "unavailable"}})
 
     return {"message": "Book placed on hold", "reservation": reservation}
-        
-        
+#-------------------------------------------
         
 @app.post("/add_to_queue")
 def add_user_to_queue(isbn: str, request: Request):
-        # Securely get user info from session
+    # Securely get user info from session
     token = request.cookies.get("login_token")
-    
     if not token:
         return {"message": "Your session has expired. Please login again."}
     
     payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
     user_email = payload.get("sub")
-    
     if not user_email:
         return {"message": "Invalid session."}
     
-    # reservation date
-    reservation_date = datetime.utcnow().isoformat(),
+    reservation_date = datetime.utcnow()
+    expiration_date = reservation_date + timedelta(days=5)
     
     # No copies available, add to queue
     reservation = {
-        "reservation_id": uuid.uuid4().hex,  # Generates a random unique ID
-        "book_id": uuid.uuid4().hex,  
+        "book_id": generate_book_id(isbn),  
         "user_email": user_email,
         "isbn": isbn,
         "reservation_date": reservation_date,
-        "expiration_date": (datetime.utcnow() + timedelta(days=5)).isoformat(),
+        "expiration_date": expiration_date,
         "status": "pending"
     }
     
-    db["reservations"].insert_one(reservation)
+    result = db["reservations"].insert_one(reservation)
+    if result.inserted_id:
+        return True
+    else:
+        return False
 
-    return {"message": "No copies available. You have been added to the queue.", 
-            "reservation": reservation, "reservation_date": reservation_date}
     
+def generate_book_id(isbn):
+    book = db["books"].find_one({"isbn": isbn})
+    title = book['title']
+    capital_letters = ''.join([char for char in title if char.isupper()])
+    
+    def generate_unique_book_id():
+        random_number = random.randint(100, 999)
+        book_id = f"{capital_letters}-{random_number}"
+        if db["reservations"].find_one({"book_id": book_id}):
+            return generate_unique_book_id()
+        return book_id
+    
+    return generate_unique_book_id()
+
+
+@app.get("/return_expired_books")
+def return_expired_books():
+    local_tz = pytz.timezone("America/New_York")
+    today_date = datetime.now(local_tz).date()
+
+    expired_reservations = db["reservations"].find({"status": "complete"})
+
+    for reservation in expired_reservations:
+        expiration_date = reservation.get("expiration_date")
+
+        if isinstance(expiration_date, str):
+            expiration_date = datetime.fromisoformat(expiration_date)
+
+        if expiration_date.date() < today_date:
+            incr_book_copies(reservation["isbn"])
+            db["reservations"].delete_one({"_id": reservation["_id"]})
+
+    return True
+
+
+def update_hold_status(isbn: str, book_id: str):
+    local_tz = pytz.timezone("America/New_York") 
+    today_date = datetime.now(local_tz)
+    hold = db["reservations"].find_one({"isbn": isbn, "book_id": book_id})
+    
+    reservation_date = hold.get("reservation_date")
+    expiration_date = hold.get("expiration_date")
+
+    if isinstance(reservation_date, str):
+        reservation_date = datetime.fromisoformat(reservation_date)
+    if isinstance(expiration_date, str):
+        expiration_date = datetime.fromisoformat(expiration_date)
+    
+    update_result = None
+    if (reservation_date.date() == today_date.date()) or ((today_date.date() > reservation_date.date()) and (today_date.date() <= expiration_date.date())):
+        new_status = "complete"
+        update_result = db["reservations"].update_one({"_id": hold["_id"]}, {"$set": {"status": new_status}})
+        
+    if update_result and update_result.modified_count > 0:
+        book_response = decr_book_copies(isbn)
+        if book_response:
+            return True
+    else:
+        return False    
+    
+def update_all_statuses():
+    reservations = db["reservations"].find({"status": "pending"})
+    
+    updated_reservations = []
+    for reservation in reservations:
+        isbn = reservation["isbn"]
+        book_id = reservation["book_id"]
+        waiting = db["reservations"].count_documents({"isbn": isbn, "status": "pending"})
+        copies = get_book_copies(isbn)
+        
+        if copies >= 1 and waiting > 0:
+            response = update_hold_status(isbn, book_id)
+            if response:
+                updated_reservations.append(book_id)
+    if updated_reservations:
+        return True
+    return False

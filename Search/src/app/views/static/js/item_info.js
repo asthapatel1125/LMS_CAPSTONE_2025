@@ -207,19 +207,19 @@ async function submitReview() {
 
 async function placeHold(isbn) {
     try {
-        const response = await fetch('/search/place_hold', {
+        const response = await fetch(`/search/place_hold/${isbn}`, {
             method: "POST",
             credentials: "include",
-            headers: {"Content-Type": "application/json" },
-            body: JSON.stringify({ isbn: isbn })
+            headers: {"Content-Type": "application/json" }
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            alert("Hold placed successfully!");
+            alert(data.message);
+            window.location.href = '/search/mylib';
         } else {
-            alert(`Failed to place hold: ${data.detail || "Unknown error"}`);
+            alert(`${data.message || "Unknown error"}`);
         }
     } catch (error) {
         console.error("Error:", error);

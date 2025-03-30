@@ -173,20 +173,31 @@ async def get_book_info_page(request: Request, isbn: str):
 
 
 # place an item on hold
-@router.post("/place_hold")
+@router.post("/place_hold/{isbn}")
 async def place_hold(request: Request, isbn: str):
-    
-    # check if the book is available for hold
-    print("checking status from router")
     is_available = get_book_status(isbn)
     print(f'checked status {is_available}')
     
-    if not is_available:
+    if is_available:
         print("Adding to queue from router")
-        add_user_to_queue(request, isbn)  # add user to queue if it's not available
-    else: 
-        print("Placing hold from router")
-        place_hold_db(request, isbn)  # if available then place hold 
+        response = add_user_to_queue(isbn, request)  # add user to queue
+        if response:
+            response2 = decr_book_copies(isbn)
+            if response2:
+                return JSONResponse(content={"message": "Hold placed successfully!"}, status_code=status.HTTP_200_OK)
+        else:
+            return JSONResponse(content={"message": "Error placing a hold"}, status_code=status.HTTP_409_CONFLICT)
+    else:
+        return JSONResponse(content={"message": "Book unavailable. Add to your wishlist for availability updates!"}, status_code=status.HTTP_400_BAD_REQUEST)    
+
+@router.get("/review-reservations")
+def review_reservations():
+    return_expired_books()
+    response = update_all_statuses()
+    if response:
+        return JSONResponse(content={"message": "Existing holds updated."}, status_code=status.HTTP_200_OK)
+    else:
+        return JSONResponse(content={"message": "No holds to update."}, status_code=status.HTTP_200_OK)
 
 
 # add to wishlist
