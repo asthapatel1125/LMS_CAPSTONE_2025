@@ -9,6 +9,7 @@ from .database.db import *
 import random
 import pytz
 from models.books import *
+import secrets
 
 app = FastAPI()
 db = get_db()
@@ -174,7 +175,8 @@ def add_user_to_queue(isbn: str, request: Request):
         "isbn": isbn,
         "reservation_date": reservation_date,
         "expiration_date": expiration_date,
-        "status": "pending"
+        "status": "pending",
+        "reservation_id": generate_random_id()
     }
     
     result = db["reservations"].insert_one(reservation)
@@ -183,6 +185,8 @@ def add_user_to_queue(isbn: str, request: Request):
     else:
         return False
 
+def generate_random_id(length=24):
+    return ''.join(secrets.choice("abcdefghijklmnopqrstuvwxyz0123456789") for _ in range(length))
     
 def generate_book_id(isbn):
     book = db["books"].find_one({"isbn": isbn})
