@@ -16,10 +16,9 @@ class Reservations(BaseModel):
     reservation_date: str
     expiration_date: str
     status: str
-    user_id: str
     isbn: str
     
-    @field_validator('reservation_id', 'user_id', mode='before')
+    @field_validator('reservation_id', mode='before')
     def convert_objectid(cls, v):
         if isinstance(v, ObjectId):
             return str(v)
