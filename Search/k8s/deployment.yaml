@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: search
-        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/search:v1
+        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/search:v2
         ports:
         - containerPort: 8003
