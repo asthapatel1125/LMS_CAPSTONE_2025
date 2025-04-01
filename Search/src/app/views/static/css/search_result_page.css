@@ -28,17 +28,31 @@
 .book-cover{
     object-fit:cover;
     border-radius: 15px;
+    height:100%;
     display: flex;
     justify-content: center;
-    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card-header{
-    background-color: #97b8b3;
-    border-bottom: none;
+  background-color: #97b8b3;
+  border-bottom: none;
+  width: 100%;
+}
+
+.book-info{
+  background-color: rgb(225, 230, 232, 0.3);
+  border: none;
+  padding: 0px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card{
-    background-color: rgb(225, 230, 232, 0.3);
-    border: none;
+border-color: white;
+}
+
+a {
+text-decoration: none;  /* Removes the underline */
+color: inherit;
 }

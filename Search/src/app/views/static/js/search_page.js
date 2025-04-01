@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     
     // Add event listener for the search button
     const searchButton = document.getElementById('searchButton');
-    searchButton.addEventListener('click', handleSearchButtonClick);
+    searchButton.addEventListener('click', handleSearchButtonClick); 
 
     // Monitor input changes to display suggestions dynamically
     const searchInput = document.getElementById('searchInput');

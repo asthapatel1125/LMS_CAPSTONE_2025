@@ -47,9 +47,9 @@ async function displayBooks(books) {
         card.classList.add("col-12", "col-md-6", "col-lg-4", "my-3");
 
         // Create a button for each book that links to the book info page
-        const bookButton = document.createElement('button');
-        bookButton.classList.add('btn', 'btn-outline-dark', 'w-100');
-        bookButton.setAttribute('onclick', `window.location.href='/search/book_info?isbn=${book.isbn}'`);
+        const bookButton = document.createElement('a');
+        bookButton.classList.add('w-100');
+        bookButton.setAttribute('href', `/search/book_info?isbn=${book.isbn}`);
 
         // Fetch the book cover image
         let coverImageUrl = "/search/static/images/error.png"; // Default image if no cover found
@@ -66,21 +66,27 @@ async function displayBooks(books) {
 
         // Add the book's information and cover to the button
         bookButton.innerHTML = `
-            <div class="card w-100">
-                <div class="row g-0 p-1">
+            <div class="card w-100 mb-3">
+                <div class="row p-2">
                     <!-- Image on the left -->
-                    <div class="col-3 d-flex justify-content-center align-items-center">
+                    <div class="col-2 d-flex justify-content-center align-items-center" style = "background-color: white">
                         <img src="${coverImageUrl}" class="book-cover img-fluid" alt="Book Cover">
                     </div>
                     <!-- Text on the right -->
-                    <div class="col-9">
+                    <div class="col-10 book-info">
                         <h5 class="card-header">${book.title}</h5>
                         <div class="card-body">
-                          <h6 class="card-title">Author: ${book.author}</h6>
-                          <h6 class="card-title">Genre: ${book.genre}</h6>
-                          <h6 class="card-title">Format: ${book.format}</h6>
-                          <h6 class="card-title">Status: ${book.status}</h6>
-                          <button type="submit" class="btn btn-custom-size px-5">Place Hold</button>
+                          <div class="container row">
+                            <div class="col-8">
+                              <h6 class="card-title fw-normal">Author: ${book.author}</h6>
+                              <h6 class="card-title fw-normal">Genre: ${book.genre}</h6>
+                              <h6 class="card-title fw-normal">Format: ${book.format}</h6>
+                              <h6 class="card-title fw-normal">Status: ${book.status}</h6>
+                            </div>
+                            <div class="col-4 d-flex flex-column justify-content-cente">
+                              <button type="submit" class="btn btn-custom-size p-1 m-2">Place Hold</button>
+                            </div>
+                          </div>
                         </div>
                     </div> 
                 </div>
