@@ -71,7 +71,7 @@ async function resetPassword(event) {
           const errorResponse = await response.json();
           passErrorMessage.textContent = errorResponse.error;
           passErrorMessage.style.display = 'block';
-          setTimeout(() => { passErrorMessage.style.display = 'none'; }, 1000); 
+          setTimeout(() => { passErrorMessage.style.display = 'none'; }, 2000); 
       }
   } catch (error) {
       console.error("Error during password reset:", error);

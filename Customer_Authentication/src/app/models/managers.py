@@ -26,3 +26,13 @@ def get_manager(managerID: str):
     manager["_id"] = str(manager["_id"])
     
     return Manager(**manager)
+
+# manager and user should not have the email address
+@app.get("/managers/{email}", response_model=Manager)
+def get_manager_by_email(email: str):
+    manager = db["managers"].find_one({"email": email})
+    if not manager:
+        return None
+    manager["_id"] = str(manager["_id"])
+    
+    return Manager(**manager)

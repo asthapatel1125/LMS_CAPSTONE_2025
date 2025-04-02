@@ -20,25 +20,30 @@ def handle_login(email: str, pword: str):
 # Logic for handling registration
 def handle_registration(fname: str, lname: str, email: str, password: str, age: int):
     user = get_user(email)
-    if user is None:
+    manager = get_manager_by_email(email)
+    if user is None and manager is None:
         return create_user(Customer(firstName=fname, lastName=lname, email=email, password=password, 
                                     address=Address(streetAddress="", city="", state="", country=""), 
-                                    age=age))
+                                    age=age, wishlist=Wishlist(items=[])))
     return "Error"  
     
 # Logic for handling forgot password
 def handle_forgot_password(email: str):
     user = get_user(email)
-    if user is None:
-        return False
-    return True
+    manager = get_manager_by_email(email)
+    if user is None and manager is not None:
+        return True
+    elif user is not None and manager is None:
+        return True
+    return False
 
 def handle_reset_password(request: Request, first_pass: str, second_pass: str):
     verif_email = get_verif_email(request)
     if first_pass == second_pass:
-        change_password(verif_email, first_pass)
-        return True
-    return False
+        response = change_password(verif_email, first_pass)
+        if response and response["message"]:
+            return response["message"]
+    return None
 
 def verify_manager(manager_id: str, password: str):
     manager = get_manager(manager_id)

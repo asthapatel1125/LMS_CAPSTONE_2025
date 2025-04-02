@@ -23,3 +23,10 @@
   .btn-transparent:hover {
     background-color: transparent;
   }
+
+  .footer-home {
+    background-color: #132b37;
+    color: white;
+    padding: 10px 0;
+    width: 100%;
+  }

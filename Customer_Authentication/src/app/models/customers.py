@@ -11,6 +11,9 @@ class Address(BaseModel):
     city: str
     state: str
     country: str
+    
+class Wishlist(BaseModel):
+    items: List[str]
 
 class Customer(BaseModel):
     email: str
@@ -19,6 +22,7 @@ class Customer(BaseModel):
     lastName: str
     address: Address
     age: int
+    wishlist: Wishlist
 
 @app.post("/customers/", response_model=dict)
 def create_user(customer: Customer):
@@ -68,4 +72,24 @@ def change_password(email: str, new_password: str):
     )
     if result.modified_count == 0:
         raise HTTPException(status_code=400, detail="Password update failed")
+    return {"message": "Password updated successfully"}
+
+
+@app.put("/customers/{email}/password", response_model=dict)
+def change_password(email: str, new_password: str):
+    customer = get_user(email)
+    if not customer:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if customer.password == new_password:
+        return {"message": "New password must be different from old password"}
+    
+    result = db["customers"].update_one(
+        {"email": email},
+        {"$set": {"password": new_password}}
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Password update failed")
+    
     return {"message": "Password updated successfully"}

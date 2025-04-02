@@ -86,7 +86,8 @@ async def forgot_password_page(request: Request):
 # Route to handle password reset
 @router.post("/forgot-password", response_class=HTMLResponse)
 async def forgot_password(response: Response, request: Request, email: str = Form(...)):
-    if handle_forgot_password(email):
+    result = handle_forgot_password(email)
+    if result:
         expiration_time = datetime.utcnow() + timedelta(minutes=10)
         expires = expiration_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
         verif_code = generate_code()
@@ -95,7 +96,7 @@ async def forgot_password(response: Response, request: Request, email: str = For
         response = RedirectResponse(url="/auth/verification-code", status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="verif_code", value=code_token, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME)
         response.set_cookie(key="verif_email", value=email, httponly=True, samesite="None", secure=True , path="/", expires=expires, max_age=TOKEN_EXPIRATION_TIME)
-        
+            
         send_verif_email(email, verif_code)
         return response
     
@@ -125,12 +126,18 @@ async def reset_password_page(request: Request):
 @router.post("/reset_password", response_class=HTMLResponse)
 async def reset_password(request: Request, first: str = Form(...), second: str = Form(...)):
     result = handle_reset_password(request, first, second)
-    if result:
+    if result == "Password updated successfully":
         response = JSONResponse(
             status_code=200,
             content={"success": "Password changed successfully"})
         response.delete_cookie("verif_email")
         return response
+    elif result == "New password must be different from old password":
+        response = JSONResponse(
+            status_code=409,
+            content={"error": "New password must be different from old password"})
+        return response
+    
     return JSONResponse(
             status_code=400,
             content={"error": "Passwords do not match"})
@@ -178,3 +185,7 @@ async def get_admin_dashboard(request: Request):
 @router.get("/mylibrary", response_class = HTMLResponse)
 async def get_mylib_page():
     return RedirectResponse(MYLIBRARY_PAGE, status_code=status.HTTP_303_SEE_OTHER)
+
+@router.get("/aboutus", response_class=HTMLResponse)
+async def about_page(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
