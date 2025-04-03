@@ -55,10 +55,9 @@ async def search_query_page(request: Request, query: str):
     query = query.lower().strip()
     query_regex = r'\b' + re.escape(query) + r'\b'  # Using re.escape to handle special characters safely
     results = retrieve_searchQuery_list(query)
-    
     # Filter the results to only include books where the title matches the query exactly
-    filtered_results = [book for book in results if re.search(query_regex, book.title.lower())]
-    
+    #filtered_results = [book for book in results if re.search(query_regex, book.title.lower())]
+
     search_results = [{
         "title": book.title,
         "author":book.author,
@@ -73,9 +72,9 @@ async def search_query_page(request: Request, query: str):
         "isbn": book.isbn,
         "numOfMins": book.numOfMins,
         "numCopies": book.numCopies
-    } for book in filtered_results]
+    } for book in results]
 
-    if not filtered_results:
+    if not results:
         return JSONResponse(content={"message": "No books found matching your search."}, status_code=status.HTTP_404_NOT_FOUND)
     
     # Return books as JSON data

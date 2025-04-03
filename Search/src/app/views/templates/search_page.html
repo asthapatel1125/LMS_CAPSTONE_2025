@@ -57,7 +57,7 @@
                 <div class="col-9">
                       <!-- Form for searchInput: sends GET request to /search/searchQuery -->
                       <form role="search" method="GET" action="/search/searchQuery" class="flex-grow-1">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search..." oninput="searchBooks()">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search..." oninput="searchBooks()" autocomplete="off">
                       </form>      
                     <!-- Book search results will be displayed here dynamically -->
                     <ul id="bookList" class="list-group">

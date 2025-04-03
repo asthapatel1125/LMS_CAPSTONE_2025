@@ -128,7 +128,7 @@ def get_books_by_publisher(publisher: str):
 @app.get("/books/{genre}", response_model=List[Book])
 def get_books_by_genre(genre: str):
     # Adding the 'i' flag for case-insensitive matching
-    books_cursor = db["books"].find({"genre": {"$regex": genre, "$options": "i"}})
+    books_cursor = db["books"].find({"genre": {"$regex": f"^\s*{genre}$", "$options": "i"}})
     books = [Book(**normalize_bson(book)) for book in books_cursor]
     return books
 

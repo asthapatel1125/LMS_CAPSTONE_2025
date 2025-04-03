@@ -2,6 +2,7 @@ let selectedBook = null;
 let searchResults = []; // Store search results globally
 let popularBooks = [];
 let newestBooks = [];
+let currentIndex = -1;
 
 document.addEventListener("DOMContentLoaded", async function() {
     fetchPopularBooks();
@@ -14,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     // Monitor input changes to display suggestions dynamically
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', searchBooks);
+    searchInput.addEventListener('keydown', handleSearchEnter);
 
     try {
         const response = await fetch("/search/review-reservations", {
@@ -154,6 +156,17 @@ function handleSearchButtonClick() {
     }
 }
 
+// Handle search button click - Redirect to search result page
+function handleSearchEnter(event) {
+  if (event.key === 'Enter'){
+    const query = document.getElementById('searchInput').value;
+    if (query) {
+      window.location.href = `/search/search_result_page?query=${encodeURIComponent(query)}`
+      event.preventDefault();
+    }
+  }
+}
+
 // Function to display books as search results (but not redirect yet)
 function displaySearchResults(books) {
     const bookList = document.getElementById('bookList');
@@ -162,7 +175,7 @@ function displaySearchResults(books) {
     books.forEach(book => {
         const listItem = document.createElement('li');
         listItem.classList.add('list-group-item');
-        listItem.textContent = `${book.title} by ${book.author}`;
+        listItem.textContent = `${book.title} by ${book.author} (${book.format})`;
         listItem.onclick = function() {
           window.location.href = `/search/book_info?isbn=${book.isbn}`;
         };

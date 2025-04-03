@@ -79,3 +79,14 @@
   transform: scale(1.1); /* Slightly increase size */
   transition: color 0.3s ease, text-decoration 0.3s ease, transform 0.3s ease; 
 }
+
+#bookList .list-group-item:focus {
+  background-color: #f0f0f0;
+  outline: none;
+}
+
+.list-group-item.active {
+  background-color: #007bff; /* Blue background for active item */
+  color: white; /* White text for active item */
+  outline: none; /* Optional: Removes the default focus outline */
+}
