@@ -72,7 +72,14 @@ function filterBooks() {
 
 // Function to search books
 function searchBooks() {
-    const query = document.getElementById("searchInput").value.toLowerCase();
+    let query = document.getElementById("searchInput").value;
+
+    if (!isNaN(query)) {
+        query = query.trim(); // Handle number as a string (removing spaces if needed)
+    } else {
+        query = query.toLowerCase(); // If it's not a number, apply toLowerCase
+    }
+
     const filteredBooks = books.filter(book =>
         book.title.toLowerCase().includes(query) ||
         book.author.toLowerCase().includes(query) ||
