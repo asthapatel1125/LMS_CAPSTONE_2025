@@ -60,15 +60,18 @@ def get_pending_reservations(email: str):
     
     # {ISBN, Queue position, Hold Date}
     reservations_data = []
+    
     for r in pending_reservations:        
-        # Figure out the queue position
-        existing_holds = db["reservations"].find({"isbn": r["isbn"], "status": {'$in': ['pending', 'complete']}})
+        existing_holds = list(db["reservations"].find({"isbn": r["isbn"], "status": {'$in': ['pending', 'complete']}}))
         queue = 0
+        if len(existing_holds) == 1:
+            db['reservations'].update_one({"isbn": r['isbn']},{"$set": {"status": "complete"}})
+            return reservations_data
+    
         for h in existing_holds:
             if r["book_id"] == h["book_id"]:
                 break
             queue += 1
-        
         reservations_data.append({"isbn": r["isbn"], "queue": queue, "reservationDate": r["reservation_date"].isoformat()})
     
     return reservations_data

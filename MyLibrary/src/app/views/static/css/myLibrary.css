@@ -32,7 +32,6 @@
 .wishlist-item {
     width: 80%;
     text-align: center;
-    margin: 5px 0;
 }
 
 .add-wishlist-btn {
@@ -61,7 +60,7 @@
 }
 
 .wishlist-list .list-group-item:hover {
-    background-color: #f8f9fa;
+    background-color: #e7e7e7;
 }
 
 .wishlist-list .delete-btn {
@@ -78,11 +77,22 @@
     color: #6c757d;
     text-align: center;
     padding: 20px;
-    background-color: #f8f9fa;
-    border: 2px solid #e2e6ea;
+    background-color: #e7e7e7;
+    border: 2px solid #ddddde;
     border-radius: 10px;
     max-width: 80%;
     margin: 0 auto;
     display: inline-block;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footer-home {
+    background-color: #132b37;
+    color: white;
+    padding: 0px 0;
+    width: 100%;
+}
+
+.wishlist-item-active {
+    background-color: #e7e7e7;
 }

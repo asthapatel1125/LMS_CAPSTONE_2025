@@ -106,10 +106,10 @@ async function loadWishlist() {
             listItem.addEventListener("click", function () {
                 if (selectedWishlistItems.has(book.isbn)) {
                     selectedWishlistItems.delete(book.isbn);
-                    listItem.classList.remove("bg-light", "selected");
+                    listItem.classList.remove("wishlist-item-active", "selected");
                 } else {
                     selectedWishlistItems.add(book.isbn);
-                    listItem.classList.add("bg-light", "selected");
+                    listItem.classList.add("wishlist-item-active", "selected");
                 }
             });
 
@@ -199,9 +199,11 @@ function sortByDueDate() {
         });
 
         let row = `
-            <button type="submit">
-                <tr class="book-row"><td>${book.title}</td><td>${book.daysLeft} days</td><td>${formattedDate}</td></tr>
-            </button>
+            <tr class="book-row">
+                <td>${book.title}, (${book.format})</td>
+                <td>${book.daysLeft} days</td>
+                <td>${formattedDate}</td>
+                <td><a href="/mylib/access/${book.isbn}">Access</a></td></tr>
         `;
         checkedOutTable.innerHTML += row;
     });
