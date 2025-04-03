@@ -1,7 +1,10 @@
+let starRating;
+
 document.addEventListener("DOMContentLoaded", function() {
     const urlParams = new URLSearchParams(window.location.search);
     const isbn = urlParams.get("isbn") || ""; // Default to empty string if no isbn is provided
-
+    
+    displayStarFields();
     // Fetch book data based on the query (initial load)
     fetchBooks(isbn);
 
@@ -17,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
     placeHoldButton.addEventListener('click', function() {
         placeHold(isbn);
     });
-
+    
     let reviewButton = document.getElementById("review-button");
     if (reviewButton) {
         reviewButton.addEventListener("click", function(event) {
@@ -25,6 +28,8 @@ document.addEventListener("DOMContentLoaded", function() {
             submitReview();
         });
     }
+    getStarRating();
+    
 });
 
 async function fetchBooks(isbn) {
@@ -61,31 +66,42 @@ async function fetchBooks(isbn) {
 
 function displayBookInfo(itemData) {
     const title = document.getElementById("book-title");
-    title.textContent = '📖 ' + itemData.title;
+    const bookStatus = document.getElementById("status");
+    if (itemData.format === "eBook"){ 
+      title.textContent = '📖' + itemData.title;
+    }
+    else {
+      title.textContent = '🎧 ' + itemData.title;
+    }
     document.getElementById("book-cover").innerHTML = `<img src="${itemData.coverImage}" class="book-cover img-fluid" alt="Book Cover">`;
 
     document.getElementById("main-book-info").innerHTML = `
-        <h6 class="card-title">${itemData.author}</h6>
+        <h6 class="card-title">Author: ${itemData.author}</h6>
         <p class="card-text">Rating: ${itemData.rating}</p>
-        <p class="card-text">${itemData.description}</p>
-        <p class="card-text">Copies Available: ${itemData.numCopies}</p>`;
+        <p class="card-text">Total Copies: ${itemData.numCopies}</p>
+        <p class="card-text">${itemData.description}</p>`;
 
     let bookDetails = `
+        <div class="row w-100">   
+        <div class="col-6">
         <p class="card-text">ISBN: ${itemData.isbn}</p>
         <p class="card-text">Format: ${itemData.format}</p>
-        <p class="card-text">Genre: ${itemData.genre}</p>`;
+        <p class="card-text">Genre: ${itemData.genre}</p>
+        </div>
+        <div class="col-6">`;
 
     if (itemData.format === "eBook") {
-        bookDetails += `<p class="card-text">Page Numbers: ${itemData.pageNumber}</p>`;
+        bookDetails += `<p class="card-text">Page Length: ${itemData.pageNumber}</p>`;
     }
     if (itemData.format === "Audio") {
-        bookDetails += `<p class="card-text">Number of Minutes: ${itemData.numOfMins}</p>`;
+        bookDetails += `<p class="card-text">Hours (Approx): ${getHours(itemData.numOfMins)}</p>`;
     }
     bookDetails += `
-        <p class="card-text">Publisher: ${itemData.publisher}</p>
-        <p class="card-text">Status: ${itemData.status}</p>`;
+        <p class="card-text">Publisher: ${itemData.publisher}</p>`;
 
     document.getElementById("book-info").innerHTML = bookDetails;
+    bookStatus.textContent = itemData.status;
+    bookStatus.style.color = 'green';
 
     const holdButton = document.getElementById('hold-button');
     let wishButton = document.getElementById('wishlist-button');
@@ -96,6 +112,7 @@ function displayBookInfo(itemData) {
         holdButton.disabled = true;
     } else if(itemData.status === "Not Available"){
         holdButton.disabled = true;
+        bookStatus.style.color = 'red';
     }
 }
 
@@ -146,6 +163,11 @@ function getStars(rating) {
     return stars;
 }
 
+function getHours(minutes){
+  let hours = Math.ceil(minutes/60);
+  return hours
+}
+
 function addToWishlist(isbn) {
     fetch(`/search/add-to-wishlist`, {
         method: "POST",
@@ -164,10 +186,11 @@ function addToWishlist(isbn) {
 
 async function submitReview() {
     const isbn = document.querySelector('input[name="isbn"]').value;
-    const rating = document.getElementById("status").value;
+    //const rating = document.getElementById("status").value;
+    const rating = starRating;
     const reviewComment = document.getElementById("description").value;
     const reviewButton = document.getElementById("review-button");
-
+    console.log(rating);
     if (!rating || !reviewComment.trim()) {
         alert("Please select a rating and enter a comment.");
         return;
@@ -225,4 +248,33 @@ async function placeHold(isbn) {
         console.error("Error:", error);
         alert("An error occurred. Please try again.");
     }
+}
+
+function displayStarFields(){
+  const stars = document.querySelectorAll(".stars i");
+  // Loop through the "stars" NodeList
+  stars.forEach((star, index1) => {
+    // Add an event listener that runs a function when the "click" event is triggered
+    star.addEventListener("click", () => {
+      // Loop through the "stars" NodeList Again
+      stars.forEach((star, index2) => {
+        // Add the "active" class to the clicked star and any stars with a lower index
+        // and remove the "active" class from any stars with a higher index
+        index1 >= index2 ? star.classList.add("active") : star.classList.remove("active");
+      });
+    });
+  });
+}
+
+function getStarRating(){
+  // Get all the star icons
+  const stars = document.querySelectorAll('.stars i');
+  let rating = 0;
+  // Add event listeners to each star
+  stars.forEach(star => {
+      star.addEventListener('click', function() {
+      starRating = this.getAttribute('value');
+      console.log(rating);
+      });
+  });
 }
