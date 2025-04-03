@@ -111,7 +111,8 @@ async function searchBooks() {
     if (query === "") {
         clearSearchResults();
         selectedBook = null;
-        document.getElementById('bookList').innerHTML = '';
+        const bookList = document.getElementById('bookList');
+        bookList.innerHTML = ''; // Clear previous results
     } else {
         try {
             const response = await fetch(`/search/searchQuery?query=${encodeURIComponent(query)}`, {
@@ -235,7 +236,7 @@ function createCarouselSlide(bookChunk, index) {
 
         const imgTag = document.createElement('img');
         imgTag.src = book.coverUrl || "/search/static/images/error.png";
-        imgTag.classList.add('img-fluid');
+        imgTag.classList.add('img-fluid', 'bookCover');
         imgTag.alt = book.title || "Book Cover"; 
 
         aTag.appendChild(imgTag);

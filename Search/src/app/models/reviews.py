@@ -46,11 +46,17 @@ def get_reviews_db(isbn: str):
     reviews_list = []
 
     for review in reviews_cursor:
-        reviews_list.append({
-            "user": review.get("user_email").split('@')[0],  # just the username part
-            "rating": review.get("rating"),
-            "review_text": review.get("review_text"),
-            "created_at": review.get("created_at").strftime("%Y-%m-%d %H:%M")
-        })
-
+        user_email = review.get("user_email")
+        user = db["customers"].find_one({"email": user_email}, {"firstName": 1, "lastName": 1})
+        try:
+          reviews_list.append({
+              "user": review.get("user_email").split('@')[0],  # just the username part
+              "firstName" : user.get("firstName"),
+              "lastName" : user.get("lastName"),
+              "rating": review.get("rating"),
+              "review_text": review.get("review_text"),
+              "created_at": review.get("created_at").strftime("%Y-%m-%d")
+          })
+        except AttributeError:
+          print("Customer does not exist")
     return reviews_list

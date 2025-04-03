@@ -141,13 +141,22 @@ function displayReviews(reviews) {
     commentsList.innerHTML = ''; // Clear any existing reviews
     reviews.forEach(review => {
         const card = document.createElement('div');
+        const dateString = review.created_at;
+        const date = new Date(dateString);
+        // Options for formatting
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = date.toLocaleDateString('en-US', options);
+
         card.innerHTML = `
             <div class="card mt-3 mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">${review.user}</h5>
-                    <p class="card-text">${getStars(review.rating)} </p>
-                    <p class="card-text">${review.review_text}</p>
-                    <p class="card-text">${review.created_at} </p>
+                    <h5 class="card-title d-inline me-2">${review.firstName} ${review.lastName}</h5>
+                    <p class="card-text d-inline">${getStars(review.rating)} </p>
+                    <div class="d-flex">
+                      <p class="card-title details fs-6 fst-italic d-inline me-2">@${review.user}</p>
+                      <p class="card-title details d-inline">(${formattedDate})</p>
+                    </div>
+                    <p class="card-text">${review.review_text}</p> 
                 </div>
             </div>`;
         commentsList.appendChild(card);
