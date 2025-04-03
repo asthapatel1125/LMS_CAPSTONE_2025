@@ -29,7 +29,7 @@ function displayBooks(filteredBooks) {
         const bookCard = document.createElement("div");
         bookCard.className = "col";
         bookCard.innerHTML = `
-            <button type="submit" class="h-100" style="border: none; background:none;" 
+            <button type="submit" class="h-100 w-100" style="border: none; background:none;" 
                 onclick="displayBookDetails('${book.isbn}')">
                 <div class="card h-100">
                     <div class="card-body">
@@ -37,6 +37,7 @@ function displayBooks(filteredBooks) {
                         <h6 class="card-subtitle mb-2 text-muted">${book.author}</h6>
                         <p class="card-text"><strong>ISBN:</strong> ${book.isbn}</p>
                         <p class="card-text"><strong>Genre:</strong> ${book.genre}</p>
+                        <p class="card-text"><strong>Format:</strong> ${book.format}</p>
                         <p class="card-text"><strong>Availability:</strong> ${book.status}</p>
                         <p class="card-text"><strong>Kid Friendly:</strong> ${book.kidFriendly ? "Yes" : "No"}</p>
                         <p class="card-text"><strong>Copies:</strong> ${book.numCopies}</p>
