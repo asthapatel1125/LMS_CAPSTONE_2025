@@ -45,6 +45,7 @@ async function displayBooks(books) {
 
     // Use a for...of loop to handle async/await properly
     for (const book of books) {
+        let title;
         const card = document.createElement('div');
         card.classList.add("col-12", "col-md-6", "col-lg-4", "my-3");
 
@@ -66,6 +67,13 @@ async function displayBooks(books) {
             console.error(`Error fetching cover for ISBN: ${book.isbn}`, coverError);
         }
 
+        if (book.format === "Audio"){
+          title = '🎧' + book.title
+        }
+        else{
+          title = '📖' + book.title
+        }
+
         // Add the book's information and cover to the button
         bookButton.innerHTML = `
             <div class="card w-100 mb-3">
@@ -76,7 +84,7 @@ async function displayBooks(books) {
                     </div>
                     <!-- Text on the right -->
                     <div class="col-10 book-info">
-                        <h5 class="card-header">${book.title}</h5>
+                        <h5 class="card-header">${title}</h5>
                         <div class="card-body">
                           <div class="container row">
                             <div class="col-8">
@@ -86,7 +94,7 @@ async function displayBooks(books) {
                               <h6 class="card-title fw-normal">Status: ${book.status}</h6>
                             </div>
                             <div class="col-4 d-flex flex-column justify-content-cente">
-                              <button type="submit" class="btn btn-custom-size p-1 m-2">Place Hold</button>
+                              <button type="submit" class="btn btn-custom-size p-2 m-2">Place Hold</button>
                             </div>
                           </div>
                         </div>

@@ -33,7 +33,7 @@
     background-position: center; 
     height: 400px; 
     border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(31, 64, 51, 0.51);
 }
 
 .book-section{
@@ -89,4 +89,11 @@
   background-color: #007bff; /* Blue background for active item */
   color: white; /* White text for active item */
   outline: none; /* Optional: Removes the default focus outline */
+}
+
+.carousel-header{
+  background-color: #97b8b383;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(31, 64, 51, 0.51);
 }
