@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const query = urlParams.get("query") || "";
     window.searchQuery = query;
     fetchBooks(query);
+
+    
 });
 
 // Function to fetch books from the backend based on the search query
@@ -135,6 +137,13 @@ function applyFilters() {
         console.error('Error:', error);
         bookCardContainer.innerHTML = `<div>Error fetching books. Please try again later.</div>`;  // Display error message
     });
+}
+
+// Function to reset all filters
+function resetFilters() {
+    const checkboxes = document.querySelectorAll('.form-check-input');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+    applyFilters(); // Refresh book results without filters
 }
 
 // Function to get the checked checkbox values

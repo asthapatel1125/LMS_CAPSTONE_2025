@@ -15,6 +15,7 @@ class Review(BaseModel):
 
 @app.post("/write-review")
 async def add_review(request: Request, rating: int, review_comment: str, isbn: str)-> None:
+    print("received review from db!")
     # Securely get user info from session
     token = request.cookies.get("login_token")
     
@@ -37,6 +38,7 @@ async def add_review(request: Request, rating: int, review_comment: str, isbn: s
 
     # add to databse
     db["reviews"].insert_one(review_data)
+    print(f'added {review_comment} to db!')
 
 
 # get reviews from db

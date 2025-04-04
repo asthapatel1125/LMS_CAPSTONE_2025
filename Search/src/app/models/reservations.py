@@ -97,62 +97,6 @@ def get_book_status(isbn:str):
     return status  # Returns True if available, False otherwise
 
 
-# FUNCTION NOT REFERENCED FOR NOW
-#-------------------------------------------
-@app.post("reserve_book")
-def place_hold_db(request: Request, isbn: str):
-    print("placing hold from db")
-    # get user email
-    # Securely get user info from session
-    token = request.cookies.get("login_token")
-    print("got token")
-    if not token:
-        return {"message": "Your session has expired. Please login again."}
-    
-    payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-    user_email = payload.get("sub")
-    print(f'got email {user_email}')
-    if not user_email:
-        return {"message": "Invalid session."}
-    
-    print("finding book with isbn")
-    # get book instance from book db
-    book = db["books"].find_one({"isbn": isbn})
-
-    if not book:
-        raise HTTPException(status_code=404, detail="Book not found")
-    
-    
-    # check if the same user has this copy on hold (yet to implement)
-    print("placing hold to table in the db")
-    # if copy is available then place hold
-    reservation = {
-        "reservation_id": uuid.uuid4().hex,  # Generates a random unique ID
-        "book_id": uuid.uuid4().hex,  
-        "user_email": user_email,
-        "isbn": isbn,
-        "reservation_date": datetime.utcnow().isoformat(),
-        "expiration_date": (datetime.utcnow() + timedelta(days=5)).isoformat(),
-        "status": "complete"
-    }
-    
-    db["reservations"].insert_one(reservation)
-    print("added to reservation")
-    print("checking active holds")
-    # UPDATE BOOK STATUS
-    # check reservations db for active holds (reservations.status == "complete") after this addition
-    active_holds = db["reservations"].count_documents({
-        "isbn": isbn,
-        "status": "complete"  # active hold
-    })
-    
-    # if this is the last copy being placed on hold then change the status
-    if active_holds == book["numOfCopies"]:  # Last copy taken
-        db["books"].update_one({"isbn": isbn}, {"$set": {"status": "unavailable"}})
-
-    return {"message": "Book placed on hold", "reservation": reservation}
-#-------------------------------------------
-        
 @app.post("/add_to_queue")
 def add_user_to_queue(isbn: str, request: Request):
     # Securely get user info from session

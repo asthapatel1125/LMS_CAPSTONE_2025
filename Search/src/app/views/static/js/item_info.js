@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Fetch book data based on the query (initial load)
     fetchBooks(isbn);
 
+    fetchReviews(isbn);
 
     // Set up wishlist button
     let wishButton = document.getElementById('wishlist-button');

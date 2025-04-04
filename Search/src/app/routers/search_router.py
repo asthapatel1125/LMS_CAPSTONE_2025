@@ -175,10 +175,8 @@ async def get_book_info_page(request: Request, isbn: str):
 @router.post("/place_hold/{isbn}")
 async def place_hold(request: Request, isbn: str):
     is_available = get_book_status(isbn)
-    print(f'checked status {is_available}')
     
     if is_available:
-        print("Adding to queue from router")
         response = add_user_to_queue(isbn, request)  # add user to queue
         if response:
             response2 = decr_book_copies(isbn)
@@ -217,7 +215,7 @@ async def write_review(
     review_comment: str = Form(...),
     isbn: str = Form(...)
 )->None:
-    
+    print(f'received review from router {review_comment}')
     await add_review(request, rating, review_comment, isbn )
 
 
