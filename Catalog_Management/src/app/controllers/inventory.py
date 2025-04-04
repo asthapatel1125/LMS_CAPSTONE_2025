@@ -34,11 +34,11 @@ def handle_add_book(title: str, isbn: str, author: str, genre: str, rating: floa
     else:
         return response2
 
-def handle_modify_book(title: str, isbn: str, author: str, genre: str, numCopies: int, description: str, kidFriendly: bool, format: str, pageNumber: int, publisher: str, status: str):
+def handle_modify_book(title: str, isbn: str, author: str, genre: str, numCopies: int, description: str, kidFriendly: bool, format: str, pageNumber: int, numOfMins: int, publisher: str, status: str, image: str):
     book = get_book(isbn)
     if book is not None:
         updates = {"title": title, "isbn": isbn, "author": author, "genre": genre, "numCopies": numCopies,
-                    "description": description, "kidFriendly": kidFriendly, "format": format, "pageNumber": pageNumber,
+                    "description": description, "kidFriendly": kidFriendly, "format": format, "pageNumber": pageNumber, "numOfMins": numOfMins,
                     "publisher": publisher, "status": status}
         update_occurred = False
         for field, new in updates.items():
@@ -49,7 +49,15 @@ def handle_modify_book(title: str, isbn: str, author: str, genre: str, numCopies
                     print(f"\n\n{response}\n\n")
                     if response:
                         update_occurred = True
+        if image is not None:
+            update_occurred = modify_book_cover(isbn, image)
+            return update_occurred
         return update_occurred
     return False
 
+def check_uploaded_image(content_type: str):
+    if content_type.startswith('image/'):
+        return True
+    else:
+        return False
     

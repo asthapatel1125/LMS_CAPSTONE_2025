@@ -92,11 +92,17 @@
                                 <label for="format" class="form-label">Format</label>
                                 <input type="text" id="format" name="format" class="form-control" placeholder="Format">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="pageNumber" class="form-label">Page Number</label>
-                                <input type="number" id="pageNumber" name="pageNumber" class="form-control" placeholder="Page Number">
-                            </div>
                         </div>
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label for="pageNumber" class="form-label">Page Number</label>
+                            <input type="number" id="pageNumber" name="pageNumber" class="form-control" placeholder="Page Number">
+                        </div>
+                          <div class="col-md-6 mb-3">
+                              <label for="numOfMins" class="form-label">Number of Minutes</label>
+                              <input type="number" id="numOfMins" name="numOfMins" class="form-control" placeholder="Minutes">
+                          </div>
+                      </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="publisher" class="form-label">Publisher</label>
@@ -110,8 +116,17 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="row">
+                          <div class="mb-3">
+                            <label for="imageUpload" class="form-label">Upload Book Cover:</label>
+                            <input type="file" class="form-control" id="imageUpload" name="imageUpload" accept="image/*" onchange="previewImage(event)">
+                          </div>
+                          <div class="mb-3">
+                            <img id="imagePreview" src="#" alt="Image Preview" style="display: none; width: 100%; max-width: 14rem;"/>
+                          </div>       
+                      </div>
                         <div class="text-center">
-                            <button type="submit" class="btn btn-custom-size px-4" id="modifyButton" onclick="modifyBook()">Modify</button>
+                            <button type="submit" class="btn btn-custom-size px-4" id="modifyButton" onclick="modifyBook(event)">Modify</button>
                             <button type="button" class="btn btn-clear-size px-4 mx-2" onclick="cancel()">Cancel</button>
                             <button type="button" class="btn btn-clear-size px-4" onclick="back()">Back</button>
                         </div>

@@ -1,6 +1,21 @@
 let selectedBook = null;
 let books = [];
 
+function previewImage(event) {
+  const imagePreview = document.getElementById('imagePreview');
+  const file = event.target.files[0];
+  
+  if (file) {
+      // Create a URL for the selected image file
+      const reader = new FileReader();
+      reader.onload = function() {
+          imagePreview.src = reader.result;  // Set the source of the preview image
+          imagePreview.style.display = 'block';  // Display the image
+      }
+      reader.readAsDataURL(file);  // Read the image file as data URL
+  }
+}
+
 async function fetchBooks() {
     try {
         const response = await fetch('/catalog/books/');
@@ -60,21 +75,37 @@ function displayBooks(booksToDisplay) {
     });
 }
 
-function displayBookDetails(book) {
+async function displayBookDetails(book) {
     const bookDetailsDiv = document.getElementById('bookDetails');
+    const imageUrl = await getImage(book.isbn);
+    let length;
+    if (book.format === "Audio"){
+      length = `<strong>Number of Minutes:</strong> ${book.numOfMins}`
+    } else{
+      length = `<strong>Page Length:</strong> ${book.pageNumber}`;
+    }
     bookDetailsDiv.innerHTML = `
+      <div class="card shadow-sm p-4 rounded">
         <h5>${book.title}</h5>
-        <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>ISBN:</strong> ${book.isbn}</p>
-        <p><strong>Genre:</strong> ${book.genre}</p>
-        <p><strong>Number of copies:</strong> ${book.numCopies}</p>
-        <p><strong>Description:</strong> ${book.description}</p>
-        <p><strong>Kid Friendly:</strong> ${book.kidFriendly ? "Yes" : "No"}</p>
-        <p><strong>Format:</strong> ${book.format}</p>
-        <p><strong>Page Number:</strong> ${book.pageNumber}</p>
-        <p><strong>Publisher:</strong> ${book.publisher}</p>
-        <p><strong>Status:</strong> ${book.status}</p>
+        <div class="row">
+          <div class="col-sm-6">
+            <p><strong>Author:</strong> ${book.author}</p>
+            <p><strong>ISBN:</strong> ${book.isbn}</p>
+            <p><strong>Genre:</strong> ${book.genre}</p>
+            <p><strong>Number of copies:</strong> ${book.numCopies}</p>
+            <p><strong>Description:</strong> ${book.description}</p>
+            <p><strong>Kid Friendly:</strong> ${book.kidFriendly ? "Yes" : "No"}</p>
+            <p><strong>Format:</strong> ${book.format}</p>
+            <p><strong>${length}</p>
+            <p><strong>Publisher:</strong> ${book.publisher}</p>
+            <p><strong>Status:</strong> ${book.status}</p>
+          </div>
+          <div class="col-sm-6">
+            <img class="img-fluid rounded-4" src="${imageUrl}" alt="${book.title} Book Cover">
+          </div>
+        </div>
         <button class="btn btn-custom-size mt-2" onclick="openModifyForm()">Modify</button>
+      </div>
     `;
     document.getElementById('bookDetails').style.display = 'block';
 }
@@ -105,8 +136,18 @@ function populateModifyForm(book) {
     document.getElementById('kidFriendly').checked = book.kidFriendly;
     document.getElementById('format').value = book.format;
     document.getElementById('pageNumber').value = book.pageNumber;
+    document.getElementById('numOfMins').value = book.numOfMins;
     document.getElementById('publisher').value = book.publisher;
     document.getElementById('status').value = book.status;
+
+    if (book.format === "Audio"){
+      document.getElementById("pageNumber").readOnly = true;
+      document.getElementById("numOfMins").readOnly = false;
+    }
+    else{
+      document.getElementById("numOfMins").readOnly = true;
+      document.getElementById("pageNumber").readOnly = false;
+    }
 }
 
 function modifyButtonEnable() {
@@ -182,43 +223,92 @@ function modifyBook(event) {
     event.preventDefault();
     const formIsValid = validateForm();
     if (formIsValid) {
+        //const data = Object.fromEntries(formData.entries());
+        //data.kidFriendly = document.getElementById("kidFriendly").checked;
+        const checkbox = document.getElementById('kidFriendly');
+        if (checkbox.checked) {
+          checkbox.value = "true";
+        }else{
+          checkbox.value = "false";
+        }
         const formData = new FormData(document.getElementById("modifyBookForm"));
-        const data = Object.fromEntries(formData.entries());
-        data.kidFriendly = document.getElementById("kidFriendly").checked;
-        
-        fetch('/catalog/modify-item', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (response.status === 409) {
-                fetchBooks();
-                return response.json().then(result => {
-                    alert(result.detail);
-                });
-            } else if (response.ok) {
-                alert("Book modified successfully!");
-                document.getElementById("modifyBookForm").reset();
-                window.location.href = "/catalog/modify-item";
-            } else {
-                fetchBooks();
-                alert("An unexpected error occurred.");
+        formData.append("kidFriendly", checkbox.value);
+
+        // Check book cover uploaded correctly
+        const fileInput = document.getElementById('imageUpload');
+        const file = fileInput.files[0];
+        if (file) {
+            if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                alert('Only JPG, PNG, or JPEG images are allowed for the book cover!');
+                event.target.value = '';
+                imagePreview.style.display = 'none';
+                return;
             }
-        })
-        .catch(error => console.error('Error:', error));
+            const reader = new FileReader();
+            reader.onloadend = function() {
+              bookCoverValid = true; 
+              console.log(bookCoverValid);
+            };
+            reader.readAsDataURL(file);
+        } 
+       submitForm(formData);
     }
+}
+
+async function submitForm(formData){
+    console.log(formData);
+    fetch('/catalog/modify-item', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+        if (response.status === 409) {
+            fetchBooks();
+            return response.json().then(result => {
+                alert(result.detail);
+            });
+        } else if (response.ok) {
+            alert("Book modified successfully!");
+            document.getElementById("modifyBookForm").reset();
+            window.location.href = "/catalog/modify-item";
+        } else {
+            fetchBooks();
+            alert("An unexpected error occurred.");
+        }
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 function cancel(){
     fetchBooks();
-    document.getElementById("modifyBookForm").reset();
+    //document.getElementById("modifyBookForm").reset();
+    populateModifyForm(selectedBook);
+
+    const imagePreview = document.getElementById('imagePreview');
+    imagePreview.src = "";
+    imagePreview.style.display = 'none';
+    const imageUpload = document.getElementById('imageUpload');
+    imageUpload.value = '';
   }
 
 function back(){
-    window.location.href = "/catalog/edit_inventory";
+    window.location.href = "/catalog/modify-item";
 }
 
-document.querySelector("#modifyButton").addEventListener("click", modifyBook);
+// change this to an API call to get the book cover
+async function getImage(isbn){
+  try {
+      const coverResponse = await fetch(`/catalog/serve-book-cover/${isbn}`);
+      if (coverResponse.ok) {
+          let blob = await coverResponse.blob();
+          let coverBlob = new Blob([blob], { type: "image/jpg" });
+          let blobUrl = URL.createObjectURL(coverBlob);
+          return blobUrl;
+      }
+  } catch (coverError) {
+      console.error(`Error fetching cover for ISBN: ${isbn}`, coverError);
+  }
+  return "";
+}
+
+document.querySelector("#modifyButton").addEventListener("submit", modifyBook);

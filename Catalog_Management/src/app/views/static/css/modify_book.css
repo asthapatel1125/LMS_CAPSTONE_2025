@@ -59,3 +59,8 @@
 .container.my-auto {
     flex-grow: 1;
 }
+
+.img-fluid{
+  width: 85%;
+  object-fit: cover;
+}

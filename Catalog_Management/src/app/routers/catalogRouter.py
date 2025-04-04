@@ -120,11 +120,17 @@ def modify_item_page(request: Request):
     return templates.TemplateResponse("modify_book.html", {"request": request})
 
 @router.post("/modify-item", response_class=HTMLResponse)
-def modify_item(title: str = Body(...), isbn: str = Body(...), author: str = Body(...), genre: str = Body(...),
-                numCopies: int = Body(...), description: str = Body(...), kidFriendly: bool = Body(...),
-                format: str = Body(...), pageNumber: int = Body(...), publisher: str = Body(...), status: str = Body(...)):
+async def modify_item(title: str = Body(...), isbn: str = Body(...), author: str = Body(...), genre: str = Body(...),
+                numCopies: int = Body(...), description: str = Body(...),
+                format: str = Body(...), pageNumber: int = Body(...), numOfMins: int = Body(...), publisher: str = Body(...), status: str = Body(...), imageUpload: UploadFile = File(...), kidFriendly: bool = Body(...)):
     
-    result = handle_modify_book(title, isbn, author, genre, numCopies, description, kidFriendly, format, pageNumber, publisher, status)
+    if (check_uploaded_image(imageUpload.content_type)):
+        image_data = await imageUpload.read()
+        image_base64 = base64.b64encode(image_data).decode('utf-8')
+    else:
+        image_base64 = None
+    
+    result = handle_modify_book(title, isbn, author, genre, numCopies, description, kidFriendly, format, pageNumber, numOfMins, publisher, status, image_base64)
     if result == False:
         return JSONResponse(
             status_code=409,
