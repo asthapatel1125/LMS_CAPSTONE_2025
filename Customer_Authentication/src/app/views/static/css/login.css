@@ -74,16 +74,3 @@
 .quote {
     font-style: italic;
 }
-
-/* Footer Styling */
-.footer-home {
-    background-color: #132b37;
-    color: white;
-    padding: 10px 0;
-    width: 100%;
-}
-
-.footer-home p {
-    margin: 0;
-    font-size: 14px;
-}

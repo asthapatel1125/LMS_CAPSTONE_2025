@@ -69,19 +69,6 @@
     font-size: 14px;
 }
 
-/* Footer Styling */
-.footer-home {
-    background-color: #132b37;
-    color: white;
-    padding: 10px 0;
-    width: 100%;
-  }
-
-.footer-home p {
-    margin: 0;
-    font-size: 14px;
-}
-
 .btn-transparent {
     background-color: rgba(0, 0, 0, 0.1);
     border: none;
