@@ -246,11 +246,31 @@ function modifyBook(event) {
             }
             const reader = new FileReader();
             reader.onloadend = function() {
-              bookCoverValid = true; 
-              console.log(bookCoverValid);
+              bookCoverValid = true;
             };
             reader.readAsDataURL(file);
-        } 
+        }
+        
+        // Check the format of the book and ensure the book file is valid
+        const bookFileInput = document.getElementById('bookFile');
+        const bookFile = bookFileInput.files[0];
+        const format = document.getElementById("format").value;
+        console.log(bookFile.type);
+        if (bookFile) {
+          if (format === "eBook" && bookFile.type !== "application/epub+zip") {
+              alert('Only EPUB files are allowed for eBooks!');
+              return;
+          } else if (format === "Audio" && !["audio/mp3", "audio/mpeg"].includes(bookFile.type)) {
+              alert('Only MP3 files are allowed for Audio books!');
+              return;
+          }
+          const bookreader = new FileReader();
+          bookreader.onloadend = function() {
+              bookFileValid = true;
+          };
+          bookreader.readAsDataURL(bookFile);
+      }
+
        submitForm(formData);
     }
 }
@@ -289,6 +309,10 @@ function cancel(){
     imagePreview.style.display = 'none';
     const imageUpload = document.getElementById('imageUpload');
     imageUpload.value = '';
+
+    const fileSection = document.getElementById('fileUploadSection');
+    const bookFile = document.getElementById('bookFile');
+    bookFile.value = '';
   }
 
 function back(){

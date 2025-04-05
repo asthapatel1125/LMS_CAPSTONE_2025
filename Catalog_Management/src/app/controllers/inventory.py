@@ -34,7 +34,7 @@ def handle_add_book(title: str, isbn: str, author: str, genre: str, rating: floa
     else:
         return response2
 
-def handle_modify_book(title: str, isbn: str, author: str, genre: str, numCopies: int, description: str, kidFriendly: bool, format: str, pageNumber: int, numOfMins: int, publisher: str, status: str, image: str):
+def handle_modify_book(title: str, isbn: str, author: str, genre: str, numCopies: int, description: str, kidFriendly: bool, format: str, pageNumber: int, numOfMins: int, publisher: str, status: str, file: str, image: str):
     book = get_book(isbn)
     if book is not None:
         updates = {"title": title, "isbn": isbn, "author": author, "genre": genre, "numCopies": numCopies,
@@ -51,7 +51,8 @@ def handle_modify_book(title: str, isbn: str, author: str, genre: str, numCopies
                         update_occurred = True
         if image is not None:
             update_occurred = modify_book_cover(isbn, image)
-            return update_occurred
+        if file is not None:
+            update_occurred = modify_book_file(isbn, file)
         return update_occurred
     return False
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Body, status, Request, UploadFile, File
-from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResponse, StreamingResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, Response, JSONResponse, StreamingResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from controllers.token import *
 from controllers.inventory import *
@@ -127,15 +127,19 @@ def modify_item_page(request: Request):
 @router.post("/modify-item", response_class=HTMLResponse)
 async def modify_item(title: str = Body(...), isbn: str = Body(...), author: str = Body(...), genre: str = Body(...),
                 numCopies: int = Body(...), description: str = Body(...),
-                format: str = Body(...), pageNumber: int = Body(...), numOfMins: int = Body(...), publisher: str = Body(...), status: str = Body(...), imageUpload: UploadFile = File(...), kidFriendly: bool = Body(...)):
-    
+                format: str = Body(...), pageNumber: int = Body(...), numOfMins: int = Body(...), publisher: str = Body(...), status: str = Body(...), bookFile: UploadFile = File(...), imageUpload: UploadFile = File(...), kidFriendly: bool = Body(...)):
+    image_base64 = None
+    file_base64 = None
+
     if (check_uploaded_image(imageUpload.content_type)):
         image_data = await imageUpload.read()
         image_base64 = base64.b64encode(image_data).decode('utf-8')
-    else:
-        image_base64 = None
+
+    if bookFile:
+        file_data = await bookFile.read()
+        file_base64 = base64.b64encode(file_data).decode('utf-8')
     
-    result = handle_modify_book(title, isbn, author, genre, numCopies, description, kidFriendly, format, pageNumber, numOfMins, publisher, status, image_base64)
+    result = handle_modify_book(title, isbn, author, genre, numCopies, description, kidFriendly, format, pageNumber, numOfMins, publisher, status, file_base64, image_base64)
     if result == False:
         return JSONResponse(
             status_code=409,
@@ -149,4 +153,16 @@ async def serve_cover(isbn: str):
     data = await get_book_cover(isbn)
     file = BytesIO(data)
     response = StreamingResponse(file, media_type="image/jpg")
+    return response
+
+# Route for digital content
+@router.get("/file/{isbn}/{format}", response_class=StreamingResponse)
+async def serve_file(isbn: str, format:str):
+    data = await get_book_file(isbn)
+    file = BytesIO(data)
+    if format == "eBook":
+        media_type_field = "application/epub+zip"
+    else:
+        media_type_field = "audio/mp3"
+    response = StreamingResponse(file, media_type= media_type_field, headers={"Content-Disposition": f"attachment"})
     return response

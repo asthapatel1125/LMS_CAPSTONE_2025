@@ -70,7 +70,6 @@ function filterBooks() {
     displayBooks(filteredBooks);
 }
 
-
 // Function to search books
 function searchBooks() {
     let query = document.getElementById("searchInput").value;
@@ -123,10 +122,29 @@ async function displayBookDetails(bookISBN) {
                 <div class="col-md-3">
                     <img class="img-fluid rounded-4" src="${imageUrl}" alt="${book.title} Book Cover">
                 </div>
+                <div class="col-12 mt-4">
+                  <h4 class="text-center mb-4">View Content 📟</h4>
+                  ${setupContentFormat(book.format, book.title)}
+                </div>
             </div>
             <button class="btn btn-primary mt-4 custom-back-btn" onclick="closeAndShowBooks()">Back</button>
         </div>
     `;
+    
+    if (book.format === "eBook"){
+      await getePubContent(book.isbn);
+
+      document.getElementById("prev").addEventListener("click", () => {
+        if (rendition) rendition.prev();
+      });
+
+      document.getElementById("next").addEventListener("click", () => {
+        if (rendition) rendition.next();
+      });
+      
+    } else {
+      await getAudioContent(book.isbn);
+    }
 }
 
 function closeAndShowBooks(){
@@ -151,4 +169,84 @@ async function getImage(isbn){
         console.error(`Error fetching cover for ISBN: ${isbn}`, coverError);
     }
     return "";
+}
+
+// get the ebook
+async function getePubContent(isbn){
+  try {
+    const response = await fetch(`/catalog/file/${isbn}/eBook`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            let blob = await response.blob();
+            console.log("Received EPUB Blob:", blob);
+
+            let epubBlob = new Blob([blob], { type: "application/epub+zip" });
+            let blobUrl = URL.createObjectURL(epubBlob);
+            console.log("Created Blob URL:", blobUrl);
+
+            const epubBook = ePub(blobUrl, { openAs: "epub" });
+            console.log("EPUB Object Created:", epubBook);
+
+            epubBook.ready
+                .then(() => console.log("EPUB is ready!"))
+                .catch(err => console.error("Error waiting for EPUB ready:", err));
+
+            epubBook.opened
+                .then(() => console.log("EPUB fully opened!"))
+                .catch(err => console.error("Error waiting for EPUB opened:", err));
+
+            rendition = epubBook.renderTo("epub-container", {
+                width: "100%",
+                height: "100%"
+            });
+            rendition.display();
+  } catch (error) {
+    console.error(`Error fetching file for ISBN: ${isbn}`, error);
+  }
+  return ""
+}
+
+//get the audio book
+async function getAudioContent(isbn){
+  try {
+    const audioPlayer = document.getElementById("audio-player");
+    const container = document.getElementById("container");
+    const response = await fetch(`/catalog/file/${isbn}/Audio`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            container.innerText = "Loading audiobook...";
+
+            let audioBlob = await response.blob();
+            let audioUrl = URL.createObjectURL(audioBlob);
+            audioPlayer.src = audioUrl;
+
+            // Once the audio is loaded, set the container text to empty
+            audioPlayer.oncanplaythrough = () => {
+                container.innerText = "";
+            };
+
+            console.log("Audiobook loaded and ready to play!");
+
+  } catch (error){
+    console.error(`Error fetching file for ISBN: ${isbn}`, error);
+  }
+}
+
+//function to create the html based on audio or ebook
+function setupContentFormat(format, title){
+  let mediaBody;
+  if (format === "Audio"){
+    mediaBody = `<div id="audio-player-container" class="w-100" style="border: none;">
+                    <div id="container">Loading audiobook ...</div>
+                    <audio id="audio-player" controls class="w-100">
+                        <!-- Audio will be dynamically added -->
+                    </audio>
+                </div>`
+  }
+  else {
+    mediaBody = `<div id="epub-container" class="w-100 epub-area" style="border: 1px solid rgba(184, 184, 184, 0.389); height: 100vh; border-radius: 30px; box-shadow: 0px 0px 10px rgba(178, 178, 178, 0.3)"></div>
+                  <div class="modal-footer justify-content-center">
+                      <button id="prev" class="btn" style="font-size: 30px;">⏮️</button>
+                      <button id="next" class="btn" style="font-size: 30px;">⏩</button>
+                  </div>`;
+  }
+  return mediaBody;
 }
