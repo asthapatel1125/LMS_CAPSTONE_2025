@@ -43,10 +43,21 @@
                 <!-- Book details will be displayed here when a book is clicked -->
             </div>
             <div class="col-12">
+              <div class="text-start" id="form-alert"></div>
               <button type="submit" class="btn btn-custom-size px-4" id = "deleteButton" onclick="deleteBook()">Delete</button>
-              <button type="button" class="btn btn-clear-size px-4 mx-2" onclick="cancel()">Cancel</button>
+              <button type="button" class="btn btn-clear-size px-4 mx-2" style = "border-color: black;" onclick="cancel()">Cancel</button>
             </div>
           </form>
+          <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body"> </div>
+              </div>
+            </div>
+          </div>
        </div>
       </div>
     <div class="col-1"></div>

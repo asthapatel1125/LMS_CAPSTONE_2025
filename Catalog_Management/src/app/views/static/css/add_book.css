@@ -5,7 +5,7 @@
 /* Custom button styles */
 .btn-custom-size {
     padding: 6px 12px; /* Adjust padding for smaller size */
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
     background-color: #162D3A;
@@ -29,7 +29,7 @@
 
 .btn-remove-size{
     padding: 5px; /* Adjust padding for smaller size */
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
     background-color: #E3E3E3;
@@ -37,7 +37,7 @@
 }
 
 .btn-clear-size{
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
     background-color: #E3E3E3;
@@ -48,4 +48,17 @@
     display: none;
     width: 100%; 
     max-width: 300px;
+}
+
+.modal{
+  border-radius: 15px;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-content {
+  background-color: #162D3A;
+  color: white;
 }

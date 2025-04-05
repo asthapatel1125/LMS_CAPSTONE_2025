@@ -21,7 +21,7 @@
 /* Custom button styles */
 .btn-custom-size {
     padding: 6px 12px; /* Adjust padding for smaller size */
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
     background-color: #162D3A;
@@ -36,4 +36,17 @@
 
 .h5 {
     color: #162D3A;
+}
+
+.modal{
+  border-radius: 15px;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-content {
+  background-color: #162D3A;
+  color: white;
 }

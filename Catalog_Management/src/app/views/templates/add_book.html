@@ -119,9 +119,19 @@
           <div class="col-12">
             <button type="submit" class="btn btn-custom-size px-4 mx-2" onclick="submitBook(event)">Submit</button>
             <button type="button" class="btn btn-clear-size px-4 mx-2" onclick="clear()">Clear</button>
-            <button type="button" class="btn btn-clear-size px-4 mx-2" onclick="cancel()">Cancel</button>
+            <button type="button" class="btn btn-cancel-size px-4 mx-2" style = "border-color: black;" onclick="cancel()">Cancel</button>
           </div>
         </form>
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body" id="modal-body"> </div>
+            </div>
+          </div>
+        </div>
     </div>
   </div>
   <div class="col-1"></div>

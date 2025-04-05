@@ -48,7 +48,8 @@ function displayBooks(booksToDisplay) {
         // Create a button for each book
         const bookButton = document.createElement('button');
         bookButton.classList.add('btn', 'btn-custom-search', 'w-100', 'p-1');
-        bookButton.innerHTML = `<h5>${book.title}</h5> <p>By: ${book.author}</p> <p><i>${book.genre}</i></p>`;
+        if (book.format === "Audio"){bookButton.innerHTML = `<h5>${book.title}🎧</h5> <p>By: ${book.author}</p> <p><i>${book.genre}</i></p>`;}
+        else {bookButton.innerHTML = `<h5>${book.title}📖</h5> <p>By: ${book.author}</p> <p><i>${book.genre}</i></p>`;}
         
         bookButton.addEventListener('click', () => {
             selectedBook = book;
@@ -67,12 +68,21 @@ function displayBooks(booksToDisplay) {
 // Function to display detailed book information
 function displayBookDetails(book) {
   const bookDetailsDiv = document.getElementById('bookDetails');
+  let length;
+  if (book.format === "Audio"){length = `<strong>Number of Minutes:</strong> ${book.numOfMins}`} 
+  else{length = `<strong>Page Length:</strong> ${book.pageNumber}`;}
   bookDetailsDiv.innerHTML = `
       <h5>${book.title}</h5>
       <p><strong>Author:</strong> ${book.author}</p>
       <p><strong>ISBN:</strong> ${book.isbn}</p>
+      <p><strong>Format:</strong> ${book.format}</p>
       <p><strong>Genre:</strong> ${book.genre}</p>
+      <p><strong>Kid Friendly:</strong> ${book.kidFriendly ? "Yes" : "No"}</p>
       <p><strong>Rating:</strong> ${book.rating} ⭐</p>
+      <p><strong>Publisher:</strong> ${book.publisher}</p>
+      <p>${length}</p>
+      <p><strong>Number of copies:</strong> ${book.numCopies}</p>
+      <p><strong>Status:</strong> ${book.status}</p>
       <p><strong>Description:</strong> ${book.description}</p>
   `;
   console.log(book)
@@ -108,6 +118,7 @@ function validateForm() {
 
 async function deleteBook() {
   event.preventDefault();
+  var myModal = new bootstrap.Modal(document.getElementById('successModal'));
   const formIsValid = validateForm();
   if (formIsValid) {
     try {
@@ -120,10 +131,16 @@ async function deleteBook() {
 
       if (response.ok) {
         const result = await response.json();
-        alert(result.message);
-        location.href = "/catalog/edit_inventory";
+        document.getElementById('modal-body').innerHTML = formatModal(false);
+        myModal.show();
+        const closeButton = document.querySelector('.btn-close');
+        closeButton.addEventListener('click', function () {
+          document.getElementById('bookDetails').innerHTML = '';
+          window.location.href = "/catalog/remove-item"; 
+        });
       } else {
-        alert("Failed to delete book");
+        document.getElementById('modal-body').innerHTML = formatModal(true);
+        myModal.show();
       }
     } catch (error) {
       console.error("Error deleting book:", error);
@@ -133,6 +150,20 @@ async function deleteBook() {
 
 function cancel(){
   location.href = "/catalog/edit_inventory";
+}
+
+function formatModal(error){
+  let modalBody;
+  if (error){
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">❎</p></div>
+                <div class="row"><p class="text-center fs-5">Form submission failed!</p></div>
+                <div class="row"><p class="text-center">Please try again.</p></div>`
+    
+  } else{
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">✅</p></div>
+                <div class="row"><p class="text-center fs-5">Successfully submited!</p></div>`
+  }
+  return modalBody
 }
 
 document.getElementById("deleteBookForm").addEventListener("submit", deleteBook);

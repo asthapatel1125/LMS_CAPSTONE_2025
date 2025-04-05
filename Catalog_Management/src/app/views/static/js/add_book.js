@@ -188,6 +188,7 @@ function submitBook(event) {
 }
 
 async function submitFormData(formData) {
+    var myModal = new bootstrap.Modal(document.getElementById('successModal'));
     try {
         const response = await fetch('/catalog/add-item', {
             method: 'POST',
@@ -195,20 +196,27 @@ async function submitFormData(formData) {
         });
 
         if (response.status === 409) {
+            document.getElementById('modal-body').innerHTML = formatModal(true);
+            myModal.show();
             const result = await response.json();
-            alert(result.detail);
-            clear();
+            console.log(result.detail);
             return;
         }
 
         if (response.ok) {
-            alert("Book added successfully!");
+          document.getElementById('modal-body').innerHTML = formatModal(false);
+          myModal.show();
+          const closeButton = document.querySelector('.btn-close');
+          closeButton.addEventListener('click', function () {
             document.getElementById("addBookForm").reset();
             if (response.redirected) {
                 window.location.href = response.url;
             }
+        });
         } else {
-            alert("An unexpected error occurred.");
+            document.getElementById('modal-body').innerHTML = formatModal(true);
+            myModal.show();
+            console.log("An unexpected error occurred.");
         }
     } catch (error) {
         console.error('Error:', error);
@@ -244,6 +252,20 @@ function toggleFileUpload() {
       pageField.style.display = 'none';
       minuteField.style.display = 'block';
     }
+}
+
+function formatModal(error){
+  let modalBody;
+  if (error){
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">❎</p></div>
+                <div class="row"><p class="text-center fs-5">Form submission failed!</p></div>
+                <div class="row"><p class="text-center">Please try again.</p></div>`
+    
+  } else{
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">✅</p></div>
+                <div class="row"><p class="text-center fs-5">Successfully submited!</p></div>`
+  }
+  return modalBody
 }
 
 

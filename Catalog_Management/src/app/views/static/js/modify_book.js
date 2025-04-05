@@ -57,7 +57,8 @@ function displayBooks(booksToDisplay) {
         listItem.classList.add('list-group-item');
         const bookButton = document.createElement('button');
         bookButton.classList.add('btn', 'btn-custom-search', 'w-100', 'p-1');
-        bookButton.innerHTML = `<h5>${book.title}</h5> <p>By: ${book.author}</p>`;
+        if (book.format === "Audio"){bookButton.innerHTML = `<h5>${book.title}🎧</h5> <p>By: ${book.author}</p>`;}
+        else {bookButton.innerHTML = `<h5>${book.title}📖</h5> <p>By: ${book.author}</p>`;}
         bookButton.addEventListener('click', () => {
             selectedBook = book;
             displayBookDetails(book);
@@ -96,7 +97,7 @@ async function displayBookDetails(book) {
             <p><strong>Description:</strong> ${book.description}</p>
             <p><strong>Kid Friendly:</strong> ${book.kidFriendly ? "Yes" : "No"}</p>
             <p><strong>Format:</strong> ${book.format}</p>
-            <p><strong>${length}</p>
+            <p>${length}</p>
             <p><strong>Publisher:</strong> ${book.publisher}</p>
             <p><strong>Status:</strong> ${book.status}</p>
           </div>
@@ -141,6 +142,7 @@ function populateModifyForm(book) {
     document.getElementById('status').value = book.status;
 
     if (book.format === "Audio"){
+      console.log("Audio");
       document.getElementById("pageNumber").readOnly = true;
       document.getElementById("numOfMins").readOnly = false;
     }
@@ -255,7 +257,7 @@ function modifyBook(event) {
         const bookFileInput = document.getElementById('bookFile');
         const bookFile = bookFileInput.files[0];
         const format = document.getElementById("format").value;
-        console.log(bookFile.type);
+     
         if (bookFile) {
           if (format === "eBook" && bookFile.type !== "application/epub+zip") {
               alert('Only EPUB files are allowed for eBooks!');
@@ -277,6 +279,8 @@ function modifyBook(event) {
 
 async function submitForm(formData){
     console.log(formData);
+    var myModal = new bootstrap.Modal(document.getElementById('successModal'));
+    event.preventDefault();
     fetch('/catalog/modify-item', {
       method: 'POST',
       body: formData
@@ -285,15 +289,23 @@ async function submitForm(formData){
         if (response.status === 409) {
             fetchBooks();
             return response.json().then(result => {
-                alert(result.detail);
+              document.getElementById('modal-body').innerHTML = formatModal(true);
+              myModal.show();
+              console.log(result);
             });
         } else if (response.ok) {
-            alert("Book modified successfully!");
-            document.getElementById("modifyBookForm").reset();
-            window.location.href = "/catalog/modify-item";
+            document.getElementById('modal-body').innerHTML = formatModal(false);
+            myModal.show();
+            const closeButton = document.querySelector('.btn-close');
+            closeButton.addEventListener('click', function () {
+              document.getElementById("modifyBookForm").reset();
+              window.location.href = "/catalog/modify-item"; 
+            });
+            
         } else {
             fetchBooks();
-            alert("An unexpected error occurred.");
+            document.getElementById('modal-body').innerHTML = formatModal(true);
+            myModal.show();
         }
     })
     .catch(error => console.error('Error:', error));
@@ -316,9 +328,13 @@ function cancel(){
   }
 
 function back(){
-    window.location.href = "/catalog/modify-item";
+    document.getElementById("bookDetailsForm").style.display = 'none';
+    displayBookDetails(selectedBook);
 }
 
+function menuReturn(){
+  window.location.href = "/catalog/edit_inventory";
+}
 // change this to an API call to get the book cover
 async function getImage(isbn){
   try {
@@ -333,6 +349,20 @@ async function getImage(isbn){
       console.error(`Error fetching cover for ISBN: ${isbn}`, coverError);
   }
   return "";
+}
+
+function formatModal(error){
+  let modalBody;
+  if (error){
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">❎</p></div>
+                <div class="row"><p class="text-center fs-5">Form submission failed!</p></div>
+                <div class="row"><p class="text-center">Please try again.</p></div>`
+    
+  } else{
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">✅</p></div>
+                <div class="row"><p class="text-center fs-5">Successfully submited!</p></div>`
+  }
+  return modalBody
 }
 
 document.querySelector("#modifyButton").addEventListener("submit", modifyBook);

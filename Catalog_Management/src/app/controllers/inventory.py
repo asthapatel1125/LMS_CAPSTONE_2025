@@ -36,11 +36,13 @@ def handle_add_book(title: str, isbn: str, author: str, genre: str, rating: floa
 
 def handle_modify_book(title: str, isbn: str, author: str, genre: str, numCopies: int, description: str, kidFriendly: bool, format: str, pageNumber: int, numOfMins: int, publisher: str, status: str, file: str, image: str):
     book = get_book(isbn)
+
     if book is not None:
         updates = {"title": title, "isbn": isbn, "author": author, "genre": genre, "numCopies": numCopies,
                     "description": description, "kidFriendly": kidFriendly, "format": format, "pageNumber": pageNumber, "numOfMins": numOfMins,
                     "publisher": publisher, "status": status}
         update_occurred = False
+        
         for field, new in updates.items():
             if getattr(book, field) != new:
                 update_method = globals().get(f"update_{field}")
@@ -54,11 +56,5 @@ def handle_modify_book(title: str, isbn: str, author: str, genre: str, numCopies
         if file is not None:
             update_occurred = modify_book_file(isbn, file)
         return update_occurred
+        
     return False
-
-def check_uploaded_image(content_type: str):
-    if content_type.startswith('image/'):
-        return True
-    else:
-        return False
-    

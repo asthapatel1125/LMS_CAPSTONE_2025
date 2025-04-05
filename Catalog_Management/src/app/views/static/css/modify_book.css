@@ -12,7 +12,7 @@
 
 .btn-custom-size {
     padding: 6px 12px;
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
     background-color: #162D3A;
@@ -24,7 +24,7 @@
 
 .btn-clear-size {
     padding: 6px 12px;
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
     background-color: lightgray;
@@ -63,4 +63,17 @@
 .img-fluid{
   width: 85%;
   object-fit: cover;
+}
+
+.modal{
+  border-radius: 15px;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-content {
+  background-color: #162D3A;
+  color: white;
 }

@@ -131,15 +131,16 @@ async def modify_item(title: str = Body(...), isbn: str = Body(...), author: str
     image_base64 = None
     file_base64 = None
 
-    if (check_uploaded_image(imageUpload.content_type)):
+    if (imageUpload.content_type.startswith('image/')):
         image_data = await imageUpload.read()
         image_base64 = base64.b64encode(image_data).decode('utf-8')
 
-    if bookFile:
+    if bookFile.filename != "":
         file_data = await bookFile.read()
         file_base64 = base64.b64encode(file_data).decode('utf-8')
     
     result = handle_modify_book(title, isbn, author, genre, numCopies, description, kidFriendly, format, pageNumber, numOfMins, publisher, status, file_base64, image_base64)
+    
     if result == False:
         return JSONResponse(
             status_code=409,
