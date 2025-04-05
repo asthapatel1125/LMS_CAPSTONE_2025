@@ -11,6 +11,7 @@ MANAGER_LOGIN_PAGE = "https://35.234.252.105/auth/manager"
 MANAGE_HOLDS_ADMIN = "https://35.234.252.105/reservations/holds-admin"
 USER_MANAGEMENT_PAGE = "https://35.234.252.105/userManage/main"
 NOTIFICATIONS_PAGE = "https://35.234.252.105/notif/main"
+USER_LOGIN_PAGE = "https://35.234.252.105/auth/login"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
@@ -63,8 +64,12 @@ def view_inventory_page(request: Request):
 def notifications_page(request: Request):
     return RedirectResponse(url=NOTIFICATIONS_PAGE, status_code=status.HTTP_303_SEE_OTHER)
 
-# Edit inventory page buttons (x3)
+# Redirect to the customer auth page
+@router.get("/loginCustomer", response_class=HTMLResponse)
+def view_login_customer(request: Request):
+    return RedirectResponse(url=USER_LOGIN_PAGE, status_code=status.HTTP_303_SEE_OTHER)
 
+# Edit inventory page buttons (x3)
 @router.get("/add-item", response_class=HTMLResponse)
 def add_item_page(request: Request):
     return templates.TemplateResponse("add_book.html", {"request": request})
