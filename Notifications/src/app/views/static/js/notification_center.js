@@ -137,59 +137,68 @@ function createAvailableTable(){
 }
 
 // Function to alert when notifcation sent
-async function sendNotification(tableType){
-  const selectedRow = getCheckedRow(tableType);
-  if (!selectedRow) {
-    alert('Select a row!');
+async function sendNotification(tableType) {
+  const checkboxes = document.querySelectorAll(`input[type="checkbox"].${tableType}:checked`);
+  if (checkboxes.length === 0) {
+    alert("Select at least one row!");
     return;
   }
-  let bookData = {};
-  
-  if (tableType === "selectTodayRow"){
-    bookData = {
-      title: selectedRow.cells[1].textContent,
-      isbn: selectedRow.cells[2].textContent,
-      bookID: selectedRow.cells[3].textContent,
-      email: selectedRow.cells[4].textContent,
-    };
-  } else if (tableType === "selectUpcomingRow"){
-    bookData = {
-      title: selectedRow.cells[1].textContent,
-      isbn: selectedRow.cells[2].textContent,
-      bookID: selectedRow.cells[3].textContent,
-      dueDate: selectedRow.cells[4].textContent,
-      email: selectedRow.cells[5].textContent,
-    };
-  } else if (tableType === "selectAvailRow"){
-    bookData = {
-      title: selectedRow.cells[1].textContent,
-      isbn: selectedRow.cells[2].textContent,
-      rating: selectedRow.cells[3].textContent,
-      email: selectedRow.cells[4].textContent,
-    };
-  }
 
-  try {
-    const response = await fetch(`/notif/send/${tableType}`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(bookData)
-    });
-    console.log(JSON.stringify(bookData));
-    if (!response.ok) {
-      alert('Failed to send notification');
+  for (const checkbox of checkboxes) {
+    const row = checkbox.closest("tr");
+    let bookData = {};
+
+    if (tableType === "selectTodayRow") {
+      bookData = {
+        title: row.cells[1].textContent,
+        isbn: row.cells[2].textContent,
+        bookID: row.cells[3].textContent,
+        email: row.cells[4].textContent,
+      };
+    } else if (tableType === "selectUpcomingRow") {
+      bookData = {
+        title: row.cells[1].textContent,
+        isbn: row.cells[2].textContent,
+        bookID: row.cells[3].textContent,
+        dueDate: row.cells[4].textContent,
+        email: row.cells[5].textContent,
+      };
+    } else if (tableType === "selectAvailRow") {
+      bookData = {
+        title: row.cells[1].textContent,
+        isbn: row.cells[2].textContent,
+        rating: row.cells[3].textContent,
+        email: row.cells[4].textContent,
+      };
     }
-    if(response.ok){
+
+    try {
+      const response = await fetch(`/notif/send/${tableType}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookData),
+      });
+
+      if (!response.ok) {
+        alert(`❌ Failed to send notification to ${bookData.email}`);
+        continue;
+      }
+
       const result = await response.json();
-      if(result.success){ alert(`📩 Notification sent successfully to ${bookData.email}`); }
-      else { alert(`📩 Notification cannot be sent to ${bookData.email}`); }
+      if (result.success) {
+        alert(`📩 Notification sent successfully to ${bookData.email}`);
+      } else {
+        alert(`⚠️ Notification could not be sent to ${bookData.email}`);
+      }
+
+    } catch (error) {
+      console.error(`Error sending notification to ${bookData.email}:`, error);
+      alert(`❌ Error sending to ${bookData.email}. Try again.`);
     }
-    
-  } catch (error) {
-    console.error('Error sending notification:', error);
-    alert('❌ Error sending notification. Please try again.');
+
+    // Uncheck the checkbox
+    checkbox.checked = false;
   }
- 
 }
 
 // Function to get the checked row, only one checkbox is selected at a time
