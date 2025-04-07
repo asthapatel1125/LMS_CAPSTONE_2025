@@ -49,13 +49,27 @@ function loadUserInfo(user) {
 async function deleteUser(event) {
   event.preventDefault();
   try {
-    const response = await fetch(`/userManage/users/delete-user/${user.email}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: user.email }),
-    });
+    userStatus = document.getElementById("status").innerText;
+    console.log(userStatus);
+    let response;
+    
+    if (userStatus === "Manager"){
+      response = await fetch(`/userManage/users/delete-user/${user.managerID}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: user.managerID }),
+      });
+    } else {
+      response = await fetch(`/userManage/users/delete-user/${user.email}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: user.email }),
+      });
+    }
 
     if (!response.ok) {
       const result = await response.json()

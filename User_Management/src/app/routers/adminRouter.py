@@ -110,7 +110,7 @@ def add_user(request: Request, firstName: str = Form(...), lastName: str = Form(
         return {"message": "Your session has expired. Please login again."}
     
     if isManager:
-        result = add_manager(firstName, lastName, managerID, email, password)
+        result = add_manager(firstName, lastName, email, password, managerID)
     else:  # If the user is a regular customer
         result = add_customer(firstName, lastName, age, email, password)
     
