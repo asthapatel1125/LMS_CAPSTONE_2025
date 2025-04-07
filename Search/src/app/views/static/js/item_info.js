@@ -109,9 +109,7 @@ function displayBookInfo(itemData) {
     holdButton.disabled = false;
     wishButton.disabled = false;
 
-    if (itemData.numCopies <= 0) {
-        holdButton.disabled = true;
-    } else if(itemData.status === "Not Available"){
+    if(itemData.status === "Not Available"){
         holdButton.disabled = true;
         bookStatus.style.color = 'red';
     }
