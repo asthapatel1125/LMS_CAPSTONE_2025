@@ -119,16 +119,17 @@ async def get_search_result_page(request: Request, query: str):
 async def filter_books(filters: FilterRequest):
     
     books = retrieve_searchQuery_list(filters.searchQuery)
-    
+    print(filters)
     # Filter the books based on the given filters
     filtered_books = [book for book in books if
         (not filters.genres or book.genre in filters.genres) and
         (not filters.formats or book.format in filters.formats) and
-        (not filters.availability or book.numCopies > 0) and
+        (not filters.availability or 
+            (("Available" in filters.audience and book.numCopies > 0))) and
         (not filters.audience or 
-            (("Kids" in filters.audience and book.kidFriendly) or  # kidFriendly = True
-            ("Adult" in filters.audience and not book.kidFriendly))) and  # kidFriendly = False
-        (not filters.ratings or book.rating in filters.ratings)
+            (("True" in filters.audience and book.kidFriendly) or  # kidFriendly = True
+            ("False" in filters.audience and not book.kidFriendly))) and  # kidFriendly = False
+        (not filters.ratings or round(book.rating) in filters.ratings)
         ]
 
     # If no books match the filters, return an empty list

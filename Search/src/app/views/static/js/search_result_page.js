@@ -111,12 +111,12 @@ async function displayBooks(books) {
 function applyFilters() {
     // Get the current search query from the URL (this is your query parameter)
     const searchQuery = window.searchQuery || new URLSearchParams(window.location.search).get("query") || "";    // Collecting filter values
-    const genreFilters = getCheckedBoxes('#collapseThree .form-check-input');
-    const formatFilters = getCheckedBoxes('#collapseTwo .form-check-input');
-    const availabilityFilters = getCheckedBoxes('#collapseOne .form-check-input');
-    const audienceFilters = getCheckedBoxes('#collapseFour .form-check-input');
-    const ratingFilters = getCheckedBoxes('#collapseFive .form-check-input');
-
+    const genreFilters = getCheckedBoxes('#collapseThree input[type="checkbox"]');
+    const formatFilters = getCheckedBoxes('#collapseTwo input[type="checkbox"]');
+    const availabilityFilters = getCheckedBoxes('#collapseOne input[type="checkbox"]');
+    const audienceFilters = getCheckedBoxes('#collapseFour input[type="checkbox"]');
+    const ratingFilters = getCheckedBoxes('#collapseFive input[type="checkbox"]');
+    console.log(searchQuery, genreFilters, formatFilters, availabilityFilters, audienceFilters, ratingFilters);
     // Display loading indicator
     const bookCardContainer = document.getElementById('bookCardContainer');
     bookCardContainer.innerHTML = `<div>Loading...</div>`;  // Show loading text
@@ -149,7 +149,7 @@ function applyFilters() {
 
 // Function to reset all filters
 function resetFilters() {
-    const checkboxes = document.querySelectorAll('.form-check-input');
+    const checkboxes = document.querySelectorAll('.form-check-input, input[type="checkbox"]');
     checkboxes.forEach(checkbox => checkbox.checked = false);
     applyFilters(); // Refresh book results without filters
 }

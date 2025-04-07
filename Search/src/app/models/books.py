@@ -28,7 +28,6 @@ def normalize_bson(book: dict) -> dict:
 
     return book
 
-
 class Book(BaseModel):
     title: str
     author: str
@@ -132,6 +131,13 @@ def get_books_by_genre(genre: str):
     books = [Book(**normalize_bson(book)) for book in books_cursor]
     return books
 
+# Get a list of books by genre
+@app.get("/books/{isbn}", response_model=List[Book])
+def get_books_by_isbn(isbn: str):
+    # Adding the 'i' flag for case-insensitive matching
+    books_cursor = db["books"].find({"isbn": {"$regex": isbn, "$options": "i"}})
+    books = [Book(**normalize_bson(book)) for book in books_cursor]
+    return books
 
 # Get a list of books by status
 @app.get("/books/{status}", response_model=List[Book])

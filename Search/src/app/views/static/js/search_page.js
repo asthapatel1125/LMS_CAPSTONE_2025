@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         });
 
         const data = await response.json();
-        alert(data.message);
+        //alert(data.message);
     } catch (error) {
         console.error("Error:", error);
         alert("Failed to update reservations.");
