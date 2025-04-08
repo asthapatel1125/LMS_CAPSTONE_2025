@@ -34,7 +34,7 @@ class CustomMiddleware(BaseHTTPMiddleware):
         print("Custom middleware: After request processing")
         return response
 
-app.add_middleware(CustomMiddleware)
+# app.add_middleware(CustomMiddleware)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, "views", "static")
@@ -71,7 +71,7 @@ async def root(request: Request):
             return RedirectResponse(url="/reservations/holds-admin", status_code=status.HTTP_303_SEE_OTHER)
         except HTTPException:
             pass
-    return RedirectResponse(url="/reservations/manager-login", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/reservations/holds-admin", status_code=status.HTTP_303_SEE_OTHER)
 
 if __name__ == "__main__":
     uvicorn.run(

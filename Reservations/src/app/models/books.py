@@ -76,3 +76,28 @@ def get_book_copies(isbn: int):
         book["numCopies"] = int(book["numCopies"]["$numberInt"])
 
     return book["numCopies"]
+
+# numCopies increment and decrement
+@app.put("/books/incr/{isbn}")
+def incr_book_copies(isbn: int):
+    book = db["books"].find_one({"isbn": isbn})
+    if not book:
+        return JSONResponse(status_code=404, content={"message": "Book on hold is not found"})
+
+    result = db["books"].update_one({"isbn": isbn}, {"$inc": {"numCopies": 1}})
+    if result.modified_count > 0:
+        return JSONResponse(status_code=200, content={"message": "Copy successfully returned!"})
+    else:
+        return JSONResponse(status_code=500, content={"message": "Failed to update book for reservation."})
+    
+@app.put("/books/decr/{isbn}")
+def decr_book_copies(isbn: int):
+    book = db["books"].find_one({"isbn": isbn})
+    if not book:
+        return JSONResponse(status_code=404, content={"message": "Book on hold is not found"})
+    result = db["books"].update_one({"isbn": isbn}, {"$inc": {"numCopies": -1}})
+
+    if result.modified_count > 0:
+        return JSONResponse(status_code=200, content={"message": "Copy successfully passed to the next user in the queue!"})
+    else:
+        return JSONResponse(status_code=500, content={"message": "Failed to update book for reservation."})
