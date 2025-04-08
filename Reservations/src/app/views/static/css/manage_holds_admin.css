@@ -65,3 +65,16 @@
 .btn-clear-size{
     background-color: white;
 }
+
+.modal{
+  border-radius: 15px;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-content {
+  background-color: #162D3A;
+  color: white;
+}

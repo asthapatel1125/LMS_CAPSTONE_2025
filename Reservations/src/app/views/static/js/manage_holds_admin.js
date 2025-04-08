@@ -357,9 +357,11 @@ function getCheckedRow() {
 
 async function cancelHold() {
     const checkedRow = getCheckedRow();
+    var myModal = new bootstrap.Modal(document.getElementById('successModal'));
   
     if (!checkedRow) {
-      alert("Please select a row.");
+      document.getElementById('modal-body').innerHTML = formatModal(true, "Select a row.");
+      myModal.show();
       return;
     }
     const isbn = checkedRow.querySelector('td:nth-child(4)').textContent;
@@ -372,22 +374,31 @@ async function cancelHold() {
         });
         
         if (response.ok) {
-            alert("Hold deleted successfully");
+            document.getElementById('modal-body').innerHTML = formatModal(false, "Successfully deleted hold!");
+            myModal.show();
+            const closeButton = document.querySelector('.btn-close');
             await fetchHolds();
-            window.location.reload();
+            closeButton.addEventListener('click', function () {
+              window.location.reload();
+            });
         } else {
-            alert("Failed to delete hold. Please try again.");
+            document.getElementById('modal-body').innerHTML = formatModal(true, "Failed to delete hold.");
+            myModal.show();
         }
     } catch (error) {
         console.error("Error deleting hold:", error);
-        alert("An error occurred while deleting the hold.");
+        document.getElementById('modal-body').innerHTML = formatModal(false, "An error occurred while deleting the hold.");
+        myModal.show();
     }
 }
 
 async function extendHold() {
     const checkedRow = getCheckedRow();
+    var myModal = new bootstrap.Modal(document.getElementById('successModal'));
+
     if (!checkedRow) {
-      alert("Please select a row.");
+      document.getElementById('modal-body').innerHTML = formatModal(true, "Select a row.");
+      myModal.show();
       return;
     }
     const isbn = checkedRow.querySelector('td:nth-child(4)').textContent;
@@ -400,20 +411,40 @@ async function extendHold() {
         });
         
         if (response.ok) {
-            alert("Hold extended successfully!");
+            document.getElementById('modal-body').innerHTML = formatModal(false, "Successfully extended hold!");
+            myModal.show();
+            const closeButton = document.querySelector('.btn-close');
             await fetchHolds();
-            window.location.reload();
+            closeButton.addEventListener('click', function () {
+              window.location.reload();
+            });
         } else {
-            alert("Failed to extend hold. Please try again.");
+            document.getElementById('modal-body').innerHTML = formatModal(true, "Failed to extend hold.");
+            myModal.show();
         }
     } catch (error) {
         console.error("Error extending hold:", error);
-        alert("An error occurred while extending the hold.");
+        document.getElementById('modal-body').innerHTML = formatModal(true, "An error occurred while extending the hold.");
+        myModal.show();
     }
 }
 
 function goBack(){
     window.location = '/reservations/dashboard';
+}
+
+function formatModal(error, message){
+  let modalBody;
+  if (error){
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">❎</p></div>
+                <div class="row"><p class="text-center fs-5">${message}</p></div>
+                <div class="row"><p class="text-center">Please try again.</p></div>`
+    
+  } else{
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">✅</p></div>
+                <div class="row"><p class="text-center fs-5">${message}!</p></div>`
+  }
+  return modalBody
 }
 
 // Dynamically filter books
