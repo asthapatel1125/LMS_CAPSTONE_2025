@@ -6,6 +6,7 @@ from bson import ObjectId
 from datetime import datetime
 import re
 from pymongo import ReturnDocument
+from fastapi.responses import JSONResponse
 
 class Manager(BaseModel):
     _id: str
@@ -63,9 +64,9 @@ def delete_manager(manager_id: str):
     result = db["managers"].delete_one({"managerID": manager_id})
     
     if result.deleted_count > 0:
-        return {"message": f"Manager with ID {manager_id} was successfully deleted."}
+        return JSONResponse(status_code=200, content={"message": f"Manager with ID {manager_id} was successfully deleted."})
     else:
-        return {"message": f"No manager found with ID {manager_id}."}
+        return JSONResponse(status_code=409, content={"message": f"No manager found with ID {manager_id}."})
 
 def edit_manager(username: str, first_name: str, last_name: str, email: str, managerID: str):   
     updated_document = db["managers"].find_one_and_update({"managerID": username}, 
@@ -73,15 +74,15 @@ def edit_manager(username: str, first_name: str, last_name: str, email: str, man
         return_document = ReturnDocument.AFTER)
     if managerID != updated_document["managerID"]:
         print(db["managers"].update_one({"_id":updated_document["_id"]}, {"$set": {"managerID":managerID, "passwordHash":managerID}}))
-    return {"message": "Manager details updated successfully"}
+    return JSONResponse(status_code=200, content={"message": "Manager details updated successfully"})
 
 def add_manager(firstName: str, lastName: str, email: str, password: str, managerID: str):
     existing_manager = db["managers"].find_one({"managerID": managerID})
     if existing_manager:
-        return {"message": "Manager already exists."}
+        return JSONResponse(status_code=409, content={"message": "Manager already exists."})
     
     result = db["managers"].insert_one({"firstName": firstName, "lastName": lastName, "managerID": managerID, "email": email, "password": password})
     if result:
-        return {"message": "Manager successfully registered!"}
+        return JSONResponse(status_code=200, content={"message": "Manager successfully created!"})
     else:
-        return {"message": "Error registering manager."}
+        return JSONResponse(status_code=409, content={"message": "Error creating manager."}) 

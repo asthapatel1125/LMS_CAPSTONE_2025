@@ -6,6 +6,7 @@ from typing import List, Optional
 from bson import ObjectId
 from datetime import datetime
 from pymongo import ReturnDocument
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -69,9 +70,9 @@ def get_customer_metadata(email: str):
 def delete_customer(email: str):
     result = db["customers"].delete_one({"email": email})
     if result.deleted_count > 0:
-        return {"message": f"Customer with email {email} was successfully deleted."}
+        return JSONResponse(status_code=200, content={"message": f"Customer with email {email} was successfully deleted."})
     else:
-        return {"message": f"No customer found with email {email}."}
+        return JSONResponse(status_code=409, content={"message": f"No customer found with email {email}."})
 
 def edit_customer(username: str, first_name: str, last_name: str, age: int, email: str):   
     updated_document = db["customers"].find_one_and_update({"email": username}, 
@@ -79,15 +80,15 @@ def edit_customer(username: str, first_name: str, last_name: str, age: int, emai
         return_document = ReturnDocument.AFTER)
     if email != updated_document["email"]:
         db["customers"].update_one({"_id":updated_document["_id"]}, {"$set": {"email":email}})
-    return {"message": "Customer details updated successfully"}
+    return JSONResponse(status_code=200, content={"message": "Customer details updated successfully"})
 
 def add_customer(firstName: str, lastName: str, age: int, email: str, password: str):
     existing_customer = db["customers"].find_one({"email": email})
     if existing_customer:
-        return {"message": "Customer with this email already exists."}
+        return JSONResponse(status_code=409, content={"message": "Customer with this email already exists."})
     
     result = db["customers"].insert_one({"firstName": firstName, "lastName": lastName, "age": age, "email": email, "password": password})
     if result:
-        return {"message": "Customer successfully created!"}
+        return JSONResponse(status_code=200, content={"message": "Customer successfully created!"})
     else:
-        return {"message": "Error creating customer."}
+        return JSONResponse(status_code=409, content={"message": "Error creating customer."}) 

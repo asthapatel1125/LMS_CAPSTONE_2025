@@ -61,6 +61,7 @@ function resetForm(){
 //check new passwords match when submitting
 async function submitUser(event) {
     event.preventDefault(); 
+    var myModal = new bootstrap.Modal(document.getElementById('successModal'));
     const formData = new FormData();
     formData.append("firstName", document.getElementById("first-name").value);
     formData.append("lastName", document.getElementById("last-name").value);
@@ -90,13 +91,34 @@ async function submitUser(event) {
         });
         
         const result = await response.json();
-        alert(result.message);
-        
-        window.location.href = "/userManage/main";
+        if (response.ok) {
+          document.getElementById('modal-body').innerHTML = formatModal(false, result.message);
+        } else {
+          document.getElementById('modal-body').innerHTML = formatModal(true, result.message);
+        }
+        myModal.show();
+        const closeButton = document.querySelector('.btn-close');
+        closeButton.addEventListener('click', function () {
+          window.location.href = "/userManage/main";
+        });
         
     } catch (error) {
-        alert("An error occurred while editing the user.");
+        console.log("An error occurred while editing the user.");
     }
+}
+
+function formatModal(error, message){
+  let modalBody;
+  if (error){
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">❎</p></div>
+                <div class="row"><p class="text-center fs-5">${message}</p></div>
+                <div class="row"><p class="text-center">Please try again.</p></div>`
+    
+  } else{
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">✅</p></div>
+                <div class="row"><p class="text-center fs-5">${message}!</p></div>`
+  }
+  return modalBody
 }
 
 document.addEventListener("DOMContentLoaded", function () {

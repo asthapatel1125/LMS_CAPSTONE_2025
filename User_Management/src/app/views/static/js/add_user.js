@@ -17,8 +17,9 @@ function checkPasswords(){
 
 document.getElementById("user-register-form").addEventListener("submit", async function (event) {
     event.preventDefault();
+    var myModal = new bootstrap.Modal(document.getElementById('successModal'));
     if (!checkPasswords()) {
-      alert("Passwords do not match. Fix errors before submitting.");
+      //alert("Passwords do not match. Fix errors before submitting.");
       return;
     }
 
@@ -48,14 +49,20 @@ document.getElementById("user-register-form").addEventListener("submit", async f
       const result = await response.json();
 
       if (response.ok) {
-        alert(result.message);
+        document.getElementById('modal-body').innerHTML = formatModal(false, result.message);
+        myModal.show();
+        const closeButton = document.querySelector('.btn-close');
+        closeButton.addEventListener('click', function () {
+          window.location.href = "/userManage/add-user";
+        });
       } else {
-        alert(result.message || "An error occurred. Please try again.");
+        document.getElementById('modal-body').innerHTML = formatModal(true, result.message);
+        myModal.show();
       }
-      window.location.href = "/userManage/main";
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Failed to register user. Please try again later.");
+      document.getElementById('modal-body').innerHTML = formatModal(true, 'Error submitting form');
+      myModal.show();
     }
   });
 
@@ -82,4 +89,18 @@ function checkManager() {
       managerIDField.style.display = "none";
       ageField.style.display = "block"; // Show age field when manager is not selected
   }
+}
+
+function formatModal(error, message){
+  let modalBody;
+  if (error){
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">❎</p></div>
+                <div class="row"><p class="text-center fs-5">${message}</p></div>
+                <div class="row"><p class="text-center">Please try again.</p></div>`
+    
+  } else{
+    modalBody = `<div class="row"><p class="text-center" style="font-size: 40px;">✅</p></div>
+                <div class="row"><p class="text-center fs-5">${message}!</p></div>`
+  }
+  return modalBody
 }

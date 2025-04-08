@@ -4,7 +4,7 @@ a {
   }
 
   .btn-custom-size {
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 16px;
     cursor: pointer;
     background-color: #162D3A;
@@ -32,4 +32,13 @@ a {
 
 .user-table{
     max-height: 400px;
+}
+
+.list-group {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-height: 200px;
 }

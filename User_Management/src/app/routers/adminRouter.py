@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from controllers.token import *
 from controllers.user_controller import *
+from fastapi.responses import JSONResponse
 
 MANAGER_LOGIN_PAGE = "https://35.234.252.105/auth/manager"
 MANAGER_DASHBOARD_PAGE = "https://35.234.252.105/catalog/dashboard"
@@ -66,13 +67,13 @@ def delete_user(username: str, request: Request):
     # the manager cannot delete their own account
     token = request.cookies.get("manager_login_token")
     if not token:
-        return {"message": "Your session has expired. Please login again."}
+        return JSONResponse(status_code=409, content={"message": "Your session has expired. Please login again."})
     
     payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
     managerID = payload.get('sub')
     
     if username == managerID:
-        result = {"message": "Error cannot delete your own admin account!"}
+        result = JSONResponse(status_code=409, content={"message": "Error cannot delete your own admin account!"})
         return result
     
     if '@' in username:
@@ -86,13 +87,13 @@ def edit_user(request: Request, username: str, firstName: str = Form(...), lastN
     # the manager cannot edit their own account
     token = request.cookies.get("manager_login_token")
     if not token:
-        return {"message": "Your session has expired. Please login again."}
+        return JSONResponse(status_code=409, content={"message": "Your session has expired. Please login again."})
     
     payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
     manager_id = payload.get('sub')
     
     if username == manager_id:
-        result = {"message": "Error cannot edit your own admin account!"}
+        result = JSONResponse(status_code=409, content={"message": "Error cannot edit your own admin account!"})
         return result
     
     if '@' in username:
@@ -107,7 +108,7 @@ def add_user(request: Request, firstName: str = Form(...), lastName: str = Form(
     print(firstName,lastName,age,email,password,managerID,isManager)
     token = request.cookies.get("manager_login_token")
     if not token:
-        return {"message": "Your session has expired. Please login again."}
+        return JSONResponse(status_code=409, content={"message": "Your session has expired. Please login again."})
     
     if isManager:
         result = add_manager(firstName, lastName, email, password, managerID)

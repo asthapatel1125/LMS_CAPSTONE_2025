@@ -42,3 +42,16 @@
   border-color: #162D3A;
   color: black;
 }
+
+.modal{
+  border-radius: 15px;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-content {
+  background-color: #162D3A;
+  color: white;
+}
