@@ -5,9 +5,9 @@ from controllers.token import *
 from controllers.user_controller import *
 from fastapi.responses import JSONResponse
 
-MANAGER_LOGIN_PAGE = "https://35.203.98.254/auth/manager"
-MANAGER_DASHBOARD_PAGE = "https://35.203.98.254/catalog/dashboard"
-MANAGER_CATALOG_PAGE = "https://35.203.98.254/catalog/view-inventory"
+MANAGER_LOGIN_PAGE = "https://34.47.39.132/auth/manager"
+MANAGER_DASHBOARD_PAGE = "https://34.47.39.132/catalog/dashboard"
+MANAGER_CATALOG_PAGE = "https://34.47.39.132/catalog/view-inventory"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
