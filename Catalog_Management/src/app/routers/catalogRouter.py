@@ -7,11 +7,11 @@ from datetime import datetime
 import os, base64
 from io import BytesIO
 
-MANAGER_LOGIN_PAGE = "https://35.234.252.105/auth/manager"
-MANAGE_HOLDS_ADMIN = "https://35.234.252.105/reservations/holds-admin"
-USER_MANAGEMENT_PAGE = "https://35.234.252.105/userManage/main"
-NOTIFICATIONS_PAGE = "https://35.234.252.105/notif/main"
-USER_LOGIN_PAGE = "https://35.234.252.105/auth/login"
+MANAGER_LOGIN_PAGE = "https://35.203.98.254/auth/manager"
+MANAGE_HOLDS_ADMIN = "https://35.203.98.254/reservations/holds-admin"
+USER_MANAGEMENT_PAGE = "https://35.203.98.254/userManage/main"
+NOTIFICATIONS_PAGE = "https://35.203.98.254/notif/main"
+USER_LOGIN_PAGE = "https://35.203.98.254/auth/login"
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
