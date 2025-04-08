@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: mylibrary
-        image: northamerica-northeast2-docker.pkg.dev/modern-impulse-448721-t3/fastapi-docker-repo/mylibrary:v6
+        image: northamerica-northeast2-docker.pkg.dev/lms-capstone-456271/fastapi-docker-repo/mylibrary:v2
         ports:
         - containerPort: 8005
