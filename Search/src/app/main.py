@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from routers.search_router import router as search_router
-import uvicorn, os
+import uvicorn, os, time
 from fastapi import Request, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -26,22 +26,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Custom middleware example
-class CustomMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        print("Custom middleware: Before request processing")
-        response = await call_next(request)
-        print("Custom middleware: After request processing")
-        return response
+# ⏱️ Request Timing Middleware
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    print(f"Request took {process_time:.3f}s")
+    return response
 
-#app.add_middleware(CustomMiddleware)
+# Optional Custom Middleware
+# class CustomMiddleware(BaseHTTPMiddleware):
+#     async def dispatch(self, request: Request, call_next):
+#         print("Custom middleware: Before request processing")
+#         response = await call_next(request)
+#         print("Custom middleware: After request processing")
+#         return response
+
+# app.add_middleware(CustomMiddleware)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, "views", "static")
 templates_dir = os.path.join(base_dir, "views", "templates")
 
 app.mount("/search/static", StaticFiles(directory=static_dir), name="static")
-
 templates = Jinja2Templates(directory=templates_dir)
 
 @app.on_event("startup")
@@ -58,7 +66,6 @@ def startup_db_client():
 def shutdown_db_client():
     close_db()
     print("MongoDB connection closed!")
-
 
 app.include_router(search_router, prefix="/search")
 
@@ -77,7 +84,7 @@ if __name__ == "__main__":
     uvicorn.run(
         app="main:app",
         host="0.0.0.0",
-        port=8003,  # Use a different port
+        port=8003,
         reload=True if os.environ.get("ENVIRONMENT") == "dev" else False,
         workers=1,
     )
