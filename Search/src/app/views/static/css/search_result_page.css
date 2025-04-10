@@ -56,3 +56,11 @@ a {
 text-decoration: none;  /* Removes the underline */
 color: inherit;
 }
+
+.my-library-link {
+    background-color: #e3e3e3;
+    border-radius: 15px;
+    padding: 6px 12px;
+    text-decoration: none;
+    color: #162d3a;
+}

@@ -131,7 +131,7 @@ def get_books_by_genre(genre: str):
     books = [Book(**normalize_bson(book)) for book in books_cursor]
     return books
 
-# Get a list of books by genre
+# Get a list of books by isbn
 @app.get("/books/{isbn}", response_model=List[Book])
 def get_books_by_isbn(isbn: str):
     # Adding the 'i' flag for case-insensitive matching

@@ -209,3 +209,7 @@ def update_all_statuses():
     if updated_reservations:
         return True
     return False
+
+def get_non_duplidate_hold_status(isbn, email):
+    reservation = db["reservations"].find_one({"isbn": isbn, "user_email": email})
+    return reservation is None

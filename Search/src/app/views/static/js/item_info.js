@@ -186,6 +186,9 @@ function addToWishlist(isbn) {
     .then(response => response.json())
     .then(data => {
         alert(data.message);
+        if (data.message === "Book successfully added to wishlist!") {
+            window.location.href = "/search/mylib";
+        }
     })
     .catch(error => {
         console.error("Error adding to wishlist:", error);
@@ -225,7 +228,9 @@ async function submitReview() {
         alert("Review submitted successfully!");
         document.getElementById("status").value = "";
         document.getElementById("description").value = "";
-
+        const stars = document.querySelectorAll('.stars i');
+        stars.forEach(star => star.classList.remove('active'));
+        starRating = null;
         fetchReviews(isbn);
 
     } catch (error) {

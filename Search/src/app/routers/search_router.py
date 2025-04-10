@@ -120,12 +120,13 @@ async def filter_books(filters: FilterRequest):
     
     books = retrieve_searchQuery_list(filters.searchQuery)
     print(filters)
+    
     # Filter the books based on the given filters
     filtered_books = [book for book in books if
         (not filters.genres or book.genre in filters.genres) and
         (not filters.formats or book.format in filters.formats) and
         (not filters.availability or 
-            (("Available" in filters.audience and book.numCopies > 0))) and
+            (("Available" in filters.availability and book.status == "Available"))) and
         (not filters.audience or 
             (("True" in filters.audience and book.kidFriendly) or  # kidFriendly = True
             ("False" in filters.audience and not book.kidFriendly))) and  # kidFriendly = False
@@ -177,6 +178,17 @@ async def get_book_info_page(request: Request, isbn: str):
 async def place_hold(request: Request, isbn: str):
     is_available = get_book_status(isbn)
     
+    # check if the user already has a hold for the same item
+    email_token = request.cookies.get("login_token")
+    if not email_token:
+        return JSONResponse(content={"message": "Unable to place a hold. Please login again."}, status_code=status.HTTP_400_BAD_REQUEST)
+    email = verify_jwt(email_token)
+    is_non_duplicate_hold = get_non_duplidate_hold_status(isbn, email["subject"])
+    
+    if is_non_duplicate_hold == False:
+        return JSONResponse(content={"message": "A hold has already been placed on this book under your account."}, status_code=status.HTTP_400_BAD_REQUEST)
+    
+    # Otherwise add the user to the queue
     if is_available:
         response = add_user_to_queue(isbn, request)  # add user to queue
         if response:

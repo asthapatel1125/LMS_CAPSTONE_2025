@@ -58,9 +58,10 @@
 
 #commentsList {
     height: auto; 
-    overflow-y: auto; 
+    overflow-y: scroll; 
     border-radius: 15px;
     padding: 10px;
+    max-height: 400px;
 }
 
 .stars i {
@@ -75,4 +76,12 @@
 
 .details{
   color: grey;
+}
+
+.my-library-link {
+    background-color: #e3e3e3;
+    border-radius: 15px;
+    padding: 6px 12px;
+    text-decoration: none;
+    color: #162d3a;
 }
