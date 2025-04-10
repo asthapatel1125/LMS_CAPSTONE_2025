@@ -201,7 +201,6 @@ async def about_page(request: Request):
 
 API_KEY = "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"
 SENDER_EMAIL = "lmscapstone38@gmail.com"
-RECIPIENT_EMAIL = "m14patel@torontomu.ca"
 
 @router.post("/send-message")
 @limiter.limit("60/minute")
@@ -217,7 +216,7 @@ async def send_message(request: Request):
     url = "https://api.brevo.com/v3/smtp/email"
     payload = {
         "sender": {"name": "LMS CAPSTONE", "email": SENDER_EMAIL},
-        "to": [{"email": RECIPIENT_EMAIL}],
+        "to": [{"email": "m14patel@torontomu.ca"}, {"email": "vjadon@torontomu.ca"}, {"email": "astha.patel@torontomu.ca"}, {"email": "atiya.azeez@torontomu.ca"}],
         "replyTo": {"email": email, "name": name},
         "subject": f"New message from {name}",
         "htmlContent": f"""
