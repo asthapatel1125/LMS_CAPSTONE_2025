@@ -7,9 +7,7 @@ from controllers.email_verif_code import *
 from datetime import datetime, timedelta
 import os
 from urllib.parse import urlencode
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
+from slowapi import Limiter
 
 CATALOG_SERVICE_URL = "https://34.47.39.132/catalog"
 USER_HOME_PAGE = "https://34.47.39.132/search/home"
@@ -22,7 +20,13 @@ templates = Jinja2Templates(directory=templates_dir)
 
 router = APIRouter()
 
-limiter = Limiter(key_func=get_remote_address)
+def get_client_ip(request: Request):
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host
+
+limiter = Limiter(key_func=get_client_ip)
 app = FastAPI()
 app.state.limiter = limiter
 
