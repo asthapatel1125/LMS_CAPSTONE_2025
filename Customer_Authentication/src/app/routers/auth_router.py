@@ -7,6 +7,9 @@ from controllers.email_verif_code import *
 from datetime import datetime, timedelta
 import os
 from urllib.parse import urlencode
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 CATALOG_SERVICE_URL = "https://34.47.39.132/catalog"
 USER_HOME_PAGE = "https://34.47.39.132/search/home"
@@ -18,6 +21,10 @@ templates_dir = os.path.join(base_dir, "..", "views", "templates")
 templates = Jinja2Templates(directory=templates_dir)
 
 router = APIRouter()
+
+limiter = Limiter(key_func=get_remote_address)
+app = FastAPI()
+app.state.limiter = limiter
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
@@ -189,3 +196,47 @@ async def get_mylib_page():
 @router.get("/aboutus", response_class=HTMLResponse)
 async def about_page(request: Request):
     return templates.TemplateResponse("about.html", {"request": request})
+
+# sending emails to the developers of the website
+
+API_KEY = "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"
+SENDER_EMAIL = "lmscapstone38@gmail.com"
+RECIPIENT_EMAIL = "m14patel@torontomu.ca"
+
+@router.post("/send-message")
+@limiter.limit("60/minute")
+async def send_message(request: Request):
+    data = await request.json()
+    name = data.get("name")
+    email = data.get("email")
+    message = data.get("message")
+
+    if not name or not email or not message:
+        return JSONResponse(status_code=400, content={"error": "Missing required fields"})
+
+    url = "https://api.brevo.com/v3/smtp/email"
+    payload = {
+        "sender": {"name": "LMS CAPSTONE", "email": SENDER_EMAIL},
+        "to": [{"email": RECIPIENT_EMAIL}],
+        "replyTo": {"email": email, "name": name},
+        "subject": f"New message from {name}",
+        "htmlContent": f"""
+            <p><strong>From:</strong> {name} ({email})</p>
+            <p><strong>Message:</strong><br>{message}</p>
+        """
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api-key": API_KEY
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    if response.status_code == 201:
+        return JSONResponse(status_code=200, content={"message": "Message sent successfully!"})
+    else:
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Failed to send email: {response.status_code} - {response.text}"}
+        )

@@ -13,4 +13,5 @@ passlib
 requests
 pytest
 python-multipart
+slowapi
 
