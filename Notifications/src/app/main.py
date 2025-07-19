@@ -1,3 +1,4 @@
+import time
 from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -25,13 +26,22 @@ app.add_middleware(
 )
 
 
-# Custom middleware example
-class CustomMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        print("Custom middleware: Before request processing")
-        response = await call_next(request)
-        print("Custom middleware: After request processing")
-        return response
+# ⏱️ Request Timing Middleware
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    print(f"Request took {process_time:.3f}s")
+    return response
+
+# Optional Custom Middleware
+# class CustomMiddleware(BaseHTTPMiddleware):
+#     async def dispatch(self, request: Request, call_next):
+#         print("Custom middleware: Before request processing")
+#         response = await call_next(request)
+#         print("Custom middleware: After request processing")
+#         return response
 
 # app.add_middleware(CustomMiddleware)
 
