@@ -40,12 +40,143 @@ This service provided additional functionality and flexibility for administrator
 This microservice included the ability to send three types of email notifications to users: for recently returned and available books, books due today, and books due soon. The emailing service relied on existing reservation data and an external email provider, Brevo, to enhance the user experience by keeping customers informed about their book hold status and providing options to manage their account directly from the email.
 
 
-
 ## Tech Stack 
 
+## Material and Component List
 
-## Installation Guide 
+| Item/Component           | Unit Cost                   | Quantity     | Total Cost | Notes                                                                 |
+|--------------------------|-----------------------------|--------------|------------|-----------------------------------------------------------------------|
+| **Google Cloud Hosting** | $25/month – after trial ends| 1 account     | $0         | Pay-as-you-go account after your free trial or when you exceed the free tier usage. |
+| **MongoDB Atlas**        | Free                        | 1 account     | $0         | Free tier option selected.                                            |
+| **Docker, Ingress**      | Free                        | N/A          | $0         | Open-source tool.                                                     |
+| **Kubernetes**           | Free (basic tier)           | N/A          | $0         | Managed via Google Kubernetes Engine.                                 |
+| **FastAPI**              | Free                        | N/A          | $0         | Open-source Python framework.                                         |
+| **VSCode IDE**           | Free                        | N/A          | $0         | Visual Studio Builder Community version.                              |
+| **HTML/CSS/JS libraries**| Free                        | N/A          | $0         | Open-source, Bootstrap.                                               |
+
+**Total Cost: $0**
 
 
-## Usage instrctions 
+## Performance 
+
+The table below presents the performance metrics of the LMS website based on network activity recorded using the IP address of the deployed web application. We have considered three types of metrics to measure the performance of the website application: First, the Largest Contentful Paint (LCP) measures how fast the largest visible content (like an image or hero text) is rendered, the Cumulative Layout Shift (CLS) measures whether content shifts around while loading, and the Interaction to Next Paint (INP) measures how quickly the page reacts to user input (e.g., clicking, typing).  The goal for each of these metrics is to achieve less than 2.5 seconds for LCP, zero shifts of the elements on each page for CLS, and less than 200 milliseconds for INP.
+
+Table 9.1: Local Metrics of the Deployed Website Application
+
+| API Endpoint                        | LCP (s) | CLS (shift) | INP (ms) |
+|------------------------------------|---------|--------------|----------|
+| `/auth/login`                      | 0.32    | 0.0          | 56.0     |
+| `/auth/register`                   | 0.17    | 0.0          | 56.0     |
+| `/auth/manager`                    | 0.10    | 0.0          | 40.0     |
+| `/search/home`                     | 0.48    | 0.21         | 40.0     |
+| `/search/search_result_page`      | 0.30    | 0.0          | 112.0    |
+| `/search/book_info`               | 1.04    | 0.14         | 112.0    |
+| `/mylib/dashboard`                | 0.29    | 0.0          | 32.0     |
+| `/mylib/access`                   | 0.38    | 0.0          | 32.0     |
+| `/catalog/admin_dashboard`        | 0.04    | 0.0          | 16.0     |
+| `/catalog/view-inventory (eBook)` | 0.18    | 0.72         | 80.0     |
+| `/catalog/view-inventory (Audio)` | 0.18    | 0.72         | 88.0     |
+| `/catalog/edit_inventory`         | 0.30    | 0.0          | 16.0     |
+| `/catalog/add-item`               | 0.36    | 0.0          | 48.0     |
+| `/userManage/main`                | 0.41    | 0.69         | 0.7      |
+| `/userManage/edit-user`           | 0.29    | 0.02         | 40.0     |
+| `/userManage/delete-user`         | 0.28    | 0.0          | 16.0     |
+| `/notif/main`                     | 0.21    | 0.0          | 32.0     |
+
+
+Next, the performance of the FastAPI endpoints (in seconds) is measured using a timer function in the backend module. To test the performance of these endpoints, a timer is added in the middleware definition to measure how long each request takes to process and complete. The following code snippet showcases this test procedure used for all microservices.
+
+```python
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    print(f"Request took {process_time:.3f}s")
+    return
+```
+
+Table 9.2: Performance of FastAPI Endpoints
+
+| Endpoint                                | Method | Time (s)  |
+|-----------------------------------------|--------|-----------|
+| `/search/home`                          | GET    | 0.170     |
+| `/search/popular`                       | GET    | 0.065     |
+| `/search/newest`                        | GET    | 0.219     |
+| `/search/serve-book-cover`             | GET    | 0.123     |
+| `/search/searchQuery`                  | GET    | 0.231     |
+| `/search/search_result_page`           | GET    | 0.026     |
+| `/search/filter_books`                 | GET    | 0.128     |
+| `/search/book_info`                    | GET    | 0.010     |
+| `/search/retrieve-reviews`             | GET    | 0.036     |
+| `/search/write-review`                 | POST   | 0.058     |
+| `/search/place_hold`                   | POST   | 0.024     |
+| `/auth/login`                           | GET    | 0.019     |
+| `/auth/home`                            | GET    | 6.343     |
+| `/auth/forgot-password`                 | GET    | 0.032     |
+| `/auth/forgot-password`                 | POST   | 0.096     |
+| `/auth/verification-code`               | GET    | 0.008     |
+| `/auth/verification-code`               | POST   | 0.032     |
+| `/auth/reset-password`                  | GET    | 0.008     |
+| `/auth/reset-password`                  | POST   | 0.024     |
+| `/auth/aboutus`                         | GET    | 0.008     |
+| `/auth/register`                        | GET    | 0.032     |
+| `/auth/register`                        | POST   | 0.040     |
+| `/auth/manager`                         | GET    | 0.024     |
+| `/auth/manager`                         | POST   | 0.032     |
+| `/catalog/admin_dashboard`              | GET    | 0.049     |
+| `/catalog/view-inventory`               | GET    | 0.060     |
+| `/catalog/edit-inventory`               | GET    | 0.004     |
+| `/catalog/add-item`                     | GET    | 0.003     |
+| `/catalog/add-item`                     | POST   | 0.918     |
+| `/catalog/modify-item`                  | GET    | 0.056     |
+| `/catalog/modify-item`                  | POST   | 0.191     |
+| `/catalog/remove-item`                  | GET    | 0.006     |
+| `/catalog/remove-item`                  | POST   | 0.086     |
+| `/catalog/userManage`                   | GET    | 0.048     |
+| `/catalog/manage-holds`                 | GET    | 0.024     |
+| `/catalog/notifications`                | GET    | 0.024     |
+| `/reservations/holds-admin`             | GET    | 0.018     |
+| `/reservations/admin_dashboard`         | GET    | 0.003     |
+| `/reservations/list-holds`              | GET    | 0.067     |
+| `/reservations/book-title`              | GET    | 0.034     |
+| `/reservations/update-status`           | GET    | 0.032     |
+| `/reservations/extend-hold`             | POST   | 0.033     |
+| `/reservations/delete-hold`             | POST   | 0.035     |
+| `/mylib/dashboard`                      | GET    | 0.023     |
+| `/mylib/pending-holds`                  | POST   | 0.002     |
+| `/mylib/completed-holds`                | POST   | 0.001     |
+| `/mylib/wishlist`                       | POST   | 0.001     |
+| `/mylib/wishlist-remove`                | POST   | 0.048     |
+| `/mylib/wishlist-clear`                 | POST   | 0.048     |
+| `/userManage/add-user`                  | GET    | 0.039     |
+| `/userManage/edit-user`                 | GET    | 0.038     |
+| `/userManage/delete-user`               | GET    | 0.044     |
+| `/userManage/customer-info`             | GET    | 0.001     |
+| `/userManage/all-users`                 | GET    | 0.010     |
+| `/userManage/dashboard`                 | GET    | 0.003     |
+| `/userManage/catalog`                   | GET    | 0.001     |
+| `/notif/main`                           | GET    | 0.018     |
+| `/notif/return-soon`                    | GET    | 0.480     |
+| `/notif/returns-today`                  | GET    | 0.348     |
+| `/notif/available-now`                  | GET    | 0.440     |
+
+
+## Conclusions
+
+Throughout the development of this capstone project, LMS, a fully working application, was built using a Python-based microservices architecture. All the core features were completed across the microservices, including user authentication, borrowing books, making reservations, managing a wishlist, personalized dashboards, and email notifications. In total, seven microservices were created, all connected to a refined MongoDB database and fully deployed on Google Cloud. The app was thoroughly tested, and solid error handling was added to make sure users have a smooth and reliable experience. The final project is live and available online for everyone to try out.
+
+### Discrepancies and Unfinished Components
+
+While the system achieved a high level of functionality, aligning with the initial objectives, a few areas remain incomplete and outside the scope of the project. The LMS currently does not implement the processing and handling of payments for purchases or rentals of digital material, including ebooks and audiobooks, which was originally proposed. Furthermore, while efficient user authentication, session management, and security features were developed, more advanced features such as multi-factor authentication, error logging, and OAuth were not included in this version. Despite these gaps, the core objectives of creating a scalable, efficient, and user-friendly web application were accomplished. 
+
+### Difficulties Encountered
+
+During the development of the software application, several technical challenges were encountered, especially during the deployment phase. One major issue involved routing between microservices within the Kubernetes cluster. Early in development, the project used a single IP address, so routing wasn’t a concern. However, deploying each microservice with a unique IP would have made internal communication complex and difficult to manage. To solve this, we implemented an Ingress controller that routed requests internally based on URL prefixes, while exposing a single public IP address to users. Another challenge was designing and implementing custom queuing algorithms for book reservations, which required careful handling to maintain data integrity and ensure users received accurate reservation status updates.
+
+### Future Work
+
+The future of this project will focus on expanding the system’s features to include payment processing, an AI-based recommendation system tailored to user behavior, faster load times for images and digital content, and additional microservices for purchasing and renting digital materials. Since the project is built using a microservices architecture, it is highly scalable and flexible, making it easy to add new features. The MongoDB database also supports this growth, allowing the system to handle more users and data as it continues to evolve. 
+
+
 
