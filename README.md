@@ -42,7 +42,35 @@ This microservice included the ability to send three types of email notification
 
 ## Tech Stack 
 
-## Material and Component List
+### Components: 
+
+#### Frontend Components
+
+**HTML:** HTML is the standard language for creating web pages. It provides the structure of a webpage using elements such as headings, paragraphs, links, images, and forms.
+
+**CSS:** CSS is used to style and design web pages. It controls a website's layout, colors, fonts, and responsiveness, making it visually appealing and adaptable to different screen sizes.
+
+**JavaScript:** JavaScript is a programming language that adds interactivity to web pages. It allows for dynamic content updates, form validation, animations, and communication with backend services using APIs.
+
+#### Backend and Database Components
+
+**FastAPI:** FastAPI is a modern, high-performance web framework for building APIs with Python. It is known for its speed, automatic data validation, and easy integration with asynchronous programming.
+
+**MongoDB:** MongoDB is a NoSQL database that stores data in flexible, JSON-like documents. It is designed for scalability and performance, making it ideal for applications that handle large volumes of unstructured data.
+
+#### Cloud and Deployment Components
+
+**Google Cloud Platform:** GCP is a cloud computing service that offers infrastructure, machine learning, and storage solutions. It provides virtual machines, databases, and networking services for deploying and managing applications.
+
+**Docker:** Docker is a platform for developing, shipping, and running applications 
+inside lightweight, portable containers. It ensures consistency across different environments and simplifies application deployment.
+
+**Kubernetes:** Kubernetes is an open-source system for automating the deployment, scaling, and management of containerized applications. It helps in orchestrating multiple Docker containers efficiently.
+
+**Ingress:** Ingress is a Kubernetes resource that manages external access to services within a cluster. It allows the routing of HTTP and HTTPS traffic to backend services based on defined rules, improving security and scalability.
+
+
+## Total Cost of all Materials
 
 | Item/Component           | Unit Cost                   | Quantity     | Total Cost | Notes                                                                 |
 |--------------------------|-----------------------------|--------------|------------|-----------------------------------------------------------------------|
