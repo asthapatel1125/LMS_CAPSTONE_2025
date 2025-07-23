@@ -41,11 +41,11 @@ This microservice included the ability to send three types of email notification
 
 
 
---- Tech Stack ---
+## Tech Stack 
 
 
---- Installation Guide ---
+## Installation Guide 
 
 
---- Usage instrctions ---
+## Usage instrctions 
 
