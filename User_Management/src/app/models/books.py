@@ -139,6 +139,14 @@ def update_pageNumber(isbn: str, new_pageNumber: int):
     )
     return result.modified_count > 0
 
+@app.put("/catalog/update-numOfMins/{isbn}", response_model=dict)
+def update_numOfMins(isbn: str, new_numOfMins: int):
+    result = db["books"].update_one(
+        {"isbn": isbn},
+        {"$set": {"numOfMins": new_numOfMins}}
+    )
+    return result.modified_count > 0
+
 @app.put("/catalog/update-publisher/{isbn}", response_model=dict)
 def update_publisher(isbn: str, new_publisher: str):
     result = db["books"].update_one(
