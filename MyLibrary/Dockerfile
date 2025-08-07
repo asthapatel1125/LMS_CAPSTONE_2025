@@ -1,4 +1,4 @@
-# Dockerfile for Customer_Authentication
+# Dockerfile for MyLibrary
 
 FROM python:3.10.0
 
@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/app /app
 
-EXPOSE 8003
+EXPOSE 8005
 
 CMD ["python", "main.py"]
 
@@ -24,4 +24,4 @@ CMD ["python", "main.py"]
 # docker ps
 
 # Run the docker image
-# docker run -p 8000:8000 customer_autentication:latest
+# docker run -p 8000:8000 <<microservice_name>>:latest
