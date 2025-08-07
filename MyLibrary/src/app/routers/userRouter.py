@@ -7,13 +7,9 @@ import os, base64
 from io import BytesIO
 import tempfile
 
-<<<<<<< HEAD
 USER_LOGIN_PAGE = "https://34.47.39.132/auth/login"
 USER_SEARCH_PAGE = "https://34.47.39.132/search/home"
-=======
-USER_LOGIN_PAGE = "https://35.203.98.254/auth/login"
-USER_SEARCH_PAGE = "https://35.203.98.254/search/home"
->>>>>>> d07a66a14e1e62e634f069590dc93bde8a7b5b00
+
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(base_dir, "..", "views", "templates")
